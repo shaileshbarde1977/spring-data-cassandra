@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns="http://www.springframework.org/schema/data/cassandra"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tool="http://www.springframework.org/schema/tool"
+	targetNamespace="http://www.springframework.org/schema/data/cassandra"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/tool"
+		schemaLocation="http://www.springframework.org/schema/tool/spring-tool.xsd" />
+
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+Defines the configuration elements for the Spring Data Cassandra support.
+    ]]></xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:element name="cluster" type="clusterType">
+		<xsd:annotation>
+			<xsd:documentation
+				source="org.springframework.data.cassandra.core.CassandraClusterFactoryBean"><![CDATA[
+Defines a Cassandra Cluster instance used for accessing Cassandra'.
+			]]></xsd:documentation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="com.datastax.driver.core.Cluster" />
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:complexType name="clusterType">
+		<xsd:attribute name="id" type="xsd:ID" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					The name of the Cassandra Cluster definition (by default "cassandra-cluster")
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="contactPoints" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The comma separated hosts to Cassandra servers.  Default is localhost
+							]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="port" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The port to connect to Cassandra server as native CQL client.  Default is 9042
+							]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>				
+	</xsd:complexType>
+
+    <xsd:element name="keyspace" type="keyspaceType">
+    	<xsd:annotation>
+			<xsd:documentation source="org.springframework.data.cassandra.core.DefaultKeyspaceFactory"><![CDATA[
+Defines a Cassandra Session instance used for accessing Cassandra Keyspace'.
+			]]></xsd:documentation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="com.datastax.driver.core.Session" />
+				</tool:annotation>
+			</xsd:appinfo>			  
+		</xsd:annotation>  
+    </xsd:element>
+
+    <xsd:complexType name="keyspaceType">
+		<xsd:attribute name="id" type="xsd:ID" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					The name of the Keyspace definition (by default "cassandra-keyspace")
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>    
+		<xsd:attribute name="name" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The keyspace name of the Cassandra database.
+							]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+        <xsd:attribute name="cassandra-cluster-ref" type="clusterRef" use="optional">
+                <xsd:annotation>
+                        <xsd:documentation><![CDATA[
+The reference to a Cassandra Cluster instance. Will default to 'cassandra-cluster'.
+                                        ]]>
+                        </xsd:documentation>
+                </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+        <xsd:simpleType name="clusterRef">
+                <xsd:annotation>
+                        <xsd:appinfo>
+                                <tool:annotation kind="ref">
+                                        <tool:assignable-to type="org.springframework.data.cassandra.core.CassandraClusterFactoryBean"/>
+                                </tool:annotation>
+                        </xsd:appinfo>
+                </xsd:annotation>
+                <xsd:union memberTypes="xsd:string"/>
+        </xsd:simpleType>
+
+</xsd:schema>
