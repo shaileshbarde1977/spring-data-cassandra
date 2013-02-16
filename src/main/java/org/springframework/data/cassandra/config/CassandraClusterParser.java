@@ -17,6 +17,7 @@ package org.springframework.data.cassandra.config;
 
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSimpleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.data.cassandra.core.CassandraClusterFactoryBean;
@@ -48,9 +49,32 @@ public class CassandraClusterParser extends AbstractSimpleBeanDefinitionParser  
 	}
 
 	@Override
+	protected void doParse(Element element, ParserContext parserContext,
+			BeanDefinitionBuilder builder) {
+		
+		String contactPoints = element.getAttribute("contactPoints");
+		if (StringUtils.hasText(contactPoints)) {
+			builder.addPropertyValue("contactPoints", contactPoints);
+		}
+		
+		String port = element.getAttribute("port");
+		if (StringUtils.hasText(port)) {
+			builder.addPropertyValue("port", port);
+		}
+		
+		String compression = element.getAttribute("compression");
+		if (StringUtils.hasText(compression)) {
+			builder.addPropertyValue("compressionType", CompressionType.valueOf(compression));
+		}
+		
+		postProcess(builder, element);
+	}
+	
+	@Override
 	protected boolean isEligibleAttribute(String attributeName) {
 		return "contactPoints".equals(attributeName) || 
 				"port".equals(attributeName) || 
+				"compression".equals(attributeName) || 
 				super.isEligibleAttribute(attributeName);
 	}
 

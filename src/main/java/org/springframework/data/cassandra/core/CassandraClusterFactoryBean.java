@@ -20,9 +20,11 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
+import org.springframework.data.cassandra.config.CompressionType;
 import org.springframework.util.StringUtils;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.ProtocolOptions.Compression;
 
 /**
  * Convenient factory for configuring a Cassandra Cluster.
@@ -39,6 +41,7 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>,
 	
 	private String contactPoints;
 	private int port = DEFAULT_PORT;
+	private CompressionType compressionType;
 	
 	private PersistenceExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
 
@@ -81,9 +84,15 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>,
 					"at least one server is required");
 		}
 		
+		System.out.println("compression = " + compressionType);
+
 		Cluster.Builder builder = Cluster.builder();
 
 		builder.addContactPoints(StringUtils.commaDelimitedListToStringArray(contactPoints)).withPort(port);
+		
+		if (compressionType != null) {
+			builder.withCompression(convertCompressionType(compressionType));
+		}
 		
 		Cluster cluster = builder.build();
 		
@@ -106,6 +115,18 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>,
 	public void setPort(int port) {
 		this.port = port;
 	}
-	
 
+	public void setCompressionType(CompressionType compressionType) {
+		this.compressionType = compressionType;
+	}
+	
+	private static Compression convertCompressionType(CompressionType type) {
+		switch(type) {
+		case none:
+			return Compression.NONE;		
+		case snappy:
+			return Compression.SNAPPY;
+		}
+		throw new IllegalArgumentException("unknown compression type " + type);
+	}
 }

@@ -33,7 +33,8 @@ Defines a Cassandra Cluster instance used for accessing Cassandra'.
 		<xsd:attribute name="id" type="xsd:ID" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
-					The name of the Cassandra Cluster definition (by default "cassandra-cluster")
+					The name of the Cassandra Cluster definition (by
+					default "cassandra-cluster")
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -50,10 +51,35 @@ The comma separated hosts to Cassandra servers.  Default is localhost
 The port to connect to Cassandra server as native CQL client.  Default is 9042
 							]]></xsd:documentation>
 			</xsd:annotation>
-		</xsd:attribute>				
+		</xsd:attribute>
+		<xsd:attribute name="compression" default="none" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The protocol options compression. Default is 'none'.
+							]]></xsd:documentation>
+			</xsd:annotation>			
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="none">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+No compression.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:enumeration>
+					<xsd:enumeration value="snappy">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+Uses SNAPPY compression algorithm.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:enumeration>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
 	</xsd:complexType>
 
-    <xsd:element name="keyspace" type="keyspaceType">
+	<xsd:element name="keyspace" type="keyspaceType">
     	<xsd:annotation>
 			<xsd:documentation source="org.springframework.data.cassandra.core.DefaultKeyspaceFactory"><![CDATA[
 Defines a Cassandra Session instance used for accessing Cassandra Keyspace'.

@@ -10,7 +10,7 @@
 	<context:property-placeholder
 			location="classpath:/org/springframework/data/cassandra/config/cassandra.properties"/>
 
-    <cassandra:cluster id="cassandra-cluster" contactPoints="${cassandra.contactPoints}" port="${cassandra.port}" />
+    <cassandra:cluster id="cassandra-cluster" contactPoints="${cassandra.contactPoints}" port="${cassandra.port}" compression="snappy" />
    
     <cassandra:keyspace id="cassandra-keyspace" name="${cassandra.keyspace}" cassandra-cluster-ref="cassandra-cluster" />
 
