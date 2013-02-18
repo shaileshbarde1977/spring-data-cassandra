@@ -2,6 +2,7 @@ package org.springframework.data.cassandra.config;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,6 +27,10 @@ public class CassandraNamespaceTests {
 		Object ks = ctx.getBean("cassandra-keyspace");
 		Assert.notNull(ks);
 		Assert.isInstanceOf(Session.class, ks);
+
+		
+		Cluster c = (Cluster) cluster;
+		System.out.println(org.apache.commons.beanutils.BeanUtils.describe(c.getConfiguration()));
 	}
 	
 }

@@ -21,10 +21,19 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.cassandra.config.CompressionType;
+import org.springframework.data.cassandra.config.PoolingOptionsConfig;
+import org.springframework.data.cassandra.config.SocketOptionsConfig;
 import org.springframework.util.StringUtils;
 
+import com.datastax.driver.core.AuthInfoProvider;
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.HostDistance;
+import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.ProtocolOptions.Compression;
+import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.policies.LoadBalancingPolicy;
+import com.datastax.driver.core.policies.ReconnectionPolicy;
+import com.datastax.driver.core.policies.RetryPolicy;
 
 /**
  * Convenient factory for configuring a Cassandra Cluster.
@@ -42,6 +51,17 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>,
 	private String contactPoints;
 	private int port = DEFAULT_PORT;
 	private CompressionType compressionType;
+	
+	private PoolingOptionsConfig localPoolingOptions;
+	private PoolingOptionsConfig remotePoolingOptions;
+	private SocketOptionsConfig socketOptions;
+	
+	private AuthInfoProvider authInfoProvider;
+	private LoadBalancingPolicy loadBalancingPolicy;
+	private ReconnectionPolicy reconnectionPolicy;
+	private RetryPolicy retryPolicy;
+	
+	private boolean metricsEnabled = true;
 	
 	private PersistenceExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
 
@@ -84,8 +104,6 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>,
 					"at least one server is required");
 		}
 		
-		System.out.println("compression = " + compressionType);
-
 		Cluster.Builder builder = Cluster.builder();
 
 		builder.addContactPoints(StringUtils.commaDelimitedListToStringArray(contactPoints)).withPort(port);
@@ -93,6 +111,38 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>,
 		if (compressionType != null) {
 			builder.withCompression(convertCompressionType(compressionType));
 		}
+
+		if (localPoolingOptions != null) {
+			configPoolingOptions(builder.poolingOptions(), HostDistance.LOCAL, localPoolingOptions);
+		}
+
+		if (remotePoolingOptions != null) {
+			configPoolingOptions(builder.poolingOptions(), HostDistance.REMOTE, remotePoolingOptions);
+		}
+
+		if (socketOptions != null) {
+			configSocketOptions(builder.socketOptions(), socketOptions);
+		}
+		
+		if (authInfoProvider != null) {
+			builder.withAuthInfoProvider(authInfoProvider);
+		}
+		
+		if (loadBalancingPolicy != null) {
+			builder.withLoadBalancingPolicy(loadBalancingPolicy);
+		}
+		
+		if (reconnectionPolicy != null) {
+			builder.withReconnectionPolicy(reconnectionPolicy);
+		}
+		
+		if (retryPolicy != null) {
+			builder.withRetryPolicy(retryPolicy);
+		}
+		
+		if (!metricsEnabled) {
+			builder.withoutMetrics();
+		}	
 		
 		Cluster cluster = builder.build();
 		
@@ -120,6 +170,38 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>,
 		this.compressionType = compressionType;
 	}
 	
+	public void setLocalPoolingOptions(PoolingOptionsConfig localPoolingOptions) {
+		this.localPoolingOptions = localPoolingOptions;
+	}
+
+	public void setRemotePoolingOptions(PoolingOptionsConfig remotePoolingOptions) {
+		this.remotePoolingOptions = remotePoolingOptions;
+	}
+
+	public void setSocketOptions(SocketOptionsConfig socketOptions) {
+		this.socketOptions = socketOptions;
+	}
+
+	public void setAuthInfoProvider(AuthInfoProvider authInfoProvider) {
+		this.authInfoProvider = authInfoProvider;
+	}
+	
+	public void setLoadBalancingPolicy(LoadBalancingPolicy loadBalancingPolicy) {
+		this.loadBalancingPolicy = loadBalancingPolicy;
+	}
+
+	public void setReconnectionPolicy(ReconnectionPolicy reconnectionPolicy) {
+		this.reconnectionPolicy = reconnectionPolicy;
+	}
+
+	public void setRetryPolicy(RetryPolicy retryPolicy) {
+		this.retryPolicy = retryPolicy;
+	}
+
+	public void setMetricsEnabled(boolean metricsEnabled) {
+		this.metricsEnabled = metricsEnabled;
+	}
+
 	private static Compression convertCompressionType(CompressionType type) {
 		switch(type) {
 		case none:
@@ -128,5 +210,44 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>,
 			return Compression.SNAPPY;
 		}
 		throw new IllegalArgumentException("unknown compression type " + type);
+	}
+	
+	private static void configPoolingOptions(PoolingOptions poolingOptions, HostDistance hostDistance, PoolingOptionsConfig config) {
+		if (config.getMinSimultaneousRequests() != null) {
+			poolingOptions.setMinSimultaneousRequestsPerConnectionTreshold(hostDistance, config.getMinSimultaneousRequests());
+		}
+		if (config.getMaxSimultaneousRequests() != null) {
+			poolingOptions.setMaxSimultaneousRequestsPerConnectionTreshold(hostDistance, config.getMaxSimultaneousRequests());
+		}
+		if (config.getCoreConnections() != null) {
+			poolingOptions.setCoreConnectionsPerHost(hostDistance, config.getCoreConnections());
+		}
+		if (config.getMaxConnections() != null) {
+			poolingOptions.setMaxConnectionsPerHost(hostDistance, config.getMaxConnections());
+		}
+	}
+	
+	private static void configSocketOptions(SocketOptions socketOptions, SocketOptionsConfig config) {
+		if (config.getConnectTimeoutMls() != null) {
+			socketOptions.setConnectTimeoutMillis(config.getConnectTimeoutMls());
+		}
+		if (config.getKeepAlive() != null) {
+			socketOptions.setKeepAlive(config.getKeepAlive());
+		}
+		if (config.getReuseAddress() != null) {
+			socketOptions.setReuseAddress(config.getReuseAddress());
+		}
+		if (config.getSoLinger() != null) {
+			socketOptions.setSoLinger(config.getSoLinger());
+		}
+		if (config.getTcpNoDelay() != null) {
+			socketOptions.setTcpNoDelay(config.getTcpNoDelay());
+		}
+		if (config.getReceiveBufferSize() != null) {
+			socketOptions.setReceiveBufferSize(config.getReceiveBufferSize());
+		}
+		if (config.getSendBufferSize() != null) {
+			socketOptions.setSendBufferSize(config.getSendBufferSize());
+		}
 	}
 }

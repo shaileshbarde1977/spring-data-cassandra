@@ -15,14 +15,20 @@
  */
 package org.springframework.data.cassandra.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSimpleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.data.cassandra.core.CassandraClusterFactoryBean;
+import org.springframework.data.config.ParsingUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
+
 /**
  * Parser for &lt;cluster;gt; definitions.
  * 
@@ -69,6 +75,48 @@ public class CassandraClusterParser extends AbstractSimpleBeanDefinitionParser  
 		
 		postProcess(builder, element);
 	}
+	
+	@Override
+	protected void postProcess(BeanDefinitionBuilder builder, Element element) {
+		List<Element> subElements = DomUtils.getChildElements(element);
+
+		// parse nested locator/server elements
+		for (Element subElement : subElements) {
+			String name = subElement.getLocalName();
+
+			if ("local-pooling-options".equals(name)) {
+				builder.addPropertyValue("localPoolingOptions", parsePoolingOptions(subElement));
+			}
+			else if ("remote-pooling-options".equals(name)) {
+				builder.addPropertyValue("remotePoolingOptions", parsePoolingOptions(subElement));
+			}
+			else if ("socket-options".equals(name)) {
+				builder.addPropertyValue("socketOptions", parseSocketOptions(subElement));
+			}
+		}
+	
+	}	
+	
+	private BeanDefinition parsePoolingOptions(Element element) {
+		BeanDefinitionBuilder defBuilder = BeanDefinitionBuilder.genericBeanDefinition(PoolingOptionsConfig.class);
+		ParsingUtils.setPropertyValue(defBuilder, element, "min-simultaneous-requests", "minSimultaneousRequests");
+		ParsingUtils.setPropertyValue(defBuilder, element, "max-simultaneous-requests", "maxSimultaneousRequests");
+		ParsingUtils.setPropertyValue(defBuilder, element, "core-connections", "coreConnections");
+		ParsingUtils.setPropertyValue(defBuilder, element, "max-connections", "maxConnections");
+		return defBuilder.getBeanDefinition();
+	}	
+	
+	private BeanDefinition parseSocketOptions(Element element) {
+		BeanDefinitionBuilder defBuilder = BeanDefinitionBuilder.genericBeanDefinition(SocketOptionsConfig.class);
+		ParsingUtils.setPropertyValue(defBuilder, element, "connect-timeout-mls", "connectTimeoutMls");
+		ParsingUtils.setPropertyValue(defBuilder, element, "keep-alive", "keepAlive");
+		ParsingUtils.setPropertyValue(defBuilder, element, "reuse-address", "reuseAddress");
+		ParsingUtils.setPropertyValue(defBuilder, element, "so-linger", "soLinger");
+		ParsingUtils.setPropertyValue(defBuilder, element, "tcp-no-delay", "tcpNoDelay");
+		ParsingUtils.setPropertyValue(defBuilder, element, "receive-buffer-size", "receiveBufferSize");
+		ParsingUtils.setPropertyValue(defBuilder, element, "send-buffer-size", "sendBufferSize");
+		return defBuilder.getBeanDefinition();
+	}		
 	
 	@Override
 	protected boolean isEligibleAttribute(String attributeName) {

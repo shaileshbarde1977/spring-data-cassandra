@@ -30,6 +30,15 @@ Defines a Cassandra Cluster instance used for accessing Cassandra'.
 	</xsd:element>
 
 	<xsd:complexType name="clusterType">
+		<xsd:sequence>
+			<xsd:element name="local-pooling-options"
+				type="poolingOptionsType" maxOccurs="1" minOccurs="0">
+			</xsd:element>
+			<xsd:element name="remote-pooling-options"
+				type="poolingOptionsType" maxOccurs="1" minOccurs="0">
+			</xsd:element>
+			<xsd:element name="socket-options" type="socketOptionsType" maxOccurs="1" minOccurs="0"></xsd:element>
+		</xsd:sequence>
 		<xsd:attribute name="id" type="xsd:ID" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
@@ -52,12 +61,13 @@ The port to connect to Cassandra server as native CQL client.  Default is 9042
 							]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="compression" default="none" use="optional">
+		<xsd:attribute name="compression" default="none"
+			use="optional">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[
 The protocol options compression. Default is 'none'.
 							]]></xsd:documentation>
-			</xsd:annotation>			
+			</xsd:annotation>
 			<xsd:simpleType>
 				<xsd:restriction base="xsd:string">
 					<xsd:enumeration value="none">
@@ -77,6 +87,74 @@ Uses SNAPPY compression algorithm.
 				</xsd:restriction>
 			</xsd:simpleType>
 		</xsd:attribute>
+		<xsd:attribute name="auth-info-provider" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+AuthInfoProvider implementation.
+							]]></xsd:documentation>
+			</xsd:annotation>		
+			<xsd:simpleType>
+				<xsd:annotation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:assignable-to type="com.datastax.driver.core.AuthInfoProvider" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+				<xsd:union memberTypes="xsd:string" />
+			</xsd:simpleType>
+		</xsd:attribute>		
+		<xsd:attribute name="load-balancing-policy" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+LoadBalancingPolicy implementation.
+							]]></xsd:documentation>
+			</xsd:annotation>			
+			<xsd:simpleType>
+				<xsd:annotation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:assignable-to type="com.datastax.driver.core.policies.LoadBalancingPolicy" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+				<xsd:union memberTypes="xsd:string" />
+			</xsd:simpleType>	
+		</xsd:attribute>		
+		<xsd:attribute name="reconnection-policy" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+ReconnectionPolicy implementation.
+							]]></xsd:documentation>
+			</xsd:annotation>			
+			<xsd:simpleType>
+				<xsd:annotation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:assignable-to type="com.datastax.driver.core.policies.ReconnectionPolicy" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+				<xsd:union memberTypes="xsd:string" />
+			</xsd:simpleType>	
+		</xsd:attribute>		
+		<xsd:attribute name="retry-policy" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+RetryPolicy implementation.
+							]]></xsd:documentation>
+			</xsd:annotation>			
+			<xsd:simpleType>
+				<xsd:annotation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:assignable-to type="com.datastax.driver.core.policies.RetryPolicy" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+				<xsd:union memberTypes="xsd:string" />
+	        </xsd:simpleType>			
+		</xsd:attribute>		
 	</xsd:complexType>
 
 	<xsd:element name="keyspace" type="keyspaceType">
@@ -128,4 +206,25 @@ The reference to a Cassandra Cluster instance. Will default to 'cassandra-cluste
                 <xsd:union memberTypes="xsd:string"/>
         </xsd:simpleType>
 
+
+        <xsd:complexType name="poolingOptionsType">
+        	<xsd:attribute name="min-simultaneous-requests"
+        		type="xsd:string">
+        	</xsd:attribute>
+        	<xsd:attribute name="max-simultaneous-requests"
+        		type="xsd:string">
+        	</xsd:attribute>
+        	<xsd:attribute name="core-connections" type="xsd:string"></xsd:attribute>
+        	<xsd:attribute name="max-connections" type="xsd:string"></xsd:attribute>
+        </xsd:complexType>
+
+        <xsd:complexType name="socketOptionsType">
+	    	<xsd:attribute name="connect-timeout-mls" type="xsd:string"></xsd:attribute>
+	    	<xsd:attribute name="keep-alive" type="xsd:string"></xsd:attribute>
+	    	<xsd:attribute name="reuse-address" type="xsd:string"></xsd:attribute>
+	    	<xsd:attribute name="so-linger" type="xsd:string"></xsd:attribute>
+	    	<xsd:attribute name="tcp-no-delay" type="xsd:string"></xsd:attribute>
+	    	<xsd:attribute name="receive-buffer-size" type="xsd:string"></xsd:attribute>
+	    	<xsd:attribute name="send-buffer-size" type="xsd:string"></xsd:attribute>
+    </xsd:complexType>
 </xsd:schema>

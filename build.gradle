@@ -42,6 +42,7 @@ dependencies {
     compile "org.springframework:spring-context-support:$springVersion"
     compile "org.springframework:spring-tx:$springVersion"
     compile("org.springframework:spring-oxm:$springVersion", optional)
+    compile "org.springframework.data:spring-data-commons:$springDataVersion"
 
     // Cassandra Drivers
     compile "com.datastax.cassandra:cassandra-driver-core:$datastaxVersion"
