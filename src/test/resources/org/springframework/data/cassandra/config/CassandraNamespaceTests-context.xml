@@ -25,7 +25,9 @@
         </cassandra:cluster>
 
         <cassandra:keyspace id="cassandra-keyspace" name="${cassandra.keyspace}"
-                cassandra-cluster-ref="cassandra-cluster" />
+                cassandra-cluster-ref="cassandra-cluster">
+                <cassandra:keyspace-attributes auto="create-drop" replication-stategy="SimpleStrategy" replication-factor="1" durable-writes="true" />
+        </cassandra:keyspace>
 
         <bean id="cassandraTemplate"
                 class="org.springframework.data.cassandra.core.CassandraTemplate">

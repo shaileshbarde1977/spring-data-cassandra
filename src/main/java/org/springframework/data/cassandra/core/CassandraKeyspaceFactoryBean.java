@@ -15,13 +15,18 @@
  */
 package org.springframework.data.cassandra.core;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
+import org.springframework.data.cassandra.config.KeyspaceAttributes;
+import org.springframework.util.StringUtils;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.KeyspaceMetadata;
 import com.datastax.driver.core.Session;
 
 /**
@@ -35,9 +40,16 @@ import com.datastax.driver.core.Session;
 public class CassandraKeyspaceFactoryBean implements FactoryBean<Session>,
 InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 
+    private static final Logger log = LoggerFactory.getLogger(CassandraKeyspaceFactoryBean.class);
+    
+	public static final String DEFAULT_REPLICATION_STRATEGY = "SimpleStrategy";
+	public static final int DEFAULT_REPLICATION_FACTOR = 1;
+	
 	private Cluster cluster;
 	private Session session;
 	private String keyspace;
+	
+	private KeyspaceAttributes keyspaceAttributes;
 	
 	private PersistenceExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
 
@@ -81,13 +93,62 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 		}
 
 		Session session = null;
-		if (keyspace != null) {
-			session = cluster.connect(keyspace);
-		}
-		else {
-			session = cluster.connect();
-		}
+		session = cluster.connect();
 		
+		if (StringUtils.hasText(keyspace)) {
+			
+			KeyspaceMetadata keyspaceMetadata = cluster.getMetadata().getKeyspace(keyspace.toLowerCase());
+			boolean keyspaceExists = keyspaceMetadata != null;
+			
+			if (keyspaceExists) {
+				log.info("keyspace exists " + keyspaceMetadata.asCQLQuery());
+			}
+			
+			if (keyspaceAttributes == null) {
+				keyspaceAttributes = new KeyspaceAttributes();
+			}
+				
+			// drop the old keyspace if needed
+			if (keyspaceExists && (keyspaceAttributes.isCreate() || keyspaceAttributes.isCreateDrop())) {
+				log.info("Drop keyspace " + keyspace + " on afterPropertiesSet");
+				session.execute("DROP KEYSPACE " + keyspace);
+				keyspaceExists = false;
+			}	
+			
+			boolean keyspaceCreated = false;
+			// create the new keyspace if needed
+			if (!keyspaceExists && (keyspaceAttributes.isCreate() || keyspaceAttributes.isCreateDrop() || keyspaceAttributes.isUpdate())) {
+
+				String query = String.format("CREATE KEYSPACE %1$s WITH replication = { 'class' : '%2$s', 'replication_factor' : %3$d } AND DURABLE_WRITES = %4$b", 
+						keyspace, 
+						keyspaceAttributes.getReplicationStrategy(), 
+						keyspaceAttributes.getReplicationFactor(), 
+						keyspaceAttributes.isDurableWrites());
+				
+				log.info("Create keyspace " + keyspace + " on afterPropertiesSet " + query);
+				
+				session.execute(query);
+				keyspaceCreated = true;
+			}
+			
+			// update keyspace if needed
+			if (keyspaceAttributes.isUpdate() && !keyspaceCreated) {
+				
+				
+				
+			}
+			
+			// validate keyspace if needed
+			if (keyspaceAttributes.isValidate()) {
+				
+				if (!keyspaceExists) {
+					throw new IllegalStateException("keyspace '" + keyspace + "' not found in the Cassandra");
+				}
+			}
+			
+			session.execute("USE " + keyspace);
+	    }
+			
 		// initialize property
 		this.session = session;
 	}
@@ -97,6 +158,12 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 	 * @see org.springframework.beans.factory.DisposableBean#destroy()
 	 */
 	public void destroy() throws Exception {
+		
+		if (StringUtils.hasText(keyspace) && keyspaceAttributes != null && keyspaceAttributes.isCreateDrop()) {
+			log.info("Drop keyspace " + keyspace + " on destroy");
+			session.execute("USE system");
+			session.execute("DROP KEYSPACE " + keyspace);
+		}
 		this.session.shutdown();
 	}
 
@@ -107,6 +174,9 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 	public void setCluster(Cluster cluster) {
 		this.cluster = cluster;
 	}
-	
-	
+
+	public void setKeyspaceAttributes(KeyspaceAttributes keyspaceAttributes) {
+		this.keyspaceAttributes = keyspaceAttributes;
+	}
+
 }

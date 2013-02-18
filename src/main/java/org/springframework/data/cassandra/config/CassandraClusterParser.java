@@ -117,14 +117,5 @@ public class CassandraClusterParser extends AbstractSimpleBeanDefinitionParser  
 		ParsingUtils.setPropertyValue(defBuilder, element, "send-buffer-size", "sendBufferSize");
 		return defBuilder.getBeanDefinition();
 	}		
-	
-	@Override
-	protected boolean isEligibleAttribute(String attributeName) {
-		return "contactPoints".equals(attributeName) || 
-				"port".equals(attributeName) || 
-				"compression".equals(attributeName) || 
-				super.isEligibleAttribute(attributeName);
-	}
-
 
 }

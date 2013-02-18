@@ -170,14 +170,18 @@ Defines a Cassandra Session instance used for accessing Cassandra Keyspace'.
 		</xsd:annotation>  
     </xsd:element>
 
-    <xsd:complexType name="keyspaceType">
+	<xsd:complexType name="keyspaceType">
+		<xsd:sequence>
+			<xsd:element name="keyspace-attributes" type="keyspaceAttributesType" maxOccurs="1" minOccurs="0"></xsd:element>
+		</xsd:sequence>
 		<xsd:attribute name="id" type="xsd:ID" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
-					The name of the Keyspace definition (by default "cassandra-keyspace")
+					The name of the Keyspace definition (by default
+					"cassandra-keyspace")
 				</xsd:documentation>
 			</xsd:annotation>
-		</xsd:attribute>    
+		</xsd:attribute>
 		<xsd:attribute name="name" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[
@@ -185,17 +189,18 @@ The keyspace name of the Cassandra database.
 							]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-        <xsd:attribute name="cassandra-cluster-ref" type="clusterRef" use="optional">
-                <xsd:annotation>
-                        <xsd:documentation><![CDATA[
+		<xsd:attribute name="cassandra-cluster-ref" type="clusterRef"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
 The reference to a Cassandra Cluster instance. Will default to 'cassandra-cluster'.
                                         ]]>
-                        </xsd:documentation>
-                </xsd:annotation>
-        </xsd:attribute>
-    </xsd:complexType>
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
 
-        <xsd:simpleType name="clusterRef">
+	<xsd:simpleType name="clusterRef">
                 <xsd:annotation>
                         <xsd:appinfo>
                                 <tool:annotation kind="ref">
@@ -210,21 +215,148 @@ The reference to a Cassandra Cluster instance. Will default to 'cassandra-cluste
         <xsd:complexType name="poolingOptionsType">
         	<xsd:attribute name="min-simultaneous-requests"
         		type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+if the utilisation of opened connections drops below by this configured threshold, then cassandra drops connections till core-connections.
+							]]></xsd:documentation>
+			</xsd:annotation>        		
         	</xsd:attribute>
         	<xsd:attribute name="max-simultaneous-requests"
         		type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+If the utilisation of connections reaches this configurable threshold, then cassandra creates more connections up to max-connections.
+							]]></xsd:documentation>
+			</xsd:annotation>        		
         	</xsd:attribute>
-        	<xsd:attribute name="core-connections" type="xsd:string"></xsd:attribute>
-        	<xsd:attribute name="max-connections" type="xsd:string"></xsd:attribute>
+        	<xsd:attribute name="core-connections" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+For each host, the driver keeps a core amount of connections open at all time.
+							]]></xsd:documentation>
+			</xsd:annotation>        	
+        	</xsd:attribute>
+        	<xsd:attribute name="max-connections" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+More connections are created up to a configurable maximum number of connections.
+							]]></xsd:documentation>
+			</xsd:annotation>
+        	</xsd:attribute>
         </xsd:complexType>
 
         <xsd:complexType name="socketOptionsType">
-	    	<xsd:attribute name="connect-timeout-mls" type="xsd:string"></xsd:attribute>
-	    	<xsd:attribute name="keep-alive" type="xsd:string"></xsd:attribute>
-	    	<xsd:attribute name="reuse-address" type="xsd:string"></xsd:attribute>
-	    	<xsd:attribute name="so-linger" type="xsd:string"></xsd:attribute>
-	    	<xsd:attribute name="tcp-no-delay" type="xsd:string"></xsd:attribute>
-	    	<xsd:attribute name="receive-buffer-size" type="xsd:string"></xsd:attribute>
-	    	<xsd:attribute name="send-buffer-size" type="xsd:string"></xsd:attribute>
+	    	<xsd:attribute name="connect-timeout-mls" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+Sets connection timeout for client socket in milliseconds.
+							]]></xsd:documentation>
+			</xsd:annotation>  
+		    </xsd:attribute>
+	    	<xsd:attribute name="keep-alive" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+Sets the SO_KEEPALIVE socket option.
+							]]></xsd:documentation>
+			</xsd:annotation>  	    	
+	    	</xsd:attribute>
+	    	<xsd:attribute name="reuse-address" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+Sets the SO_REUSEADDR socket option.
+							]]></xsd:documentation>
+			</xsd:annotation>  	    	
+	    	</xsd:attribute>
+	    	<xsd:attribute name="so-linger" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+Sets the SO_LINGER socket option.
+							]]></xsd:documentation>
+			</xsd:annotation>  	    	
+	    	</xsd:attribute>
+	    	<xsd:attribute name="tcp-no-delay" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+Sets the SO_TCPNODELAY socket option.
+							]]></xsd:documentation>
+			</xsd:annotation>  	    	
+	    	</xsd:attribute>
+	    	<xsd:attribute name="receive-buffer-size" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+Sets the SO_RCVBUF socket option.
+							]]></xsd:documentation>
+			</xsd:annotation>  	    	
+	    	</xsd:attribute>
+	    	<xsd:attribute name="send-buffer-size" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+Sets the SO_SNDBUF socket option.
+							]]></xsd:documentation>
+			</xsd:annotation>  	    	
+	    	</xsd:attribute>
     </xsd:complexType>
+
+        <xsd:complexType name="keyspaceAttributesType">
+        	<xsd:attribute name="auto" default="validate">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The keyspace manipulation operation on startup. Default value is 'validate'.
+							]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="validate">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+Validate the keyspace, makes no changes.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:enumeration>
+					<xsd:enumeration value="update">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+Update the keyspace.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:enumeration>
+					<xsd:enumeration value="create">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+Creates the keyspace, destroying previous data.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:enumeration>
+					<xsd:enumeration value="create-drop">
+						<xsd:annotation>
+							<xsd:documentation><![CDATA[
+Creates and then drop the keyspace at the end of the session.
+							]]></xsd:documentation>
+						</xsd:annotation>
+					</xsd:enumeration>
+				</xsd:restriction>
+			</xsd:simpleType>
+        	</xsd:attribute>
+        	<xsd:attribute name="replication-stategy" type="xsd:string" use="optional" default="SimpleStrategy">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+Replication strategy of the Cassandra keyspace. Default value is 'SimpleStrategy'.
+							]]></xsd:documentation>
+			</xsd:annotation>        		
+        	</xsd:attribute>
+        	<xsd:attribute name="replication-factor" type="xsd:string" use="optional" default="1" >
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+Replication factor used by the Cassandra keyspace. Default value is '1'.
+							]]></xsd:documentation>
+			</xsd:annotation>        	
+        	</xsd:attribute>
+        	<xsd:attribute name="durable-writes" type="xsd:string" use="optional" default="true">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+Support durable writes in the Cassandra keyspace. Default value is 'true'.
+							]]></xsd:documentation>
+			</xsd:annotation>        	
+        	</xsd:attribute>
+        </xsd:complexType>
 </xsd:schema>

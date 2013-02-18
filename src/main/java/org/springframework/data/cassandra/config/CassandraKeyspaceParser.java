@@ -15,13 +15,18 @@
  */
 package org.springframework.data.cassandra.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSimpleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.data.cassandra.core.CassandraKeyspaceFactoryBean;
+import org.springframework.data.config.ParsingUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 /**
@@ -69,11 +74,27 @@ public class CassandraKeyspaceParser extends AbstractSimpleBeanDefinitionParser 
 	}
 	
 	@Override
-	protected boolean isEligibleAttribute(String attributeName) {
-		return "name".equals(attributeName) || 
-				"cassandra-cluster-ref".equals(attributeName) || 
-				super.isEligibleAttribute(attributeName);
-	}
+	protected void postProcess(BeanDefinitionBuilder builder, Element element) {
+		List<Element> subElements = DomUtils.getChildElements(element);
 
+		// parse nested locator/server elements
+		for (Element subElement : subElements) {
+			String name = subElement.getLocalName();
+
+			if ("keyspace-attributes".equals(name)) {
+				builder.addPropertyValue("keyspaceAttributes", parseKeyspaceAttributes(subElement));
+			}
+		}
+	
+	}	
+	
+	private BeanDefinition parseKeyspaceAttributes(Element element) {
+		BeanDefinitionBuilder defBuilder = BeanDefinitionBuilder.genericBeanDefinition(KeyspaceAttributes.class);
+		ParsingUtils.setPropertyValue(defBuilder, element, "auto", "auto");
+		ParsingUtils.setPropertyValue(defBuilder, element, "replication-strategy", "replicationStrategy");
+		ParsingUtils.setPropertyValue(defBuilder, element, "replication-factor", "replicationFactor");
+		ParsingUtils.setPropertyValue(defBuilder, element, "durable-writes", "durableWrites");
+		return defBuilder.getBeanDefinition();
+	}	
 	
 }
