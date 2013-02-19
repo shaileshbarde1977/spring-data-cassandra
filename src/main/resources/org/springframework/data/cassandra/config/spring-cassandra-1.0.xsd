@@ -298,65 +298,81 @@ Sets the SO_SNDBUF socket option.
     </xsd:complexType>
 
         <xsd:complexType name="keyspaceAttributesType">
+        	<xsd:sequence>
+        		<xsd:element name="table" type="tableType" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+        	</xsd:sequence>
         	<xsd:attribute name="auto" default="validate">
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[
+        		<xsd:annotation>
+        			<xsd:documentation><![CDATA[
 The keyspace manipulation operation on startup. Default value is 'validate'.
 							]]></xsd:documentation>
-			</xsd:annotation>
-			<xsd:simpleType>
-				<xsd:restriction base="xsd:string">
-					<xsd:enumeration value="validate">
-						<xsd:annotation>
-							<xsd:documentation><![CDATA[
+        		</xsd:annotation>
+        		<xsd:simpleType>
+        			<xsd:restriction base="xsd:string">
+        				<xsd:enumeration value="validate">
+        					<xsd:annotation>
+        						<xsd:documentation><![CDATA[
 Validate the keyspace, makes no changes.
 							]]></xsd:documentation>
-						</xsd:annotation>
-					</xsd:enumeration>
-					<xsd:enumeration value="update">
-						<xsd:annotation>
-							<xsd:documentation><![CDATA[
+        					</xsd:annotation>
+        				</xsd:enumeration>
+        				<xsd:enumeration value="update">
+        					<xsd:annotation>
+        						<xsd:documentation><![CDATA[
 Update the keyspace.
 							]]></xsd:documentation>
-						</xsd:annotation>
-					</xsd:enumeration>
-					<xsd:enumeration value="create">
-						<xsd:annotation>
-							<xsd:documentation><![CDATA[
+        					</xsd:annotation>
+        				</xsd:enumeration>
+        				<xsd:enumeration value="create">
+        					<xsd:annotation>
+        						<xsd:documentation><![CDATA[
 Creates the keyspace, destroying previous data.
 							]]></xsd:documentation>
-						</xsd:annotation>
-					</xsd:enumeration>
-					<xsd:enumeration value="create-drop">
-						<xsd:annotation>
-							<xsd:documentation><![CDATA[
+        					</xsd:annotation>
+        				</xsd:enumeration>
+        				<xsd:enumeration value="create-drop">
+        					<xsd:annotation>
+        						<xsd:documentation><![CDATA[
 Creates and then drop the keyspace at the end of the session.
 							]]></xsd:documentation>
-						</xsd:annotation>
-					</xsd:enumeration>
-				</xsd:restriction>
-			</xsd:simpleType>
+        					</xsd:annotation>
+        				</xsd:enumeration>
+        			</xsd:restriction>
+        		</xsd:simpleType>
         	</xsd:attribute>
-        	<xsd:attribute name="replication-stategy" type="xsd:string" use="optional" default="SimpleStrategy">
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[
+        	<xsd:attribute name="replication-stategy" type="xsd:string"
+        		use="optional" default="SimpleStrategy">
+        		<xsd:annotation>
+        			<xsd:documentation><![CDATA[
 Replication strategy of the Cassandra keyspace. Default value is 'SimpleStrategy'.
 							]]></xsd:documentation>
-			</xsd:annotation>        		
+        		</xsd:annotation>
         	</xsd:attribute>
-        	<xsd:attribute name="replication-factor" type="xsd:string" use="optional" default="1" >
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[
+        	<xsd:attribute name="replication-factor" type="xsd:string"
+        		use="optional" default="1">
+        		<xsd:annotation>
+        			<xsd:documentation><![CDATA[
 Replication factor used by the Cassandra keyspace. Default value is '1'.
 							]]></xsd:documentation>
-			</xsd:annotation>        	
+        		</xsd:annotation>
         	</xsd:attribute>
-        	<xsd:attribute name="durable-writes" type="xsd:string" use="optional" default="true">
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[
+        	<xsd:attribute name="durable-writes" type="xsd:string"
+        		use="optional" default="true">
+        		<xsd:annotation>
+        			<xsd:documentation><![CDATA[
 Support durable writes in the Cassandra keyspace. Default value is 'true'.
 							]]></xsd:documentation>
-			</xsd:annotation>        	
+        		</xsd:annotation>
+        	</xsd:attribute>
+        </xsd:complexType>
+
+        <xsd:complexType name="tableType">
+        	<xsd:attribute name="entity" type="xsd:string">
+        		<xsd:annotation>
+        			<xsd:documentation><![CDATA[
+Entity class name.
+							]]></xsd:documentation>
+        		</xsd:annotation>        	
         	</xsd:attribute>
         </xsd:complexType>
 </xsd:schema>

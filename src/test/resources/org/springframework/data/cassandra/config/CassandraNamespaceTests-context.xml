@@ -26,7 +26,13 @@
 
         <cassandra:keyspace id="cassandra-keyspace" name="${cassandra.keyspace}"
                 cassandra-cluster-ref="cassandra-cluster">
-                <cassandra:keyspace-attributes auto="create-drop" replication-stategy="SimpleStrategy" replication-factor="1" durable-writes="true" />
+                <cassandra:keyspace-attributes auto="update" replication-stategy="SimpleStrategy" replication-factor="1" durable-writes="true">
+                   <cassandra:table entity="org.springframework.data.cassandra.test.Comment" />
+                   <cassandra:table entity="org.springframework.data.cassandra.test.Notification" />
+                   <cassandra:table entity="org.springframework.data.cassandra.test.Post" />
+                   <cassandra:table entity="org.springframework.data.cassandra.test.Timeline" />
+                   <cassandra:table entity="org.springframework.data.cassandra.test.User" />
+                </cassandra:keyspace-attributes>
         </cassandra:keyspace>
 
         <bean id="cassandraTemplate"

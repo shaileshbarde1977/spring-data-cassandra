@@ -15,6 +15,8 @@
  */
 package org.springframework.data.cassandra.core;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -134,7 +136,17 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 			// update keyspace if needed
 			if (keyspaceAttributes.isUpdate() && !keyspaceCreated) {
 				
+				if (compareKeyspaceAttributes(keyspaceAttributes, keyspaceMetadata) != null) {
 				
+					String query = String.format("ALTER KEYSPACE %1$s WITH replication = { 'class' : '%2$s', 'replication_factor' : %3$d } AND DURABLE_WRITES = %4$b", 
+							keyspace, 
+							keyspaceAttributes.getReplicationStrategy(), 
+							keyspaceAttributes.getReplicationFactor(), 
+							keyspaceAttributes.isDurableWrites());
+					
+					log.info("Update keyspace " + keyspace + " on afterPropertiesSet " + query);
+					session.execute(query);
+				}
 				
 			}
 			
@@ -144,6 +156,12 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 				if (!keyspaceExists) {
 					throw new IllegalStateException("keyspace '" + keyspace + "' not found in the Cassandra");
 				}
+				
+				String errorField = compareKeyspaceAttributes(keyspaceAttributes, keyspaceMetadata);
+				if (errorField != null) {
+					throw new IllegalStateException(errorField + " attribute is not much in the keyspace '" + keyspace + "'");
+				}
+			
 			}
 			
 			session.execute("USE " + keyspace);
@@ -179,4 +197,33 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 		this.keyspaceAttributes = keyspaceAttributes;
 	}
 
+	private static String compareKeyspaceAttributes(KeyspaceAttributes keyspaceAttributes, KeyspaceMetadata keyspaceMetadata) {
+		if (keyspaceAttributes.isDurableWrites() != keyspaceMetadata.isDurableWrites()) {
+			return "durableWrites";
+		}
+		Map<String, String> replication = keyspaceMetadata.getReplication();
+		String replicationFactorStr = replication.get("replication_factor");
+		if (replicationFactorStr == null) {
+			return "replication_factor";
+		}
+		try {
+			int replicationFactor = Integer.parseInt(replicationFactorStr);
+			if (keyspaceAttributes.getReplicationFactor() != replicationFactor) {
+				return "replication_factor";
+			}
+		}
+		catch(NumberFormatException e) {
+			return "replication_factor";
+		}
+		
+		String attributesStrategy = keyspaceAttributes.getReplicationStrategy();
+		if (attributesStrategy.indexOf('.') == -1) {
+			attributesStrategy = "org.apache.cassandra.locator." + attributesStrategy;
+		}
+		String replicationStrategy = replication.get("class");
+		if (!attributesStrategy.equals(replicationStrategy)) {
+			return "replication_class";
+		}
+		return null;
+	}
 }
