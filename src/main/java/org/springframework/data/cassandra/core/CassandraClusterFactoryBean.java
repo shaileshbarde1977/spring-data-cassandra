@@ -63,7 +63,7 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>,
 	
 	private boolean metricsEnabled = true;
 	
-	private PersistenceExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
+	private final PersistenceExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
 
 	public Cluster getObject() throws Exception {
 		return cluster;

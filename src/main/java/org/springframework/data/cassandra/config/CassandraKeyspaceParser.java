@@ -21,6 +21,7 @@ import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractSimpleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.data.cassandra.core.CassandraKeyspaceFactoryBean;
@@ -77,10 +78,10 @@ public class CassandraKeyspaceParser extends AbstractSimpleBeanDefinitionParser 
 	protected void postProcess(BeanDefinitionBuilder builder, Element element) {
 		List<Element> subElements = DomUtils.getChildElements(element);
 
-		// parse nested locator/server elements
+		// parse nested elements
 		for (Element subElement : subElements) {
 			String name = subElement.getLocalName();
-
+			
 			if ("keyspace-attributes".equals(name)) {
 				builder.addPropertyValue("keyspaceAttributes", parseKeyspaceAttributes(subElement));
 			}
@@ -94,7 +95,30 @@ public class CassandraKeyspaceParser extends AbstractSimpleBeanDefinitionParser 
 		ParsingUtils.setPropertyValue(defBuilder, element, "replication-strategy", "replicationStrategy");
 		ParsingUtils.setPropertyValue(defBuilder, element, "replication-factor", "replicationFactor");
 		ParsingUtils.setPropertyValue(defBuilder, element, "durable-writes", "durableWrites");
+		
+		List<Element> subElements = DomUtils.getChildElements(element);
+		ManagedList<Object> tables = new ManagedList<Object>(subElements.size());
+		
+		// parse nested elements
+		for (Element subElement : subElements) {
+			String name = subElement.getLocalName();
+			
+			if ("table".equals(name)) {
+				tables.add(parseTable(subElement));
+			}
+		}
+		if (!tables.isEmpty()) {
+			defBuilder.addPropertyValue("tables", tables);
+		}
+		
 		return defBuilder.getBeanDefinition();
 	}	
 	
+	private BeanDefinition parseTable(Element element) {
+		BeanDefinitionBuilder defBuilder = BeanDefinitionBuilder.genericBeanDefinition(TableAttributes.class);
+		ParsingUtils.setPropertyValue(defBuilder, element, "entity", "entity");
+		ParsingUtils.setPropertyValue(defBuilder, element, "mapping", "mapping");
+		return defBuilder.getBeanDefinition();
+	}
+
 }

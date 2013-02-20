@@ -15,6 +15,8 @@
  */
 package org.springframework.data.cassandra.config;
 
+import java.util.Collection;
+
 /**
  * Keyspace attributes are used for manipulation around keyspace at the startup.
  * Auto property defines the way how to do this. Other attributes used to
@@ -44,6 +46,8 @@ public class KeyspaceAttributes {
 	private String replicationStrategy = DEFAULT_REPLICATION_STRATEGY;
 	private int replicationFactor = DEFAULT_REPLICATION_FACTOR;
 	private boolean durableWrites = DEFAULT_DURABLE_WRITES;
+
+	private Collection<TableAttributes> tables;
 	
 	public String getAuto() {
 		return auto;
@@ -92,6 +96,13 @@ public class KeyspaceAttributes {
 	public void setDurableWrites(boolean durableWrites) {
 		this.durableWrites = durableWrites;
 	}
-	
+
+	public Collection<TableAttributes> getTables() {
+		return tables;
+	}
+
+	public void setTables(Collection<TableAttributes> tables) {
+		this.tables = tables;
+	}
 	
 }

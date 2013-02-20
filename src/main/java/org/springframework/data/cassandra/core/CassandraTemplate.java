@@ -15,23 +15,44 @@
  */
 package org.springframework.data.cassandra.core;
 
+import org.springframework.dao.support.PersistenceExceptionTranslator;
+
+import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.exceptions.NoHostAvailableException;
 
 /**
  * @author Alex Shvid
  */
-public class CassandraTemplate {
+public class CassandraTemplate implements CassandraOperations {
 
-	private Session session;
-	
+	private final Session session;
+
+	private final PersistenceExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
+
 	/**
 	 * Constructor used for a basic template configuration
 	 * 
-	 * @param factory must not be {@literal null}.
+	 * @param factory
+	 *            must not be {@literal null}.
 	 */
 	public CassandraTemplate(Session session) {
 		this.session = session;
 	}
-	
-	
+
+	public ResultSet executeQuery(String query) {
+		try {
+			return session.execute(query);
+		} catch (NoHostAvailableException e) {
+			throw new CassandraConnectionFailureException("no host available", e);
+		} catch (RuntimeException e) {
+			throw potentiallyConvertRuntimeException(e);
+		}
+	}
+
+	private RuntimeException potentiallyConvertRuntimeException(
+			RuntimeException ex) {
+		RuntimeException resolved = this.exceptionTranslator.translateExceptionIfPossible(ex);
+		return resolved == null ? ex : resolved;
+	}
 }

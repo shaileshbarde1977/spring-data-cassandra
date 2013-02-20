@@ -80,7 +80,7 @@ public class CassandraClusterParser extends AbstractSimpleBeanDefinitionParser  
 	protected void postProcess(BeanDefinitionBuilder builder, Element element) {
 		List<Element> subElements = DomUtils.getChildElements(element);
 
-		// parse nested locator/server elements
+		// parse nested elements
 		for (Element subElement : subElements) {
 			String name = subElement.getLocalName();
 

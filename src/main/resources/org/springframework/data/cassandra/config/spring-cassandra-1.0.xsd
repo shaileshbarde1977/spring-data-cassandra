@@ -374,5 +374,12 @@ Entity class name.
 							]]></xsd:documentation>
         		</xsd:annotation>        	
         	</xsd:attribute>
+        	<xsd:attribute name="mapping" type="xsd:string" use="optional">
+        		<xsd:annotation>
+        			<xsd:documentation source="org.springframework.data.cassandra.mapping.TableMapping"><![CDATA[
+Table mapping class that implements TableMapping interface. Default value is 'AnnotationTableMapping'.
+							]]></xsd:documentation>
+        		</xsd:annotation>        	
+        	</xsd:attribute>
         </xsd:complexType>
 </xsd:schema>

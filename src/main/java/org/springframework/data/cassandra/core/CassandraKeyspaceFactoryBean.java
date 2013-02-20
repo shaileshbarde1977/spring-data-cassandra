@@ -15,6 +15,8 @@
  */
 package org.springframework.data.cassandra.core;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -25,6 +27,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.cassandra.config.KeyspaceAttributes;
+import org.springframework.data.cassandra.config.TableAttributes;
+import org.springframework.data.cassandra.mapping.AnnotationTableMapping;
+import org.springframework.data.cassandra.mapping.TableMapping;
+import org.springframework.data.cassandra.util.CQLUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.datastax.driver.core.Cluster;
@@ -54,7 +61,7 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 	private KeyspaceAttributes keyspaceAttributes;
 	
 	private PersistenceExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
-
+	
 	public Session getObject() throws Exception {
 		return session;
 	}
@@ -148,6 +155,18 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 					session.execute(query);
 				}
 				
+				if (!CollectionUtils.isEmpty(keyspaceAttributes.getTables())) {
+					for (TableAttributes tableAttributes : keyspaceAttributes.getTables()) {
+						System.out.println("tableAttributes = " + tableAttributes);
+						
+						TableMapping tableMapping = instantiateMapping(tableAttributes.getMapping(), tableAttributes.getEntity());
+						System.out.println("tableMapping = " + tableMapping);
+						
+						String query = CQLUtils.generateCreateTable(tableMapping);
+						System.out.println("query = " + query);
+					}
+				}
+				
 			}
 			
 			// validate keyspace if needed
@@ -226,4 +245,45 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 		}
 		return null;
 	}
+	
+	private static TableMapping instantiateMapping(String mapping, String entity) {
+		Class<?> mappingClass = null;
+		if (mapping == null) {
+			mappingClass = AnnotationTableMapping.class;
+		}
+		else {
+			try {
+				mappingClass = Class.forName(mapping);
+			} catch (ClassNotFoundException e) {
+				throw new IllegalStateException("invalid mapping class " + mapping + " for entity " + entity, e);
+			}
+		}
+		
+		if (!TableMapping.class.isAssignableFrom(mappingClass)) {
+			throw new IllegalStateException("mapping class " + mapping + " have to implement interface " + TableMapping.class);
+		}
+		
+		Constructor<?> constructor = null;
+		try {
+			constructor = mappingClass.getConstructor(String.class);
+		} catch (SecurityException e) {
+			throw new IllegalStateException("have no permissions to construct mapping class " + mapping + " for entity " + entity, e);
+		} catch (NoSuchMethodException e) {
+			throw new IllegalStateException("constructor(string) not found for mapping class " + mapping + " for entity " + entity, e);
+		}
+		
+		try {
+			return (TableMapping) constructor.newInstance(entity);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalStateException("constructor(string) has invalid arguments in mapping class " + mapping, e);
+		} catch (InstantiationException e) {
+			throw new IllegalStateException("constructor(string) has error in mapping class " + mapping, e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException("constructor(string) is not visible in mapping class " + mapping, e);
+		} catch (InvocationTargetException e) {
+			throw new IllegalStateException("constructor(string) can't be invoked in mapping class " + mapping, e);
+		}
+			
+	}
+	
 }

@@ -38,7 +38,7 @@ public class CassandraExceptionTranslator implements PersistenceExceptionTransla
 	public DataAccessException translateExceptionIfPossible(RuntimeException ex) {
 
 		// Check for well-known Cassandra subclasses.
-
+		
 		if (ex instanceof InvalidQueryException) {
 			return new DataAccessResourceFailureException(ex.getMessage(), ex);
 		}
