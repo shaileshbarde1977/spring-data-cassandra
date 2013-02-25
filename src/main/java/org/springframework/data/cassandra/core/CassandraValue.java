@@ -13,28 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.cassandra.config;
+package org.springframework.data.cassandra.core;
+
+import java.nio.ByteBuffer;
+
+import com.datastax.driver.core.DataType;
 
 /**
- * Table attributes are used for manipulation around table at the startup (create/update/validate).
+ * Simple Cassandra value of the ByteBuffer with DataType
  * 
  * @author Alex Shvid
  */
-public class TableAttributes {
-
-	private String entity;
+public class CassandraValue {
 	
-	public String getEntity() {
-		return entity;
+	private final ByteBuffer value;
+	private final DataType type;
+	
+	public CassandraValue(ByteBuffer value, DataType type) {
+		this.value = value;
+		this.type = type;
 	}
 
-	public void setEntity(String entity) {
-		this.entity = entity;
+	public ByteBuffer getValue() {
+		return value;
 	}
 
-	@Override
-	public String toString() {
-		return "TableAttributes [entity=" + entity + "]";
+	public DataType getType() {
+		return type;
 	}
 	
 }

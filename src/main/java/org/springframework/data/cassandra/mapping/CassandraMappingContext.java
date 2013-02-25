@@ -46,15 +46,6 @@ implements ApplicationContextAware  {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.mapping.context.AbstractMappingContext#shouldCreatePersistentEntityFor(org.springframework.data.util.TypeInformation)
-	 */
-	@Override
-	protected boolean shouldCreatePersistentEntityFor(TypeInformation<?> type) {
-		return !CassandraSimpleTypes.HOLDER.isSimpleType(type.getType());
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see org.springframework.data.mapping.AbstractMappingContext#createPersistentProperty(java.lang.reflect.Field, java.beans.PropertyDescriptor, org.springframework.data.mapping.MutablePersistentEntity, org.springframework.data.mapping.SimpleTypeHolder)
 	 */
 	@Override

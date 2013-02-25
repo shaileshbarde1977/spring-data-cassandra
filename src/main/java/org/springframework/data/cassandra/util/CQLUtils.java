@@ -1,18 +1,16 @@
 package org.springframework.data.cassandra.util;
 
-import java.util.Map;
-
-import org.springframework.data.cassandra.mapping.TableMapping;
 
 public class CQLUtils {
 
-	public static String generateCreateTable(TableMapping table) {
+	public static String generateCreateTable(String tableName) {
 
 		StringBuilder str = new StringBuilder();
 		str.append("CREATE TABLE ");
-		str.append(table.table());
+		str.append(tableName);
 		str.append(" ( ");
-		
+
+		/*
 		boolean first = true;
 		for (Map.Entry<String, String> entry : table.fields().entrySet()) {
 			if (!first) {
@@ -23,7 +21,9 @@ public class CQLUtils {
 			str.append(" ");
 			str.append(entry.getValue());
 		}
+		*/
 		str.append(" )");
+		
 		
 		return str.toString();
 	}
