@@ -23,8 +23,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.cassandra.convert.CassandraConverter;
-import org.springframework.data.cassandra.convert.MappingCassandraConverter;
-import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.convert.EntityReader;
@@ -50,22 +48,11 @@ public class CassandraTemplate implements CassandraOperations {
 	/**
 	 * Constructor used for a basic template configuration
 	 * 
-	 * @param factory
-	 *            must not be {@literal null}.
+	 * @param keyspace must not be {@literal null}.
 	 */
-	public CassandraTemplate(Session session) {
-		this(session, null);
-	}
-
-	/**
-	 * Constructor used for a basic template configuration
-	 * 
-	 * @param factory
-	 *            must not be {@literal null}.
-	 */
-	public CassandraTemplate(Session session, CassandraConverter cassandraConverter) {
-		this.session = session;
-		this.cassandraConverter = cassandraConverter != null ? cassandraConverter : getDefaultCassandraConverter();
+	public CassandraTemplate(Keyspace keyspace) {
+		this.session = keyspace.getSession();
+		this.cassandraConverter = keyspace.getCassandraConverter();
 		this.mappingContext = this.cassandraConverter.getMappingContext();
 	}
 	
@@ -238,10 +225,5 @@ public class CassandraTemplate implements CassandraOperations {
 		RuntimeException resolved = this.exceptionTranslator.translateExceptionIfPossible(ex);
 		return resolved == null ? ex : resolved;
 	}
-	
-	private static final CassandraConverter getDefaultCassandraConverter() {
-		MappingCassandraConverter converter = new MappingCassandraConverter(new CassandraMappingContext());
-		converter.afterPropertiesSet();
-		return converter;
-	}
+
 }

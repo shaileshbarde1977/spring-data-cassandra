@@ -41,7 +41,7 @@ import com.datastax.driver.core.Session;
  * @author Alex Shvid
  */
 
-public class CassandraKeyspaceFactoryBean implements FactoryBean<Session>,
+public class CassandraKeyspaceFactoryBean implements FactoryBean<Keyspace>,
 InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 
     private static final Logger log = LoggerFactory.getLogger(CassandraKeyspaceFactoryBean.class);
@@ -52,13 +52,14 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 	private Cluster cluster;
 	private Session session;
 	private String keyspace;
+	private Keyspace keyspaceBean;
 	
 	private KeyspaceAttributes keyspaceAttributes;
 	
 	private final PersistenceExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
 	
-	public Session getObject() throws Exception {
-		return session;
+	public Keyspace getObject() throws Exception {
+		return keyspaceBean;
 	}
 	
 	/*
@@ -178,6 +179,8 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 			
 		// initialize property
 		this.session = session;
+		
+		keyspaceBean = new Keyspace(keyspace, session);
 	}
 	
 	/* 

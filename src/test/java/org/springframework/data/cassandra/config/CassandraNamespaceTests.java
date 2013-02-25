@@ -2,15 +2,14 @@ package org.springframework.data.cassandra.config;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.cassandra.core.Keyspace;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
@@ -26,7 +25,7 @@ public class CassandraNamespaceTests {
 		Assert.isInstanceOf(Cluster.class, cluster);
 		Object ks = ctx.getBean("cassandra-keyspace");
 		Assert.notNull(ks);
-		Assert.isInstanceOf(Session.class, ks);
+		Assert.isInstanceOf(Keyspace.class, ks);
 
 		
 		Cluster c = (Cluster) cluster;
