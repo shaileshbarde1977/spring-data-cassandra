@@ -70,7 +70,12 @@ public class CassandraKeyspaceParser extends AbstractSimpleBeanDefinitionParser 
 			clusterRef = BeanNames.CASSANDRA_CLUSTER;
 		}
 		builder.addPropertyReference("cluster", clusterRef);
-		
+
+		String converterRef = element.getAttribute("cassandra-converter-ref");
+		if (StringUtils.hasText(converterRef)) {
+			builder.addPropertyReference("converter", converterRef);
+		}
+
 		postProcess(builder, element);
 	}
 	

@@ -26,6 +26,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.cassandra.config.KeyspaceAttributes;
 import org.springframework.data.cassandra.config.TableAttributes;
+import org.springframework.data.cassandra.convert.CassandraConverter;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -52,6 +53,8 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 	private Cluster cluster;
 	private Session session;
 	private String keyspace;
+	private CassandraConverter converter;
+	
 	private Keyspace keyspaceBean;
 	
 	private KeyspaceAttributes keyspaceAttributes;
@@ -180,7 +183,7 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 		// initialize property
 		this.session = session;
 		
-		keyspaceBean = new Keyspace(keyspace, session);
+		keyspaceBean = new Keyspace(keyspace, session, converter);
 	}
 	
 	/* 
@@ -207,6 +210,10 @@ InitializingBean, DisposableBean, PersistenceExceptionTranslator  {
 
 	public void setKeyspaceAttributes(KeyspaceAttributes keyspaceAttributes) {
 		this.keyspaceAttributes = keyspaceAttributes;
+	}
+	
+	public void setConverter(CassandraConverter converter) {
+		this.converter = converter;
 	}
 
 	private static String compareKeyspaceAttributes(KeyspaceAttributes keyspaceAttributes, KeyspaceMetadata keyspaceMetadata) {

@@ -159,7 +159,7 @@ RetryPolicy implementation.
 
 	<xsd:element name="keyspace" type="keyspaceType">
     	<xsd:annotation>
-			<xsd:documentation source="org.springframework.data.cassandra.core.DefaultKeyspaceFactory"><![CDATA[
+			<xsd:documentation source="org.springframework.data.cassandra.core.CassandraKeyspaceFactoryBean"><![CDATA[
 Defines a Cassandra Session instance used for accessing Cassandra Keyspace'.
 			]]></xsd:documentation>
 			<xsd:appinfo>
@@ -198,19 +198,38 @@ The reference to a Cassandra Cluster instance. Will default to 'cassandra-cluste
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
+		<xsd:attribute name="cassandra-converter-ref" type="converterRef"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The reference to a CassandraConverter instance. Default is null.
+                                        ]]>
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:simpleType name="clusterRef">
+	    <xsd:simpleType name="clusterRef">
                 <xsd:annotation>
                         <xsd:appinfo>
                                 <tool:annotation kind="ref">
-                                        <tool:assignable-to type="org.springframework.data.cassandra.core.CassandraClusterFactoryBean"/>
+                                        <tool:assignable-to type="com.datastax.driver.core.Cluster"/>
                                 </tool:annotation>
                         </xsd:appinfo>
                 </xsd:annotation>
                 <xsd:union memberTypes="xsd:string"/>
         </xsd:simpleType>
 
+	    <xsd:simpleType name="converterRef">
+                <xsd:annotation>
+                        <xsd:appinfo>
+                                <tool:annotation kind="ref">
+                                        <tool:assignable-to type="org.springframework.data.cassandra.convert.CassandraConverter"/>
+                                </tool:annotation>
+                        </xsd:appinfo>
+                </xsd:annotation>
+                <xsd:union memberTypes="xsd:string"/>
+        </xsd:simpleType>
 
         <xsd:complexType name="poolingOptionsType">
         	<xsd:attribute name="min-simultaneous-requests"

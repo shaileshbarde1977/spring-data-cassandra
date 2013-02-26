@@ -24,8 +24,14 @@
                         send-buffer-size="65536" />
         </cassandra:cluster>
 
+        <bean id="cassandra-mapping" class=" org.springframework.data.cassandra.mapping.CassandraMappingContext" />
+
+        <bean id="cassandra-converter" class=" org.springframework.data.cassandra.convert.MappingCassandraConverter">
+          <constructor-arg ref="cassandra-mapping" />
+        </bean>
+
         <cassandra:keyspace id="cassandra-keyspace" name="${cassandra.keyspace}"
-                cassandra-cluster-ref="cassandra-cluster">
+                cassandra-cluster-ref="cassandra-cluster" cassandra-converter-ref="cassandra-converter">
                 <cassandra:keyspace-attributes auto="update" replication-stategy="SimpleStrategy" replication-factor="1" durable-writes="true">
                    <cassandra:table entity="org.springframework.data.cassandra.test.Comment" />
                    <cassandra:table entity="org.springframework.data.cassandra.test.Notification" />
