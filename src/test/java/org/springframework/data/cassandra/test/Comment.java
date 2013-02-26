@@ -20,7 +20,10 @@ import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.mapping.ColumnId;
+import org.springframework.data.cassandra.mapping.Qualify;
 import org.springframework.data.cassandra.mapping.Table;
+
+import com.datastax.driver.core.DataType;
 
 /**
  * This is an example of dynamic table that creates each time new column
@@ -46,9 +49,12 @@ public class Comment {
 	 * Column ID
 	 */
 	@ColumnId
+	@Qualify(type=DataType.Name.TIMESTAMP)
 	private Date time;
 
 	private String text;
+	
+	@Qualify(type=DataType.Name.SET, typeArguments={DataType.Name.TEXT})
 	private Set<String> likes;
 
 	/*

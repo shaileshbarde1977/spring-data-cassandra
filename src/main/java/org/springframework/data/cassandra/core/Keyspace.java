@@ -16,8 +16,6 @@
 package org.springframework.data.cassandra.core;
 
 import org.springframework.data.cassandra.convert.CassandraConverter;
-import org.springframework.data.cassandra.convert.MappingCassandraConverter;
-import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 
 import com.datastax.driver.core.Session;
 
@@ -33,27 +31,16 @@ public class Keyspace {
 	private final CassandraConverter cassandraConverter;
 	
 	/**
-	 * Constructor used for a basic Keyspace configuration with Cassandra
-	 * Session associated with Cassandra Keyspace
-	 * 
-	 * @param keyspace, system if {@literal null}.
-	 * @param session must not be {@literal null}.
-	 */
-	public Keyspace(String keyspace, Session session) {
-		this(keyspace, session, null);
-	}
-	
-	/**
 	 * Constructor used for a basic keyspace configuration
 	 * 
 	 * @param keyspace, system if {@literal null}.
 	 * @param session must not be {@literal null}.
-	 * @param cassandraConverter, create default if {@literal null}.
+	 * @param cassandraConverter must not be {@literal null}.
 	 */
 	public Keyspace(String keyspace, Session session, CassandraConverter cassandraConverter) {
 		this.keyspace = keyspace;
 		this.session = session;
-		this.cassandraConverter = cassandraConverter != null ? cassandraConverter : getDefaultCassandraConverter();
+		this.cassandraConverter = cassandraConverter;
 	}
 	
 	public String getKeyspace() {
@@ -66,12 +53,6 @@ public class Keyspace {
 
 	public CassandraConverter getCassandraConverter() {
 		return cassandraConverter;
-	}
-
-	private static final CassandraConverter getDefaultCassandraConverter() {
-		MappingCassandraConverter converter = new MappingCassandraConverter(new CassandraMappingContext());
-		converter.afterPropertiesSet();
-		return converter;
 	}
 
 }

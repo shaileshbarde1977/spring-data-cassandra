@@ -122,7 +122,7 @@ public class CassandraKeyspaceParser extends AbstractSimpleBeanDefinitionParser 
 	private BeanDefinition parseTable(Element element) {
 		BeanDefinitionBuilder defBuilder = BeanDefinitionBuilder.genericBeanDefinition(TableAttributes.class);
 		ParsingUtils.setPropertyValue(defBuilder, element, "entity", "entity");
-		ParsingUtils.setPropertyValue(defBuilder, element, "mapping", "mapping");
+		ParsingUtils.setPropertyValue(defBuilder, element, "name", "name");
 		return defBuilder.getBeanDefinition();
 	}
 

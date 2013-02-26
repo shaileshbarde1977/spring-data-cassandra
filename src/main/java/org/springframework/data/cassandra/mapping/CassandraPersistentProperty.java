@@ -17,6 +17,8 @@ package org.springframework.data.cassandra.mapping;
 
 import org.springframework.data.mapping.PersistentProperty;
 
+import com.datastax.driver.core.DataType;
+
 /**
  * Cassandra specific {@link org.springframework.data.mapping.PersistentProperty} extension.
  * 
@@ -37,6 +39,13 @@ public interface CassandraPersistentProperty extends PersistentProperty<Cassandr
 	 * @return
 	 */
 	String getColumnName();
+	
+	/**
+	 * Returns the data type.
+	 * 
+	 * @return
+	 */
+	DataType getDataType();
 	
 	/**
 	 * Returns true if the property has secondary index on this column. 

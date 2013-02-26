@@ -23,6 +23,7 @@ package org.springframework.data.cassandra.config;
 public class TableAttributes {
 
 	private String entity;
+	private String name;
 	
 	public String getEntity() {
 		return entity;
@@ -30,6 +31,14 @@ public class TableAttributes {
 
 	public void setEntity(String entity) {
 		this.entity = entity;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

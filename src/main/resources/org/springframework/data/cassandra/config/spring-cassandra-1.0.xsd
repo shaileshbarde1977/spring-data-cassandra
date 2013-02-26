@@ -393,5 +393,12 @@ Entity class name.
 							]]></xsd:documentation>
         		</xsd:annotation>        	
         	</xsd:attribute>
+        	<xsd:attribute name="name" type="xsd:string" use="optional">
+        		<xsd:annotation>
+        			<xsd:documentation><![CDATA[
+Table name override.
+							]]></xsd:documentation>
+        		</xsd:annotation>        	
+        	</xsd:attribute>        	
         </xsd:complexType>
 </xsd:schema>
