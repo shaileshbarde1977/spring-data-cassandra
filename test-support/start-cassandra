@@ -1,4 +1,4 @@
-curl -OL http://downloads.datastax.com/community/dsc.tar.gz
+curl -silent -output curl.out -OL http://downloads.datastax.com/community/dsc.tar.gz
 tar -xzf dsc.tar.gz
 
 CASSANDRA_HOME=`find . -name 'dsc-cassandra-*' -print`
@@ -11,7 +11,7 @@ echo "CASSANDRA_HOME is $CASSANDRA_HOME"
 mkdir -p ~/cassandra/var/lib/cassandra
 mkdir -p ~/cassandra/var/log/cassandra
 
-cp test-support/cassandra/conf/cassandra.yaml $CASSANDRA_HOME/conf
+cp test-support/cassandra/conf/cassandra.yaml $CASSANDRA_HOME/conf/cassandra.yaml
 
 $CASSANDRA_HOME/bin/cassandra -p $CASSANDRA_HOME/cassandra.pid
 
