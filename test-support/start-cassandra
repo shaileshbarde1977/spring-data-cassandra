@@ -1,5 +1,5 @@
 curl -OL http://downloads.datastax.com/community/dsc.tar.gz
-tar -xvzf dsc.tar.gz
+tar -xzf dsc.tar.gz
 
 CASSANDRA_HOME=`find . -name 'dsc-cassandra-*' -print`
 if [ -z "$CASSANDRA_HOME" ]; then
@@ -15,4 +15,4 @@ cp test-support/cassandra/conf/cassandra.yaml $CASSANDRA_HOME/conf
 
 $CASSANDRA_HOME/bin/cassandra -p $CASSANDRA_HOME/cassandra.pid
 
-sleep 7
+sleep 5
