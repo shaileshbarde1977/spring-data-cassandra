@@ -1,4 +1,4 @@
-curl -silent -output curl.out -OL http://downloads.datastax.com/community/dsc.tar.gz
+curl -s -o curl.out -OL http://downloads.datastax.com/community/dsc.tar.gz
 tar -xzf dsc.tar.gz
 
 CASSANDRA_HOME=`find . -name 'dsc-cassandra-*' -print`
