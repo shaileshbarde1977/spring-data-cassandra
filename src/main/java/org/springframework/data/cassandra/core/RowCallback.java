@@ -1,12 +1,12 @@
 /*
- * Copyright 2010-2011 the original author or authors.
- *
+ * Copyright 2011-2013 the original author or authors.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,26 +15,15 @@
  */
 package org.springframework.data.cassandra.core;
 
-import org.springframework.dao.DataAccessException;
-
-import com.datastax.driver.core.Session;
+import com.datastax.driver.core.Row;
 
 /**
- * Interface for operations on a Cassnadra Session.
+ * Simple internal callback to allow operations on a {@link Row}.
  * 
- * @author David Webb
- * 
- * @param <T>
+ * @author Alex Shvid
  */
-public interface SessionCallback<T> {
 
-	/**
-	 * Perform the operation in the given Session
-	 * 
-	 * @param s
-	 * @return
-	 * @throws DataAccessException
-	 */
-	T doInSession(Session s) throws DataAccessException;
+public interface RowCallback<T> {
 
+	T doWith(Row object);
 }
