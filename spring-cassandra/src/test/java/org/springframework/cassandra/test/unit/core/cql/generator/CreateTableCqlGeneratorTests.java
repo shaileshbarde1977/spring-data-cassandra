@@ -1,6 +1,6 @@
 package org.springframework.cassandra.test.unit.core.cql.generator;
 
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.cassandra.core.keyspace.TableOperations.createTable;
 
 import org.junit.Test;

@@ -15,7 +15,7 @@
  */
 package org.springframework.cassandra.test.integration.core.cql.generator;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Map;
