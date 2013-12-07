@@ -18,3 +18,8 @@ When cloning this repo, it's a good idea to also clone two others from Spring Da
 Building
 --------
 This is a standard Maven multimodule project.  Just issue the command `mvn clean install` from the repo root.
+
+
+Continuous integration
+--------
+https://travis-ci.org/shvid/spring-data-cassandra
