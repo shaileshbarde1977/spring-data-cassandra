@@ -39,12 +39,12 @@ public interface TableDescriptor {
 	/**
 	 * Returns an unmodifiable {@link List} of {@link ColumnSpecification}s.
 	 */
-	List<ColumnSpecification> getColumns();
+	List<ColumnSpecification> getAllColumns();
 
 	/**
 	 * Returns an unmodifiable list of all partition key columns.
 	 */
-	public List<ColumnSpecification> getPartitionKeyColumns();
+	public List<ColumnSpecification> getPartitionedKeyColumns();
 
 	/**
 	 * Returns an unmodifiable list of all primary key columns that are not also partition key columns.

@@ -41,12 +41,12 @@ public class CqlTableSpecificationAssertions {
 		assertEquals(expected.getName().toLowerCase(), tmd.getName().toLowerCase());
 		assertPartitionKeyColumns(expected, tmd);
 		assertPrimaryKeyColumns(expected, tmd);
-		assertColumns(expected.getColumns(), tmd.getColumns());
+		assertColumns(expected.getAllColumns(), tmd.getColumns());
 		assertOptions(expected.getOptions(), tmd.getOptions());
 	}
 
 	public static void assertPartitionKeyColumns(TableDescriptor expected, TableMetadata actual) {
-		assertColumns(expected.getPartitionKeyColumns(), actual.getPartitionKey());
+		assertColumns(expected.getPartitionedKeyColumns(), actual.getPartitionKey());
 	}
 
 	public static void assertPrimaryKeyColumns(TableDescriptor expected, TableMetadata actual) {

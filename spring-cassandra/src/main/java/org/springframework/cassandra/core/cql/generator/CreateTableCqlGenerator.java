@@ -15,11 +15,13 @@
  */
 package org.springframework.cassandra.core.cql.generator;
 
+import static org.springframework.cassandra.core.PrimaryKey.CLUSTERED;
+import static org.springframework.cassandra.core.PrimaryKey.PARTITIONED;
 import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
-import static org.springframework.cassandra.core.PrimaryKeyType.PARTITIONED;
-import static org.springframework.cassandra.core.PrimaryKeyType.CLUSTERED;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +32,8 @@ import org.springframework.cassandra.core.keyspace.Option;
 /**
  * CQL generator for generating a <code>CREATE TABLE</code> statement.
  * 
- * @author Matthew T. Adams
  * @author Alex Shvid
+ * @author Matthew T. Adams
  */
 public class CreateTableCqlGenerator extends TableCqlGenerator<CreateTableSpecification> {
 
@@ -66,12 +68,12 @@ public class CreateTableCqlGenerator extends TableCqlGenerator<CreateTableSpecif
 
 		List<ColumnSpecification> partitionKeys = new ArrayList<ColumnSpecification>();
 		List<ColumnSpecification> clusteredKeys = new ArrayList<ColumnSpecification>();
-		for (ColumnSpecification col : spec().getColumns()) {
+		for (ColumnSpecification col : spec().getAllColumns()) {
 			col.toCql(cql).append(", ");
 
-			if (col.getKeyType() == PARTITIONED) {
+			if (col.getPrimary() == PARTITIONED) {
 				partitionKeys.add(col);
-			} else if (col.getKeyType() == CLUSTERED) {
+			} else if (col.getPrimary() == CLUSTERED) {
 				clusteredKeys.add(col);
 			}
 		}
@@ -84,6 +86,7 @@ public class CreateTableCqlGenerator extends TableCqlGenerator<CreateTableSpecif
 			cql.append("(");
 		}
 
+		Collections.sort(partitionKeys, ordinalBasedColumnComparator);
 		appendColumnNames(cql, partitionKeys);
 
 		if (partitionKeys.size() > 1) {
@@ -95,6 +98,7 @@ public class CreateTableCqlGenerator extends TableCqlGenerator<CreateTableSpecif
 			cql.append(", ");
 		}
 
+		Collections.sort(clusteredKeys, ordinalBasedColumnComparator);
 		appendColumnNames(cql, clusteredKeys);
 
 		cql.append(")");
@@ -190,5 +194,38 @@ public class CreateTableCqlGenerator extends TableCqlGenerator<CreateTableSpecif
 		}
 
 	}
+
+	/**
+	 * Ordinal based column comparator is used for column ordering in partitioned and clustered parts of the primary key
+	 * 
+	 * @author Alex Shvid
+	 * 
+	 */
+
+	private static class OrdinalBasedColumnComparator implements Comparator<ColumnSpecification> {
+
+		@Override
+		public int compare(ColumnSpecification o1, ColumnSpecification o2) {
+
+			Integer ordinal1 = o1.getOrdinal();
+			Integer ordinal2 = o1.getOrdinal();
+
+			if (ordinal1 == null) {
+				if (ordinal2 == null) {
+					return 0;
+				}
+				return -1;
+			}
+
+			if (ordinal2 == null) {
+				return 1;
+			}
+
+			return ordinal1.compareTo(ordinal2);
+		}
+
+	}
+
+	private final static OrdinalBasedColumnComparator ordinalBasedColumnComparator = new OrdinalBasedColumnComparator();
 
 }

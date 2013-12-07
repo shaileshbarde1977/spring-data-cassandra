@@ -17,6 +17,7 @@ package org.springframework.data.cassandra.test.integration.table;
 
 import java.util.Date;
 
+import org.springframework.data.cassandra.mapping.Clustered;
 import org.springframework.data.cassandra.mapping.CompositePrimaryKey;
 import org.springframework.data.cassandra.mapping.Partitioned;
 
@@ -36,12 +37,13 @@ public class TimelinePK {
 	/*
 	 * Row ID
 	 */
-	@Partitioned
+	@Partitioned(ordinal = 1)
 	private String username;
 
 	/*
 	 * Clustered Column
 	 */
+	@Clustered(ordinal = 1)
 	private Date time;
 
 	public String getUsername() {

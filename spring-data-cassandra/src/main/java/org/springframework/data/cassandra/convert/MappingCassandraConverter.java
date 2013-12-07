@@ -268,41 +268,51 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
-				if (prop.isCompositePrimaryKey()) {
+				if (prop.isIdProperty()) {
 
-					CassandraPersistentEntity<?> pkEntity = mappingContext.getPersistentEntity(prop.getRawType());
+					if (prop.isCompositePrimaryKey()) {
 
-					pkEntity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
-						public void doWithPersistentProperty(CassandraPersistentProperty pkProp) {
+						compositePrimaryKeyColumn(spec, prop.getRawType());
 
-							if (pkProp.isPartitioned()) {
-								spec.partitionKeyColumn(pkProp.getColumnName(), pkProp.getDataType());
-							} else {
-								spec.clusteredKeyColumn(pkProp.getColumnName(), pkProp.getDataType(), pkProp.getOrdering());
-							}
-
-						}
-					});
-
-				} else {
-
-					if (prop.isIdProperty()) {
-						spec.partitionKeyColumn(prop.getColumnName(), prop.getDataType());
 					} else {
-						spec.column(prop.getColumnName(), prop.getDataType());
+
+						spec.partitionedKeyColumn(prop.getColumnName(), prop.getDataType(), 1);
+
 					}
-
+				} else {
+					spec.column(prop.getColumnName(), prop.getDataType());
 				}
-			}
 
+			}
 		});
 
-		if (spec.getPartitionKeyColumns().isEmpty()) {
+		if (spec.getPartitionedKeyColumns().isEmpty()) {
 			throw new MappingException("not found partition key in the entity " + entity.getType());
 		}
 
 		return spec;
 
+	}
+
+	private void compositePrimaryKeyColumn(final CreateTableSpecification spec, Class<?> propClass) {
+		final CassandraPersistentEntity<?> pkEntity = mappingContext.getPersistentEntity(propClass);
+
+		pkEntity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
+			public void doWithPersistentProperty(CassandraPersistentProperty pkProp) {
+
+				if (pkProp.isPartitioned()) {
+					spec.partitionedKeyColumn(pkProp.getColumnName(), pkProp.getDataType(), pkProp.getOrdinal());
+				} else if (pkProp.isClustered()) {
+					spec.clusteredKeyColumn(pkProp.getColumnName(), pkProp.getDataType(), pkProp.getOrdinal(),
+							pkProp.getOrdering());
+				} else {
+					throw new MappingException(
+							"all properties in composite private key must be annotated by Partitioned or Clustered annotations "
+									+ pkEntity.getType());
+				}
+
+			}
+		});
 	}
 
 	@SuppressWarnings("unchecked")

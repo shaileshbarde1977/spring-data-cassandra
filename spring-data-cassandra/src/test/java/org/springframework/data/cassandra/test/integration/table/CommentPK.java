@@ -17,6 +17,7 @@ package org.springframework.data.cassandra.test.integration.table;
  */
 import java.util.Date;
 
+import org.springframework.data.cassandra.mapping.Clustered;
 import org.springframework.data.cassandra.mapping.CompositePrimaryKey;
 import org.springframework.data.cassandra.mapping.Partitioned;
 import org.springframework.data.cassandra.mapping.Qualify;
@@ -35,12 +36,13 @@ public class CommentPK {
 	/*
 	 * Row ID
 	 */
-	@Partitioned
+	@Partitioned(ordinal = 1)
 	private String author;
 
 	/*
 	 * Clustered Column
 	 */
+	@Clustered(ordinal = 1)
 	@Qualify(type = DataType.Name.TIMESTAMP)
 	private Date time;
 

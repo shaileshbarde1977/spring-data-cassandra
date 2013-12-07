@@ -30,4 +30,12 @@ import java.lang.annotation.Target;
 @Target(value = { ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 public @interface Partitioned {
 
+	/**
+	 * Order of the column in the partition key.
+	 * 
+	 * @return
+	 */
+
+	int ordinal();
+
 }

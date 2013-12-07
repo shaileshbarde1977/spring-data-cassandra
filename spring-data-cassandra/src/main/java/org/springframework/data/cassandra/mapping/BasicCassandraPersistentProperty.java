@@ -171,6 +171,34 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 		return getField().isAnnotationPresent(Partitioned.class);
 	}
 
+	/**
+	 * Returns true if the property has Clustered annotation on this column.
+	 * 
+	 * @return
+	 */
+	public boolean isClustered() {
+		return getField().isAnnotationPresent(Clustered.class);
+	}
+
+	/**
+	 * Returns true if the property has Clustered annotation on this column.
+	 * 
+	 * @return
+	 */
+	public int getOrdinal() {
+		Partitioned partitioned = getField().getAnnotation(Partitioned.class);
+		if (partitioned != null) {
+			return partitioned.ordinal();
+		}
+		Clustered clustered = getField().getAnnotation(Clustered.class);
+		if (clustered != null) {
+			return clustered.ordinal();
+		}
+		throw new InvalidDataAccessApiUsageException(
+				"only columns annotated by Partitioned and Clustered have ordinal for the property  '" + this.getName()
+						+ "' type is '" + this.getType() + "' in the entity " + this.getOwner().getName());
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.data.mapping.model.AbstractPersistentProperty#createAssociation()
