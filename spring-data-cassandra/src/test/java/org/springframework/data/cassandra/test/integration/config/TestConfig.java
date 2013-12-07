@@ -2,13 +2,13 @@ package org.springframework.data.cassandra.test.integration.config;
 
 import org.springframework.cassandra.core.CassandraOperations;
 import org.springframework.cassandra.core.CassandraTemplate;
-import org.springframework.cassandra.core.SessionFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.core.CassandraDataOperations;
 import org.springframework.data.cassandra.core.CassandraDataTemplate;
 import org.springframework.data.cassandra.core.CassandraKeyspaceFactoryBean;
+import org.springframework.data.cassandra.core.SessionFactoryBean;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Cluster.Builder;
