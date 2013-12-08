@@ -15,10 +15,16 @@
  */
 package org.springframework.data.cassandra.convert;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.cassandra.core.keyspace.AlterTableSpecification;
 import org.springframework.cassandra.core.keyspace.CreateTableSpecification;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -39,6 +45,7 @@ import org.springframework.data.util.TypeInformation;
 import org.springframework.util.ClassUtils;
 
 import com.datastax.driver.core.Row;
+import com.datastax.driver.core.TableMetadata;
 import com.datastax.driver.core.querybuilder.Delete.Where;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
@@ -265,20 +272,18 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 		spec.name(entity.getTable());
 
-		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
+		final List<CassandraPersistentProperty> partitionedProperties = new ArrayList<CassandraPersistentProperty>(5);
+		final List<CassandraPersistentProperty> clusteredProperties = new ArrayList<CassandraPersistentProperty>(5);
+
+		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
 				if (prop.isIdProperty()) {
-
-					if (prop.isCompositePrimaryKey()) {
-
-						compositePrimaryKeyColumn(spec, prop.getRawType());
-
-					} else {
-
-						spec.partitionedKeyColumn(prop.getColumnName(), prop.getDataType(), 1);
-
-					}
+					partitionedProperties.add(prop);
+				} else if (prop.isPartitioned()) {
+					partitionedProperties.add(prop);
+				} else if (prop.isClustered()) {
+					clusteredProperties.add(prop);
 				} else {
 					spec.column(prop.getColumnName(), prop.getDataType());
 				}
@@ -286,26 +291,103 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 			}
 		});
 
-		if (spec.getPartitionedKeyColumns().isEmpty()) {
+		if (partitionedProperties.isEmpty()) {
 			throw new MappingException("not found partition key in the entity " + entity.getType());
+		}
+
+		/*
+		 * Sort primary key properties by ordinal
+		 */
+
+		Collections.sort(partitionedProperties, ordinalBasedPropertyComparator);
+		Collections.sort(clusteredProperties, ordinalBasedPropertyComparator);
+
+		/*
+		 * Add ordered primary key columns to the specification
+		 */
+
+		for (CassandraPersistentProperty prop : partitionedProperties) {
+			spec.partitionedKeyColumn(prop.getColumnName(), prop.getDataType());
+		}
+
+		for (CassandraPersistentProperty prop : clusteredProperties) {
+			spec.clusteredKeyColumn(prop.getColumnName(), prop.getDataType(), prop.getOrdering());
 		}
 
 		return spec;
 
 	}
 
-	private void compositePrimaryKeyColumn(final CreateTableSpecification spec, Class<?> propClass) {
-		final CassandraPersistentEntity<?> pkEntity = mappingContext.getPersistentEntity(propClass);
+	public AlterTableSpecification getAlterTableSpecificationIfDifferent(final CassandraPersistentEntity<?> entity,
+			final TableMetadata table) {
+
+		final AlterTableSpecification spec = new AlterTableSpecification();
+
+		spec.name(entity.getTable());
+
+		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
+			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
+
+				if (prop.isIdProperty()) {
+
+				} else if (prop.isPartitioned()) {
+
+				} else if (prop.isClustered()) {
+
+				} else {
+
+				}
+
+			}
+		});
+
+		return spec;
+
+	}
+
+	private void doWithAllProperties(final CassandraPersistentEntity<?> entity,
+			final PropertyHandler<CassandraPersistentProperty> handler) {
+
+		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
+			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
+
+				if (prop.isIdProperty()) {
+
+					if (prop.isCompositePrimaryKey()) {
+
+						final CassandraPersistentEntity<?> pkEntity = mappingContext.getPersistentEntity(prop.getRawType());
+
+						if (pkEntity == null) {
+							throw new MappingException("entity not found for " + prop.getRawType());
+						}
+
+						validatePkEntity(pkEntity);
+
+						pkEntity.doWithProperties(handler);
+
+					} else {
+
+						handler.doWithPersistentProperty(prop);
+
+					}
+
+				} else {
+
+					handler.doWithPersistentProperty(prop);
+
+				}
+
+			}
+		});
+
+	}
+
+	private void validatePkEntity(final CassandraPersistentEntity<?> pkEntity) {
 
 		pkEntity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty pkProp) {
 
-				if (pkProp.isPartitioned()) {
-					spec.partitionedKeyColumn(pkProp.getColumnName(), pkProp.getDataType(), pkProp.getOrdinal());
-				} else if (pkProp.isClustered()) {
-					spec.clusteredKeyColumn(pkProp.getColumnName(), pkProp.getDataType(), pkProp.getOrdinal(),
-							pkProp.getOrdering());
-				} else {
+				if (!pkProp.isPartitioned() && !pkProp.isClustered()) {
 					throw new MappingException(
 							"all properties in composite private key must be annotated by Partitioned or Clustered annotations "
 									+ pkEntity.getType());
@@ -313,6 +395,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 			}
 		});
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -331,5 +414,38 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		this.beanClassLoader = classLoader;
 
 	}
+
+	/**
+	 * Ordinal based column comparator is used for column ordering in partitioned and clustered parts of the primary key
+	 * 
+	 * @author Alex Shvid
+	 * 
+	 */
+
+	private static class OrdinalBasedPropertyComparator implements Comparator<CassandraPersistentProperty> {
+
+		@Override
+		public int compare(CassandraPersistentProperty o1, CassandraPersistentProperty o2) {
+
+			Integer ordinal1 = o1.getOrdinal();
+			Integer ordinal2 = o1.getOrdinal();
+
+			if (ordinal1 == null) {
+				if (ordinal2 == null) {
+					return 0;
+				}
+				return -1;
+			}
+
+			if (ordinal2 == null) {
+				return 1;
+			}
+
+			return ordinal1.compareTo(ordinal2);
+		}
+
+	}
+
+	private final static OrdinalBasedPropertyComparator ordinalBasedPropertyComparator = new OrdinalBasedPropertyComparator();
 
 }

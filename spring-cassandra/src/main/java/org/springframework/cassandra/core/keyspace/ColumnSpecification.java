@@ -48,7 +48,6 @@ public class ColumnSpecification {
 	private String name;
 	private DataType type; // TODO: determining if we should be coupling this to Datastax Java Driver type?
 	private PrimaryKey primary;
-	private Integer ordinal;
 	private Ordering ordering;
 
 	/**
@@ -73,23 +72,13 @@ public class ColumnSpecification {
 	}
 
 	/**
-	 * Identifies this column as a primary key column.
-	 * 
-	 * @return this
-	 */
-	public ColumnSpecification primary(PrimaryKey primary, Integer ordinal) {
-		return (primary == PrimaryKey.PARTITIONED) ? partitioned(ordinal, true)
-				: clustered(DEFAULT_ORDERING, ordinal, true);
-	}
-
-	/**
 	 * Identifies this column as a primary key column that is also part of a partition key. Sets the column's
 	 * {@link #primary} to {@link PrimaryKey#PARTITIONED} and its {@link #ordering} to <code>null</code>.
 	 * 
 	 * @return this
 	 */
-	public ColumnSpecification partitioned(Integer ordinal) {
-		return partitioned(ordinal, true);
+	public ColumnSpecification partitioned() {
+		return partitioned(true);
 	}
 
 	/**
@@ -99,9 +88,8 @@ public class ColumnSpecification {
 	 * 
 	 * @return this
 	 */
-	public ColumnSpecification partitioned(Integer ordinal, boolean primaryKey) {
+	public ColumnSpecification partitioned(boolean primaryKey) {
 		this.primary = primaryKey ? PARTITIONED : null;
-		this.ordinal = primaryKey ? ordinal : null;
 		this.ordering = null;
 		return this;
 	}
@@ -112,8 +100,8 @@ public class ColumnSpecification {
 	 * 
 	 * @return this
 	 */
-	public ColumnSpecification clustered(Integer ordinal) {
-		return clustered(DEFAULT_ORDERING, ordinal);
+	public ColumnSpecification clustered() {
+		return clustered(DEFAULT_ORDERING);
 	}
 
 	/**
@@ -122,8 +110,8 @@ public class ColumnSpecification {
 	 * 
 	 * @return this
 	 */
-	public ColumnSpecification clustered(Ordering order, Integer ordinal) {
-		return clustered(order, ordinal, true);
+	public ColumnSpecification clustered(Ordering order) {
+		return clustered(order, true);
 	}
 
 	/**
@@ -133,9 +121,8 @@ public class ColumnSpecification {
 	 * 
 	 * @return this
 	 */
-	public ColumnSpecification clustered(Ordering ordering, Integer ordinal, boolean primaryKey) {
+	public ColumnSpecification clustered(Ordering ordering, boolean primaryKey) {
 		this.primary = primaryKey ? CLUSTERED : null;
-		this.ordinal = primaryKey ? ordinal : null;
 		this.ordering = primaryKey ? ordering : null;
 		return this;
 	}
@@ -147,16 +134,6 @@ public class ColumnSpecification {
 	 */
 	/* package */ColumnSpecification primary(PrimaryKey primaryKey) {
 		this.primary = primaryKey;
-		return this;
-	}
-
-	/**
-	 * Sets the column's {@link #ordinal}.
-	 * 
-	 * @return this
-	 */
-	/* package */ColumnSpecification ordinal(Integer ordinal) {
-		this.ordinal = ordinal;
 		return this;
 	}
 
@@ -186,10 +163,6 @@ public class ColumnSpecification {
 		return primary;
 	}
 
-	public Integer getOrdinal() {
-		return ordinal;
-	}
-
 	public Ordering getOrdering() {
 		return ordering;
 	}
@@ -204,7 +177,7 @@ public class ColumnSpecification {
 
 	@Override
 	public String toString() {
-		return toCql(null).append(" /* primary=").append(primary).append(", ordinal=").append(ordinal)
-				.append(", ordering=").append(ordering).append(" */ ").toString();
+		return toCql(null).append(" /* primary=").append(primary).append(", ordering=").append(ordering).append(" */ ")
+				.toString();
 	}
 }

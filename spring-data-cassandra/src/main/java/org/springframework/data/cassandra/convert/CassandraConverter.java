@@ -15,10 +15,13 @@
  */
 package org.springframework.data.cassandra.convert;
 
+import org.springframework.cassandra.core.keyspace.AlterTableSpecification;
 import org.springframework.cassandra.core.keyspace.CreateTableSpecification;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.convert.EntityConverter;
+
+import com.datastax.driver.core.TableMetadata;
 
 /**
  * Central Cassandra specific converter interface from Object to Row.
@@ -28,6 +31,23 @@ import org.springframework.data.convert.EntityConverter;
 public interface CassandraConverter extends
 		EntityConverter<CassandraPersistentEntity<?>, CassandraPersistentProperty, Object, Object> {
 
+	/**
+	 * Creates table specification for a given entity
+	 * 
+	 * @param entity
+	 * @return CreateTableSpecification for this entity
+	 */
+
 	CreateTableSpecification getCreateTableSpecification(CassandraPersistentEntity<?> entity);
+
+	/**
+	 * Checks existing table in Cassandra with entity information. Creates alter table specification if has differences.
+	 * 
+	 * @param entity
+	 * @param table
+	 * @return AlterTableSpecification or null
+	 */
+
+	AlterTableSpecification getAlterTableSpecificationIfDifferent(CassandraPersistentEntity<?> entity, TableMetadata table);
 
 }
