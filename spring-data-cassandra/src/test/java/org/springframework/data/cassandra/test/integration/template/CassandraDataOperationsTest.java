@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import junit.framework.Assert;
+import static org.junit.Assert.*;
 
 import org.apache.cassandra.exceptions.ConfigurationException;
 import org.apache.thrift.transport.TTransportException;
@@ -888,8 +888,8 @@ public class CassandraDataOperationsTest {
 		log.info("SingleSelect Book Title -> " + b.getTitle());
 		log.info("SingleSelect Book Author -> " + b.getAuthor());
 
-		Assert.assertEquals(b.getTitle(), "Spring Data Cassandra Guide");
-		Assert.assertEquals(b.getAuthor(), "Cassandra Guru");
+		assertEquals(b.getTitle(), "Spring Data Cassandra Guide");
+		assertEquals(b.getAuthor(), "Cassandra Guru");
 
 	}
 
@@ -906,7 +906,7 @@ public class CassandraDataOperationsTest {
 
 		log.info("Book Count -> " + b.size());
 
-		Assert.assertEquals(b.size(), 20);
+		assertEquals(b.size(), 20);
 
 	}
 
@@ -923,7 +923,7 @@ public class CassandraDataOperationsTest {
 
 		log.info("Book Count -> " + count);
 
-		Assert.assertEquals(count, new Long(20));
+		assertEquals(count, new Long(20));
 
 	}
 
