@@ -36,28 +36,6 @@
 
 	<developers>
 		<developer>
-			<id>madams</id>
-			<name>Matthew T. Adams</name>
-			<email>matthew dot adams at scispike.com</email>
-			<organization>SciSpike Inc.</organization>
-			<organizationUrl>http://www.scispike.com</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</developer>
-		<developer>
-			<id>dwebb</id>
-			<name>David Webb</name>
-			<email>dwebb at prowaveconsulting.com</email>
-			<organization>Prowave Consulting Inc.</organization>
-			<organizationUrl>http://www.prowaveconsulting.com</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>-5</timezone>
-		</developer>
-		<developer>
 			<id>ashvid</id>
 			<name>Alex Shvid</name>
 			<email>a at shvid.com</email>
@@ -66,7 +44,25 @@
 				<role>Developer</role>
 			</roles>
 			<timezone>-8</timezone>
+		</developer>	
+		<developer>
+			<id>dwebb</id>
+			<name>David Webb</name>
+			<email>dwebb at prowaveconsulting.com</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>-5</timezone>
 		</developer>
+		<developer>
+			<id>madams</id>
+			<name>Matthew T. Adams</name>
+			<email>matthew dot adams at scispike.com</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>-6</timezone>
+		</developer>		
 	</developers>
 
 	<dependencyManagement>
