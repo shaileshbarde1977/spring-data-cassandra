@@ -16,7 +16,7 @@
 package org.springframework.cassandra.test.unit.core.cql.generator;
 
 import org.springframework.cassandra.core.cql.generator.TableNameCqlGenerator;
-import org.springframework.cassandra.core.keyspace.TableNameSpecification;
+import org.springframework.cassandra.core.cql.spec.TableNameSpecification;
 
 /**
  * Useful test class that specifies just about as much as you can for a CQL generation test. Intended to be extended by

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cassandra.core.keyspace;
+package org.springframework.cassandra.core.cql.spec;
 
 /**
  * Class that offers static methods as entry points into the fluent API for building create, drop and alter table

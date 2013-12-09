@@ -16,11 +16,11 @@
 package org.springframework.cassandra.test.unit.core.cql.generator;
 
 import static org.junit.Assert.*;
-import static org.springframework.cassandra.core.keyspace.TableOperations.alterTable;
+import static org.springframework.cassandra.core.cql.spec.TableOperations.alterTable;
 
 import org.junit.Test;
 import org.springframework.cassandra.core.cql.generator.AlterTableCqlGenerator;
-import org.springframework.cassandra.core.keyspace.AlterTableSpecification;
+import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
 
 import com.datastax.driver.core.DataType;
 

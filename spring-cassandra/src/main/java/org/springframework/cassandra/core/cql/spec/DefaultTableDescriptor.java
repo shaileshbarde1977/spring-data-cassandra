@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cassandra.core.keyspace;
+package org.springframework.cassandra.core.cql.spec;
 
-public class DropColumnSpecification extends ColumnChangeSpecification {
+/**
+ * Convenient default implementation of {@link TableDescriptor} as an extension of {@link TableSpecification} that
+ * doesn't require the use of generics.
+ * 
+ * @author Matthew T. Adams
+ */
+public class DefaultTableDescriptor extends TableSpecification<DefaultTableDescriptor> {
 
-	public DropColumnSpecification(String name) {
-		super(name);
+	/**
+	 * Factory method to produce a new {@link DefaultTableDescriptor}. Convenient if imported statically.
+	 */
+	public static DefaultTableDescriptor table() {
+		return new DefaultTableDescriptor();
 	}
 }

@@ -13,13 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cassandra.core.keyspace;
+package org.springframework.cassandra.core.cql.spec;
 
-import com.datastax.driver.core.DataType;
+/**
+ * Builder class that supports the construction of <code>DROP TABLE</code> specifications.
+ * 
+ * @author Matthew T. Adams
+ */
+public class DropTableSpecification extends TableNameSpecification<DropTableSpecification> {
 
-public class AlterColumnSpecification extends ColumnTypeChangeSpecification {
+	private boolean ifExists;
 
-	public AlterColumnSpecification(String name, DataType type) {
-		super(name, type);
+	public DropTableSpecification ifExists() {
+		return ifExists(true);
+	}
+
+	public DropTableSpecification ifExists(boolean ifExists) {
+		this.ifExists = ifExists;
+		return this;
+	}
+
+	public boolean getIfExists() {
+		return ifExists;
 	}
 }

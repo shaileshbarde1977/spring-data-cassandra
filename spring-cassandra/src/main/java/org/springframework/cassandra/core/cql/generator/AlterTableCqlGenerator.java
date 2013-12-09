@@ -19,12 +19,12 @@ import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
 
 import java.util.Map;
 
-import org.springframework.cassandra.core.keyspace.AddColumnSpecification;
-import org.springframework.cassandra.core.keyspace.AlterColumnSpecification;
-import org.springframework.cassandra.core.keyspace.AlterTableSpecification;
-import org.springframework.cassandra.core.keyspace.ColumnChangeSpecification;
-import org.springframework.cassandra.core.keyspace.DropColumnSpecification;
-import org.springframework.cassandra.core.keyspace.Option;
+import org.springframework.cassandra.core.cql.spec.AddColumnSpecification;
+import org.springframework.cassandra.core.cql.spec.AlterColumnSpecification;
+import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
+import org.springframework.cassandra.core.cql.spec.ColumnChangeSpecification;
+import org.springframework.cassandra.core.cql.spec.DropColumnSpecification;
+import org.springframework.cassandra.core.cql.spec.Option;
 
 /**
  * CQL generator for generating <code>ALTER TABLE</code> statements.

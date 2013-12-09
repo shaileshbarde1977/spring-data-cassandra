@@ -13,13 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cassandra.core.keyspace;
+package org.springframework.cassandra.core.cql.spec;
+
+import org.springframework.util.Assert;
 
 import com.datastax.driver.core.DataType;
 
-public class AddColumnSpecification extends ColumnTypeChangeSpecification {
+public abstract class ColumnTypeChangeSpecification extends ColumnChangeSpecification {
 
-	public AddColumnSpecification(String name, DataType type) {
-		super(name, type);
+	private DataType type;
+
+	public ColumnTypeChangeSpecification(String name, DataType type) {
+		super(name);
+		setType(type);
+	}
+
+	private void setType(DataType type) {
+		Assert.notNull(type);
+		this.type = type;
+	}
+
+	public DataType getType() {
+		return type;
 	}
 }

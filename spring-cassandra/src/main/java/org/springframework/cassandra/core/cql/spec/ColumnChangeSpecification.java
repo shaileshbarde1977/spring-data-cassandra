@@ -13,34 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cassandra.core.keyspace;
+package org.springframework.cassandra.core.cql.spec;
 
 import static org.springframework.cassandra.core.cql.CqlStringUtils.checkIdentifier;
 import static org.springframework.cassandra.core.cql.CqlStringUtils.identifize;
 
-/**
- * Abstract builder class to support the construction of index specifications.
- * 
- * @author Alex Shvid
- * @param <T> The subtype of the {@link IndexChangeSpecification}
- */
-public abstract class IndexChangeSpecification<T extends IndexChangeSpecification<T>> {
+public abstract class ColumnChangeSpecification {
 
-	/**
-	 * The optional name of the index.
-	 */
 	private String name;
 
-	/**
-	 * Sets the index name.
-	 * 
-	 * @return this
-	 */
-	@SuppressWarnings("unchecked")
-	public T name(String name) {
+	public ColumnChangeSpecification(String name) {
+		setName(name);
+	}
+
+	private void setName(String name) {
 		checkIdentifier(name);
 		this.name = name;
-		return (T) this;
 	}
 
 	public String getName() {
@@ -48,6 +36,6 @@ public abstract class IndexChangeSpecification<T extends IndexChangeSpecificatio
 	}
 
 	public String getNameAsIdentifier() {
-		return name != null ? identifize(name) : "";
+		return identifize(name);
 	}
 }

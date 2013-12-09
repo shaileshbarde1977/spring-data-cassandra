@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.cassandra.core.keyspace.ColumnSpecification;
-import org.springframework.cassandra.core.keyspace.CreateTableSpecification;
-import org.springframework.cassandra.core.keyspace.Option;
+import org.springframework.cassandra.core.cql.spec.ColumnSpecification;
+import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
+import org.springframework.cassandra.core.cql.spec.Option;
 
 /**
  * CQL generator for generating a <code>CREATE TABLE</code> statement.

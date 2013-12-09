@@ -17,7 +17,7 @@ package org.springframework.cassandra.core.cql.generator;
 
 import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
 
-import org.springframework.cassandra.core.keyspace.DropIndexSpecification;
+import org.springframework.cassandra.core.cql.spec.DropIndexSpecification;
 
 /**
  * CQL generator for generating a <code>DROP INDEX</code> statement.

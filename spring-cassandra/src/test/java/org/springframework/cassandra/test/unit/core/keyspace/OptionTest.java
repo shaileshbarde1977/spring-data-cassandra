@@ -20,8 +20,8 @@ import static org.junit.Assert.*;
 import java.lang.annotation.RetentionPolicy;
 
 import org.junit.Test;
-import org.springframework.cassandra.core.keyspace.DefaultOption;
-import org.springframework.cassandra.core.keyspace.Option;
+import org.springframework.cassandra.core.cql.spec.DefaultOption;
+import org.springframework.cassandra.core.cql.spec.Option;
 
 public class OptionTest {
 

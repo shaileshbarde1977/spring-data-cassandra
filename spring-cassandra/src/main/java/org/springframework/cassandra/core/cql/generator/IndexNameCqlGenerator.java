@@ -15,7 +15,7 @@
  */
 package org.springframework.cassandra.core.cql.generator;
 
-import org.springframework.cassandra.core.keyspace.IndexChangeSpecification;
+import org.springframework.cassandra.core.cql.spec.IndexChangeSpecification;
 import org.springframework.util.Assert;
 
 /**

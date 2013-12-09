@@ -27,7 +27,7 @@ import org.springframework.cassandra.core.QueryOptions;
 import org.springframework.cassandra.core.RetryPolicy;
 import org.springframework.cassandra.core.RetryPolicyResolver;
 import org.springframework.cassandra.core.cql.generator.CreateTableCqlGenerator;
-import org.springframework.cassandra.core.keyspace.CreateTableSpecification;
+import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
 import org.springframework.data.cassandra.convert.CassandraConverter;
 import org.springframework.data.cassandra.exception.EntityWriterException;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;

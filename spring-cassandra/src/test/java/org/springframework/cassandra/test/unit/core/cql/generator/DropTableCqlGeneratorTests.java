@@ -16,11 +16,11 @@
 package org.springframework.cassandra.test.unit.core.cql.generator;
 
 import static org.junit.Assert.*;
-import static org.springframework.cassandra.core.keyspace.TableOperations.dropTable;
+import static org.springframework.cassandra.core.cql.spec.TableOperations.dropTable;
 
 import org.junit.Test;
 import org.springframework.cassandra.core.cql.generator.DropTableCqlGenerator;
-import org.springframework.cassandra.core.keyspace.DropTableSpecification;
+import org.springframework.cassandra.core.cql.spec.DropTableSpecification;
 
 public class DropTableCqlGeneratorTests {
 

@@ -20,10 +20,10 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.cassandra.core.keyspace.ColumnSpecification;
-import org.springframework.cassandra.core.keyspace.TableDescriptor;
-import org.springframework.cassandra.core.keyspace.TableOption;
-import org.springframework.cassandra.core.keyspace.TableOption.CachingOption;
+import org.springframework.cassandra.core.cql.spec.ColumnSpecification;
+import org.springframework.cassandra.core.cql.spec.TableDescriptor;
+import org.springframework.cassandra.core.cql.spec.TableOption;
+import org.springframework.cassandra.core.cql.spec.TableOption.CachingOption;
 
 import com.datastax.driver.core.ColumnMetadata;
 import com.datastax.driver.core.Session;

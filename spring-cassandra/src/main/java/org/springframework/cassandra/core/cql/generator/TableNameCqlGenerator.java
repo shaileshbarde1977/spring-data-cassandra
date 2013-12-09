@@ -15,7 +15,7 @@
  */
 package org.springframework.cassandra.core.cql.generator;
 
-import org.springframework.cassandra.core.keyspace.TableNameSpecification;
+import org.springframework.cassandra.core.cql.spec.TableNameSpecification;
 import org.springframework.util.Assert;
 
 public abstract class TableNameCqlGenerator<T extends TableNameSpecification<T>> {

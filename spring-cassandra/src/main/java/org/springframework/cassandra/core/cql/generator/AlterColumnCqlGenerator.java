@@ -17,7 +17,7 @@ package org.springframework.cassandra.core.cql.generator;
 
 import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
 
-import org.springframework.cassandra.core.keyspace.AlterColumnSpecification;
+import org.springframework.cassandra.core.cql.spec.AlterColumnSpecification;
 
 /**
  * CQL generator for generating an <code>ALTER</code> column clause of an <code>ALTER TABLE</code> statement.

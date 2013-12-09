@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cassandra.core.keyspace;
+package org.springframework.cassandra.core.cql.spec;
 
-import org.springframework.util.Assert;
+/**
+ * Builder class to construct a <code>DROP INDEX</code> specification.
+ * 
+ * @author Alex Shvid
+ */
+public class DropIndexSpecification extends IndexChangeSpecification<DropIndexSpecification> {
 
-import com.datastax.driver.core.DataType;
-
-public abstract class ColumnTypeChangeSpecification extends ColumnChangeSpecification {
-
-	private DataType type;
-
-	public ColumnTypeChangeSpecification(String name, DataType type) {
-		super(name);
-		setType(type);
+	/**
+	 * Sets the default index name based on table and column name.
+	 * 
+	 * @return this
+	 */
+	public DropIndexSpecification defaultName(String table, String column) {
+		StringBuilder str = new StringBuilder();
+		str.append(table);
+		str.append("_");
+		str.append(column);
+		str.append("_idx");
+		return name(str.toString());
 	}
 
-	private void setType(DataType type) {
-		Assert.notNull(type);
-		this.type = type;
-	}
-
-	public DataType getType() {
-		return type;
-	}
 }

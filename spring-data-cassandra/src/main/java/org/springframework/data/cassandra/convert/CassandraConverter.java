@@ -17,10 +17,10 @@ package org.springframework.data.cassandra.convert;
 
 import java.util.List;
 
-import org.springframework.cassandra.core.keyspace.AlterTableSpecification;
-import org.springframework.cassandra.core.keyspace.CreateIndexSpecification;
-import org.springframework.cassandra.core.keyspace.CreateTableSpecification;
-import org.springframework.cassandra.core.keyspace.IndexChangeSpecification;
+import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
+import org.springframework.cassandra.core.cql.spec.CreateIndexSpecification;
+import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
+import org.springframework.cassandra.core.cql.spec.IndexChangeSpecification;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.convert.EntityConverter;

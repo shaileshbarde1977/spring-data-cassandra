@@ -21,8 +21,8 @@ import static org.springframework.cassandra.core.cql.CqlStringUtils.singleQuote;
 
 import java.util.Map;
 
-import org.springframework.cassandra.core.keyspace.Option;
-import org.springframework.cassandra.core.keyspace.TableOptionsSpecification;
+import org.springframework.cassandra.core.cql.spec.Option;
+import org.springframework.cassandra.core.cql.spec.TableOptionsSpecification;
 
 /**
  * Base class that contains behavior common to CQL generation for table operations.

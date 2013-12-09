@@ -13,27 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cassandra.core.keyspace;
+package org.springframework.cassandra.core.cql.spec;
 
-/**
- * Builder class to construct a <code>DROP INDEX</code> specification.
- * 
- * @author Alex Shvid
- */
-public class DropIndexSpecification extends IndexChangeSpecification<DropIndexSpecification> {
+public class DropColumnSpecification extends ColumnChangeSpecification {
 
-	/**
-	 * Sets the default index name based on table and column name.
-	 * 
-	 * @return this
-	 */
-	public DropIndexSpecification defaultName(String table, String column) {
-		StringBuilder str = new StringBuilder();
-		str.append(table);
-		str.append("_");
-		str.append(column);
-		str.append("_idx");
-		return name(str.toString());
+	public DropColumnSpecification(String name) {
+		super(name);
 	}
-
 }
