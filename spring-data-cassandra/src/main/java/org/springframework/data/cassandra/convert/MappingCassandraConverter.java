@@ -306,8 +306,8 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		 * Sort primary key properties by ordinal
 		 */
 
-		Collections.sort(partitionKeyProperties, ordinalBasedPropertyComparator);
-		Collections.sort(clusteringKeyProperties, ordinalBasedPropertyComparator);
+		Collections.sort(partitionKeyProperties, OrdinalBasedPropertyComparator.INSTANCE);
+		Collections.sort(clusteringKeyProperties, OrdinalBasedPropertyComparator.INSTANCE);
 
 		/*
 		 * Add ordered primary key columns to the specification
@@ -466,9 +466,14 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 	 * 
 	 */
 
-	private static class OrdinalBasedPropertyComparator implements Comparator<CassandraPersistentProperty> {
+	static enum OrdinalBasedPropertyComparator implements Comparator<CassandraPersistentProperty> {
 
-		@Override
+		INSTANCE;
+
+		/*
+		 * (non-Javadoc)
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
 		public int compare(CassandraPersistentProperty o1, CassandraPersistentProperty o2) {
 
 			Integer ordinal1 = o1.getOrdinal();
@@ -489,7 +494,5 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		}
 
 	}
-
-	private final static OrdinalBasedPropertyComparator ordinalBasedPropertyComparator = new OrdinalBasedPropertyComparator();
 
 }
