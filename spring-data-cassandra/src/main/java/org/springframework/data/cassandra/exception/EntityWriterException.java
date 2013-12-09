@@ -19,9 +19,12 @@ package org.springframework.data.cassandra.exception;
  * Exception to handle failing to write a PersistedEntity to a CQL String or Query object
  * 
  * @author David Webb
+ * @author Alex Shvid
  * 
  */
 public class EntityWriterException extends Exception {
+
+	private static final long serialVersionUID = 1456457362234L;
 
 	/**
 	 * @param message
