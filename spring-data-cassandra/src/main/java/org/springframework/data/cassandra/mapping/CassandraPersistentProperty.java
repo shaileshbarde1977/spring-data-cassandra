@@ -15,6 +15,7 @@
  */
 package org.springframework.data.cassandra.mapping;
 
+import org.springframework.cassandra.core.KeyPart;
 import org.springframework.cassandra.core.Ordering;
 import org.springframework.data.mapping.PersistentProperty;
 
@@ -63,24 +64,17 @@ public interface CassandraPersistentProperty extends PersistentProperty<Cassandr
 	boolean isIndexed();
 
 	/**
-	 * Returns true if the property has PartitionKey annotation.
+	 * Returns keyPart if the property has KeyColumn annotation.
 	 * 
 	 * @return
 	 */
-	boolean isPartitionKey();
+	KeyPart getKeyPart();
 
 	/**
-	 * Returns true if the property has ClusteringKey annotation.
+	 * Returns key ordinal, number of the property in the composite primary key.
 	 * 
 	 * @return
 	 */
-	boolean isClusteringKey();
-
-	/**
-	 * Returns key ordinal, number of the property in the composite key.
-	 * 
-	 * @return
-	 */
-	int getOrdinal();
+	Integer getOrdinal();
 
 }

@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.cassandra.core.KeyPart;
 import org.springframework.cassandra.core.Ordering;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.mapping.Association;
@@ -82,8 +83,18 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public String getColumnName() {
-		Column annotation = getField().getAnnotation(Column.class);
-		return annotation != null && StringUtils.hasText(annotation.value()) ? annotation.value() : field.getName();
+
+		Column column = getField().getAnnotation(Column.class);
+		if (column != null) {
+			return StringUtils.hasText(column.value()) ? column.value() : field.getName();
+		}
+
+		KeyColumn keyColumn = getField().getAnnotation(KeyColumn.class);
+		if (keyColumn != null) {
+			return StringUtils.hasText(keyColumn.name()) ? keyColumn.name() : field.getName();
+		}
+
+		return field.getName();
 	}
 
 	/**
@@ -167,17 +178,12 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * 
 	 * @return
 	 */
-	public boolean isPartitionKey() {
-		return getField().isAnnotationPresent(PartitionKey.class);
-	}
-
-	/**
-	 * Returns true if the property has ClusteringKey annotation on this column.
-	 * 
-	 * @return
-	 */
-	public boolean isClusteringKey() {
-		return getField().isAnnotationPresent(ClusteringKey.class);
+	public KeyPart getKeyPart() {
+		KeyColumn keyColumn = getField().getAnnotation(KeyColumn.class);
+		if (keyColumn != null) {
+			return keyColumn.keyPart();
+		}
+		return null;
 	}
 
 	/**
@@ -185,18 +191,12 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * 
 	 * @return
 	 */
-	public int getOrdinal() {
-		PartitionKey partitionKeyPart = getField().getAnnotation(PartitionKey.class);
-		if (partitionKeyPart != null) {
-			return partitionKeyPart.ordinal();
+	public Integer getOrdinal() {
+		KeyColumn keyColumn = getField().getAnnotation(KeyColumn.class);
+		if (keyColumn != null) {
+			return keyColumn.ordinal();
 		}
-		ClusteringKey clusteringKeyPart = getField().getAnnotation(ClusteringKey.class);
-		if (clusteringKeyPart != null) {
-			return clusteringKeyPart.ordinal();
-		}
-		throw new InvalidDataAccessApiUsageException(
-				"only columns annotated by PartitionKey and ClusteringKey have ordinal for the property  '" + this.getName()
-						+ "' type is '" + this.getType() + "' in the entity " + this.getOwner().getName());
+		return null;
 	}
 
 	/*

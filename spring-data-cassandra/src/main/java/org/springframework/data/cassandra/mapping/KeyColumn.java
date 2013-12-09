@@ -20,6 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.cassandra.core.KeyPart;
+
 /**
  * Identifies partition key in the Cassandra composite primary key class. Annotated column is the part of the Cassandra
  * Partition Key (former Row Id).
@@ -28,10 +30,26 @@ import java.lang.annotation.Target;
  */
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = { ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
-public @interface PartitionKey {
+public @interface KeyColumn {
 
 	/**
-	 * Order of the column in the partition key.
+	 * The name of the column in the table.
+	 * 
+	 * @return
+	 */
+
+	String name() default "";
+
+	/**
+	 * Key part of the primary key.
+	 * 
+	 * @return
+	 */
+
+	KeyPart keyPart();
+
+	/**
+	 * Order of the column in the primary key.
 	 * 
 	 * @return
 	 */

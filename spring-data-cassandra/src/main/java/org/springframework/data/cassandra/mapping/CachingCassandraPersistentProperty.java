@@ -18,7 +18,11 @@ package org.springframework.data.cassandra.mapping;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 
+import org.springframework.cassandra.core.KeyPart;
+import org.springframework.cassandra.core.Ordering;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
+
+import com.datastax.driver.core.DataType;
 
 /**
  * {@link CassandraPersistentProperty} caching access to {@link #isIdProperty()} and {@link #getColumnName()}.
@@ -28,9 +32,13 @@ import org.springframework.data.mapping.model.SimpleTypeHolder;
 public class CachingCassandraPersistentProperty extends BasicCassandraPersistentProperty {
 
 	private Boolean isIdProperty;
+	private Boolean isCompositePrimaryKey;
 	private String columnName;
+	private Caching<Ordering> ordering = new Caching<Ordering>();
+	private DataType dataType;
 	private Boolean isIndexed;
-	private Boolean isPartitioned;
+	private Caching<KeyPart> keyPart = new Caching<KeyPart>();
+	private Caching<Integer> ordinal = new Caching<Integer>();
 
 	/**
 	 * Creates a new {@link CachingCassandraPersistentProperty}.
@@ -47,7 +55,7 @@ public class CachingCassandraPersistentProperty extends BasicCassandraPersistent
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.mongodb.core.mapping.BasicCassandraPersistentProperty#isIdProperty()
+	 * @see org.springframework.data.cassandra.core.mapping.BasicCassandraPersistentProperty#isIdProperty()
 	 */
 	@Override
 	public boolean isIdProperty() {
@@ -61,7 +69,21 @@ public class CachingCassandraPersistentProperty extends BasicCassandraPersistent
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.mongodb.core.mapping.BasicCassandraPersistentProperty#getFieldName()
+	 * @see org.springframework.data.cassandra.core.mapping.BasicCassandraPersistentProperty#isCompositePrimaryKey()
+	 */
+	@Override
+	public boolean isCompositePrimaryKey() {
+
+		if (this.isCompositePrimaryKey == null) {
+			this.isCompositePrimaryKey = super.isCompositePrimaryKey();
+		}
+
+		return this.isCompositePrimaryKey;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.springframework.data.cassandra.core.mapping.BasicCassandraPersistentProperty#getFieldName()
 	 */
 	@Override
 	public String getColumnName() {
@@ -75,7 +97,35 @@ public class CachingCassandraPersistentProperty extends BasicCassandraPersistent
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.mongodb.core.mapping.BasicCassandraPersistentProperty#isIndexed()
+	 * @see org.springframework.data.cassandra.core.mapping.BasicCassandraPersistentProperty#getOrdering()
+	 */
+	@Override
+	public Ordering getOrdering() {
+
+		if (this.ordering.isNotCached()) {
+			this.ordering.set(super.getOrdering());
+		}
+
+		return this.ordering.get();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.springframework.data.cassandra.core.mapping.BasicCassandraPersistentProperty#getDataType()
+	 */
+	@Override
+	public DataType getDataType() {
+
+		if (this.dataType == null) {
+			this.dataType = super.getDataType();
+		}
+
+		return this.dataType;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.springframework.data.cassandra.core.mapping.BasicCassandraPersistentProperty#isIndexed()
 	 */
 	@Override
 	public boolean isIndexed() {
@@ -89,16 +139,47 @@ public class CachingCassandraPersistentProperty extends BasicCassandraPersistent
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.mongodb.core.mapping.BasicCassandraPersistentProperty#isPartitioned()
+	 * @see org.springframework.data.cassandra.core.mapping.BasicCassandraPersistentProperty#getKeyPart()
 	 */
 	@Override
-	public boolean isPartitionKey() {
+	public KeyPart getKeyPart() {
 
-		if (this.isPartitioned == null) {
-			this.isPartitioned = super.isPartitionKey();
+		if (this.keyPart.isNotCached()) {
+			this.keyPart.set(super.getKeyPart());
 		}
 
-		return this.isPartitioned;
+		return this.keyPart.get();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.springframework.data.cassandra.core.mapping.BasicCassandraPersistentProperty#getOrdinal()
+	 */
+	@Override
+	public Integer getOrdinal() {
+
+		if (this.ordinal.isNotCached()) {
+			this.ordinal.set(super.getOrdinal());
+		}
+
+		return this.ordinal.get();
+	}
+
+	static class Caching<T> {
+		private T value;
+		private boolean cached = false;
+
+		boolean isNotCached() {
+			return !cached;
+		}
+
+		T get() {
+			return value;
+		}
+
+		void set(T v) {
+			value = v;
+			cached = true;
+		}
+	}
 }

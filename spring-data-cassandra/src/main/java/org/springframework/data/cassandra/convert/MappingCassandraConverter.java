@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.cassandra.core.KeyPart;
 import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateIndexSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
@@ -286,9 +287,9 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 				if (prop.isIdProperty()) {
 					partitionKeyProperties.add(prop);
-				} else if (prop.isPartitionKey()) {
+				} else if (prop.getKeyPart() == KeyPart.PARTITION) {
 					partitionKeyProperties.add(prop);
-				} else if (prop.isClusteringKey()) {
+				} else if (prop.getKeyPart() == KeyPart.CLUSTERING) {
 					clusteringKeyProperties.add(prop);
 				} else {
 					spec.column(prop.getColumnName(), prop.getDataType());
@@ -348,7 +349,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 					return;
 				}
 
-				if (prop.isIdProperty() || prop.isPartitionKey() || prop.isClusteringKey()) {
+				if (prop.isIdProperty() || prop.getKeyPart() != null) {
 					throw new MappingException("unable to add or alter column in the primary index " + columnName
 							+ " for entity " + entity.getName());
 				} else {
@@ -429,7 +430,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		pkEntity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty pkProp) {
 
-				if (!pkProp.isPartitionKey() && !pkProp.isClusteringKey()) {
+				if (pkProp.getKeyPart() == null) {
 					throw new MappingException(
 							"all properties in composite private key must be annotated by PartitionKey or ClusteringKey annotations "
 									+ pkEntity.getType());

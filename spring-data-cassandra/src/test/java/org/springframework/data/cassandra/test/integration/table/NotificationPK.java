@@ -17,9 +17,9 @@ package org.springframework.data.cassandra.test.integration.table;
 
 import java.util.Date;
 
-import org.springframework.data.cassandra.mapping.ClusteringKey;
+import org.springframework.cassandra.core.KeyPart;
 import org.springframework.data.cassandra.mapping.CompositePrimaryKey;
-import org.springframework.data.cassandra.mapping.PartitionKey;
+import org.springframework.data.cassandra.mapping.KeyColumn;
 import org.springframework.data.cassandra.mapping.Qualify;
 
 import com.datastax.driver.core.DataType;
@@ -38,13 +38,13 @@ public class NotificationPK {
 	/*
 	 * Row ID
 	 */
-	@PartitionKey(ordinal = 1)
+	@KeyColumn(keyPart = KeyPart.PARTITION, ordinal = 1)
 	private String username;
 
 	/*
 	 * Clustered Column
 	 */
-	@ClusteringKey(ordinal = 1)
+	@KeyColumn(keyPart = KeyPart.CLUSTERING, ordinal = 1)
 	@Qualify(type = DataType.Name.TIMESTAMP)
 	private Date time;
 
