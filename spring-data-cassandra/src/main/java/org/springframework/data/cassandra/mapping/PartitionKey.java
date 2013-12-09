@@ -21,16 +21,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Identifies clustered key in the Cassandra composite primary key class.
+ * Identifies partition key in the Cassandra composite primary key class. Annotated column is the part of the Cassandra
+ * Partition Key (former Row Id).
  * 
  * @author Alex Shvid
  */
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = { ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
-public @interface Clustered {
+public @interface PartitionKey {
 
 	/**
-	 * Order of the column in the clustered key.
+	 * Order of the column in the partition key.
 	 * 
 	 * @return
 	 */

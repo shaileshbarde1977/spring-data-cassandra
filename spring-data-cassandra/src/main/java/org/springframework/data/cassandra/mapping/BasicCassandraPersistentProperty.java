@@ -168,7 +168,7 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public boolean isPartitioned() {
-		return getField().isAnnotationPresent(Partitioned.class);
+		return getField().isAnnotationPresent(PartitionKey.class);
 	}
 
 	/**
@@ -177,7 +177,7 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public boolean isClustered() {
-		return getField().isAnnotationPresent(Clustered.class);
+		return getField().isAnnotationPresent(ClusteringKey.class);
 	}
 
 	/**
@@ -186,11 +186,11 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public int getOrdinal() {
-		Partitioned partitioned = getField().getAnnotation(Partitioned.class);
+		PartitionKey partitioned = getField().getAnnotation(PartitionKey.class);
 		if (partitioned != null) {
 			return partitioned.ordinal();
 		}
-		Clustered clustered = getField().getAnnotation(Clustered.class);
+		ClusteringKey clustered = getField().getAnnotation(ClusteringKey.class);
 		if (clustered != null) {
 			return clustered.ordinal();
 		}
