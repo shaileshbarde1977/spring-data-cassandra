@@ -32,6 +32,7 @@ import com.datastax.driver.core.DataType;
 public class CachingCassandraPersistentProperty extends BasicCassandraPersistentProperty {
 
 	private Boolean isIdProperty;
+	private Boolean isEmbeddedIdProperty;
 	private Boolean hasEmbeddableType;
 	private String columnName;
 	private Caching<Ordering> ordering = new Caching<Ordering>();
@@ -65,6 +66,20 @@ public class CachingCassandraPersistentProperty extends BasicCassandraPersistent
 		}
 
 		return this.isIdProperty;
+	}
+
+	/**
+	 * Also considers fields that has an EmbeddedId annotation.
+	 * 
+	 */
+	@Override
+	public boolean isEmbeddedIdProperty() {
+
+		if (this.isEmbeddedIdProperty == null) {
+			this.isEmbeddedIdProperty = super.isEmbeddedIdProperty();
+		}
+
+		return this.isEmbeddedIdProperty;
 	}
 
 	/*

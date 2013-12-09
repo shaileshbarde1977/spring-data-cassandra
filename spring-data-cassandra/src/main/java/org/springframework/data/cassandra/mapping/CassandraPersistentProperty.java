@@ -29,6 +29,12 @@ import com.datastax.driver.core.DataType;
 public interface CassandraPersistentProperty extends PersistentProperty<CassandraPersistentProperty> {
 
 	/**
+	 * Also considers fields that has an EmbeddedId annotation.
+	 * 
+	 */
+	public boolean isEmbeddedIdProperty();
+
+	/**
 	 * Returns the true if the field composite primary key.
 	 * 
 	 * @return

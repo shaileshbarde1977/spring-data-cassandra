@@ -17,7 +17,7 @@ package org.springframework.data.cassandra.test.integration.table;
 
 import java.util.Date;
 
-import org.springframework.data.annotation.Id;
+import org.springframework.data.cassandra.mapping.EmbeddedId;
 import org.springframework.data.cassandra.mapping.Indexed;
 import org.springframework.data.cassandra.mapping.Table;
 
@@ -35,7 +35,7 @@ public class Notification {
 	/*
 	 * Primary Key
 	 */
-	@Id
+	@EmbeddedId
 	private NotificationPK pk;
 
 	@Indexed

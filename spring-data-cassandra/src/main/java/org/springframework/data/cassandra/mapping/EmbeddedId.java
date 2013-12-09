@@ -16,26 +16,17 @@
 package org.springframework.data.cassandra.mapping;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines embeddable class in the Cassandra table. Example:
- * 
- * @Embeddable class AccountPK { String account; String region; }
- * 
- * @Table class Account {
- * @EmbeddedId AccountPK pk; }
- * 
+ * Identifies composite primary key for the property.
  * 
  * @author Alex Shvid
  */
-
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE })
-public @interface Embeddable {
+@Retention(value = RetentionPolicy.RUNTIME)
+@Target(value = { ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+public @interface EmbeddedId {
 
 }

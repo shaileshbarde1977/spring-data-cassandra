@@ -394,27 +394,27 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
-				if (prop.isIdProperty()) {
+				if (prop.isEmbeddedIdProperty()) {
 
-					if (prop.hasEmbeddableType()) {
-
-						final CassandraPersistentEntity<?> pkEntity = mappingContext.getPersistentEntity(prop.getRawType());
-
-						if (pkEntity == null) {
-							throw new MappingException("entity not found for " + prop.getRawType());
-						}
-
-						validatePkEntity(pkEntity);
-
-						pkEntity.doWithProperties(handler);
-
-					} else {
-
-						handler.doWithPersistentProperty(prop);
-
+					if (!prop.hasEmbeddableType()) {
+						throw new MappingException(
+								"field annotated by EmbeddedId annotation must have Embeddable type, error in property "
+										+ prop.getName() + " for entity " + entity.getName());
 					}
 
-				} else {
+					final CassandraPersistentEntity<?> pkEntity = mappingContext.getPersistentEntity(prop.getRawType());
+
+					if (pkEntity == null) {
+						throw new MappingException("entity not found for " + prop.getRawType());
+					}
+
+					validatePkEntity(pkEntity);
+
+					pkEntity.doWithProperties(handler);
+
+				}
+
+				else {
 
 					handler.doWithPersistentProperty(prop);
 

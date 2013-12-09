@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.data.annotation.Id;
+import org.springframework.data.cassandra.mapping.EmbeddedId;
 import org.springframework.data.cassandra.mapping.Table;
 
 /**
@@ -37,7 +37,7 @@ public class Post {
 	/*
 	 * Primary Key
 	 */
-	@Id
+	@EmbeddedId
 	private PostPK pk;
 
 	private String type; // status, share
