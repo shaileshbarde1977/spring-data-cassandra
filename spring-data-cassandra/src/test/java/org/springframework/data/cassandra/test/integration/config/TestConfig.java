@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.core.CassandraDataOperations;
 import org.springframework.data.cassandra.core.CassandraDataTemplate;
-import org.springframework.data.cassandra.core.CassandraKeyspaceFactoryBean;
+import org.springframework.data.cassandra.core.CassandraSessionFactoryBean;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Cluster.Builder;
@@ -43,7 +43,7 @@ public class TestConfig extends AbstractCassandraConfiguration {
 	 * @see org.springframework.data.cassandra.config.AbstractCassandraConfiguration#getKeyspaceName()
 	 */
 	@Override
-	protected String getKeyspaceName() {
+	protected String keyspace() {
 		return keyspace;
 	}
 
@@ -60,9 +60,9 @@ public class TestConfig extends AbstractCassandraConfiguration {
 	}
 
 	@Bean
-	public CassandraKeyspaceFactoryBean keyspaceFactoryBean() {
+	public CassandraSessionFactoryBean sessionFactoryBean() {
 
-		CassandraKeyspaceFactoryBean bean = new CassandraKeyspaceFactoryBean();
+		CassandraSessionFactoryBean bean = new CassandraSessionFactoryBean();
 		bean.setCluster(cluster());
 		bean.setKeyspace("test");
 
@@ -72,17 +72,14 @@ public class TestConfig extends AbstractCassandraConfiguration {
 
 	@Bean
 	public CassandraOperations cassandraTemplate() {
-
-		CassandraOperations template = new CassandraTemplate(keyspaceFactoryBean().getObject().getSession());
+		CassandraOperations template = new CassandraTemplate(sessionFactoryBean().getObject());
 		return template;
 	}
 
 	@Bean
 	public CassandraDataOperations cassandraDataTemplate() {
-
-		CassandraDataOperations template = new CassandraDataTemplate(keyspaceFactoryBean().getObject().getSession(),
-				keyspaceFactoryBean().getObject().getCassandraConverter(), keyspaceFactoryBean().getObject().getKeyspace());
-
+		CassandraDataOperations template = new CassandraDataTemplate(sessionFactoryBean().getObject(), converter(),
+				keyspace());
 		return template;
 
 	}

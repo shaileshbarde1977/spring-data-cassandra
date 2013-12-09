@@ -24,7 +24,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.beans.factory.xml.AbstractSimpleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.data.cassandra.core.CassandraKeyspaceFactoryBean;
+import org.springframework.data.cassandra.core.CassandraSessionFactoryBean;
 import org.springframework.data.config.ParsingUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
@@ -36,11 +36,11 @@ import org.w3c.dom.Element;
  * @author Alex Shvid
  */
 
-public class CassandraKeyspaceParser extends AbstractSimpleBeanDefinitionParser {
+public class CassandraSessionParser extends AbstractSimpleBeanDefinitionParser {
 
 	@Override
 	protected Class<?> getBeanClass(Element element) {
-		return CassandraKeyspaceFactoryBean.class;
+		return CassandraSessionFactoryBean.class;
 	}
 
 	/* 
@@ -52,7 +52,7 @@ public class CassandraKeyspaceParser extends AbstractSimpleBeanDefinitionParser 
 			throws BeanDefinitionStoreException {
 
 		String id = super.resolveId(element, definition, parserContext);
-		return StringUtils.hasText(id) ? id : BeanNames.CASSANDRA_KEYSPACE;
+		return StringUtils.hasText(id) ? id : ConfigConstants.CASSANDRA_SESSION;
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class CassandraKeyspaceParser extends AbstractSimpleBeanDefinitionParser 
 
 		String clusterRef = element.getAttribute("cassandra-cluster-ref");
 		if (!StringUtils.hasText(clusterRef)) {
-			clusterRef = BeanNames.CASSANDRA_CLUSTER;
+			clusterRef = ConfigConstants.CASSANDRA_CLUSTER;
 		}
 		builder.addPropertyReference("cluster", clusterRef);
 

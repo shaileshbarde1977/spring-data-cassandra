@@ -160,10 +160,10 @@ RetryPolicy implementation.
 		</xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:element name="keyspace" type="keyspaceType">
+	<xsd:element name="session" type="sessionType">
 		<xsd:annotation>
 			<xsd:documentation
-				source="org.springframework.data.cassandra.core.CassandraKeyspaceFactoryBean"><![CDATA[
+				source="org.springframework.data.cassandra.core.CassandraSessionFactoryBean"><![CDATA[
 Defines a Cassandra Session instance used for accessing Cassandra Keyspace'.
 			]]></xsd:documentation>
 			<xsd:appinfo>
@@ -174,7 +174,7 @@ Defines a Cassandra Session instance used for accessing Cassandra Keyspace'.
 		</xsd:annotation>
 	</xsd:element>
 
-	<xsd:complexType name="keyspaceType">
+	<xsd:complexType name="sessionType">
 		<xsd:sequence>
 			<xsd:element name="keyspace-attributes" type="keyspaceAttributesType"
 				maxOccurs="1" minOccurs="0"></xsd:element>

@@ -18,12 +18,12 @@ package org.springframework.data.cassandra.config;
 /**
  * @author Alex Shvid
  */
-public final class BeanNames {
-
-	private BeanNames() {
-	}
+public interface ConfigConstants {
 
 	public static final String CASSANDRA_CLUSTER = "cassandra-cluster";
-	public static final String CASSANDRA_KEYSPACE = "cassandra-keyspace";
+	public static final String CASSANDRA_SESSION = "cassandra-session";
+
+	public static final String CASSANDRA_CLUSTER_ELEMENT = "cluster";
+	public static final String CASSANDRA_SESSION_ELEMENT = "session";
 
 }

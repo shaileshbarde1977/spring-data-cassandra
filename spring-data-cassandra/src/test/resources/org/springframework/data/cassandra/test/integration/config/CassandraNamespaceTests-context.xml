@@ -32,7 +32,7 @@
 		<constructor-arg ref="cassandra-mapping" />
 	</bean>
 
-	<cassandra:keyspace id="cassandra-keyspace" name="${cassandra.keyspace}"
+	<cassandra:session id="cassandra-session" name="${cassandra.keyspace}"
 		cassandra-cluster-ref="cassandra-cluster" cassandra-converter-ref="cassandra-converter">
 		<cassandra:keyspace-attributes auto="update"
 			replication-stategy="SimpleStrategy" replication-factor="1"
@@ -44,10 +44,10 @@
 			<cassandra:table entity="org.springframework.data.cassandra.test.integration.table.Timeline" />
 			<cassandra:table entity="org.springframework.data.cassandra.test.integration.table.User" />
 		</cassandra:keyspace-attributes>
-	</cassandra:keyspace>
+	</cassandra:session>
 	
 	<bean id="cassandraTemplate" class="org.springframework.cassandra.core.CassandraTemplate">
-		<constructor-arg ref="cassandra-keyspace" />
+		<constructor-arg ref="cassandra-session" />
 	</bean>
 
 </beans>

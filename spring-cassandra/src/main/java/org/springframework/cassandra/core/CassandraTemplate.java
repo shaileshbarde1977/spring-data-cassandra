@@ -58,15 +58,9 @@ import com.datastax.driver.core.querybuilder.Truncate;
  * 
  * @author David Webb
  * @author Matthew Adams
+ * @author Alex Shvid
  */
 public class CassandraTemplate extends CassandraAccessor implements CassandraOperations {
-
-	/**
-	 * Blank constructor. You must wire in the Session before use.
-	 * 
-	 */
-	public CassandraTemplate() {
-	}
 
 	/**
 	 * Constructor used for a basic template configuration

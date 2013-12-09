@@ -51,7 +51,7 @@ public class CassandraClusterParser extends AbstractSimpleBeanDefinitionParser {
 			throws BeanDefinitionStoreException {
 
 		String id = super.resolveId(element, definition, parserContext);
-		return StringUtils.hasText(id) ? id : BeanNames.CASSANDRA_CLUSTER;
+		return StringUtils.hasText(id) ? id : ConfigConstants.CASSANDRA_CLUSTER;
 	}
 
 	@Override

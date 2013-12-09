@@ -48,16 +48,15 @@ import com.datastax.driver.core.TableMetadata;
 import com.datastax.driver.core.exceptions.NoHostAvailableException;
 
 /**
- * Convenient factory for configuring a Cassandra Session. Session is a thread safe singleton and created per a
- * keyspace. So, it is enough to have one session per application.
+ * Convenient factory for configuring a Cassandra Session. It is enough to have one session per application.
  * 
  * @author Alex Shvid
  */
 
-public class CassandraKeyspaceFactoryBean implements FactoryBean<SpringDataKeyspace>, InitializingBean, DisposableBean,
+public class CassandraSessionFactoryBean implements FactoryBean<Session>, InitializingBean, DisposableBean,
 		BeanClassLoaderAware, PersistenceExceptionTranslator {
 
-	private static final Logger log = LoggerFactory.getLogger(CassandraKeyspaceFactoryBean.class);
+	private static final Logger log = LoggerFactory.getLogger(CassandraSessionFactoryBean.class);
 
 	public static final String DEFAULT_REPLICATION_STRATEGY = "SimpleStrategy";
 	public static final int DEFAULT_REPLICATION_FACTOR = 1;
@@ -71,8 +70,6 @@ public class CassandraKeyspaceFactoryBean implements FactoryBean<SpringDataKeysp
 	private CassandraConverter converter;
 	private MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
 
-	private SpringDataKeyspace keyspaceBean;
-
 	private KeyspaceAttributes keyspaceAttributes;
 
 	private final PersistenceExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
@@ -81,8 +78,8 @@ public class CassandraKeyspaceFactoryBean implements FactoryBean<SpringDataKeysp
 		this.beanClassLoader = classLoader;
 	}
 
-	public SpringDataKeyspace getObject() {
-		return keyspaceBean;
+	public Session getObject() {
+		return session;
 	}
 
 	/*
@@ -244,7 +241,6 @@ public class CassandraKeyspaceFactoryBean implements FactoryBean<SpringDataKeysp
 		// initialize property
 		this.session = session;
 
-		this.keyspaceBean = new SpringDataKeyspace(keyspace, session, converter);
 	}
 
 	private void createNewTable(Session session, String useTableName, CassandraPersistentEntity<?> entity)

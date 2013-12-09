@@ -56,11 +56,6 @@ import com.datastax.driver.core.querybuilder.Select;
 public class CassandraDataTemplate extends CassandraTemplate implements CassandraDataOperations {
 
 	/*
-	 * Default Keyspace if none is passed in.
-	 */
-	private static final String KEYSPACE_DEFAULT = "system";
-
-	/*
 	 * List of iterable classes when testing POJOs for specific operations.
 	 */
 	public static final Collection<String> ITERABLE_CLASSES;
@@ -75,40 +70,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 	}
 
-	/*
-	 * Required elements for successful Template Operations.  These can be set with the Constructor, or wired in
-	 * later.
-	 * 
-	 * TODO - DW - Discuss Autowiring these.
-	 */
 	private String keyspace;
 	private CassandraConverter cassandraConverter;
 	private MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
-
-	/**
-	 * Default Constructor for wiring in the required components later
-	 */
-	public CassandraDataTemplate() {
-	}
-
-	/**
-	 * Constructor if only session is known at time of Template Creation
-	 * 
-	 * @param session must not be {@literal null}
-	 */
-	public CassandraDataTemplate(Session session) {
-		this(session, null, null);
-	}
-
-	/**
-	 * Constructor if only session and converter are known at time of Template Creation
-	 * 
-	 * @param session must not be {@literal null}
-	 * @param converter must not be {@literal null}.
-	 */
-	public CassandraDataTemplate(Session session, CassandraConverter converter) {
-		this(session, converter, null);
-	}
 
 	/**
 	 * Constructor used for a basic template configuration
@@ -117,8 +81,10 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param converter must not be {@literal null}.
 	 */
 	public CassandraDataTemplate(Session session, CassandraConverter converter, String keyspace) {
-		setSession(session);
-		this.keyspace = keyspace == null ? KEYSPACE_DEFAULT : keyspace;
+		super(session);
+		Assert.notNull(converter);
+		Assert.notNull(keyspace);
+		this.keyspace = keyspace;
 		this.cassandraConverter = converter;
 		this.mappingContext = this.cassandraConverter.getMappingContext();
 	}

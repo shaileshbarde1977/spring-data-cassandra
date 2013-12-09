@@ -18,11 +18,13 @@ package org.springframework.cassandra.support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Session;
 
 /**
  * @author David Webb
+ * @author Alex Shvid
  * 
  */
 public class CassandraAccessor implements InitializingBean {
@@ -70,6 +72,7 @@ public class CassandraAccessor implements InitializingBean {
 	 * @param session The session to set.
 	 */
 	public void setSession(Session session) {
+		Assert.notNull(session);
 		this.session = session;
 	}
 

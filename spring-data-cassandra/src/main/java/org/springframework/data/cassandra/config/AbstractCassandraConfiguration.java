@@ -31,7 +31,6 @@ import org.springframework.data.cassandra.convert.CassandraConverter;
 import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.CassandraAdminOperations;
 import org.springframework.data.cassandra.core.CassandraAdminTemplate;
-import org.springframework.data.cassandra.core.SpringDataKeyspace;
 import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
@@ -62,7 +61,7 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 * 
 	 * @return must not be {@literal null}.
 	 */
-	protected abstract String getKeyspaceName();
+	protected abstract String keyspace();
 
 	/**
 	 * Return the {@link Cluster} instance to connect to.
@@ -84,26 +83,12 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 */
 	@Bean
 	public Session session() throws Exception {
-		String keyspace = getKeyspaceName();
+		String keyspace = keyspace();
 		if (StringUtils.hasText(keyspace)) {
 			return cluster().connect(keyspace);
 		} else {
 			return cluster().connect();
 		}
-	}
-
-	/**
-	 * Creates a {@link SpringDataKeyspace} to be used by the {@link CassandraTemplate}. Will use the {@link Session}
-	 * instance configured in {@link #session()} and {@link CassandraConverter} configured in {@link #converter()}.
-	 * 
-	 * @see #cluster()
-	 * @see #Keyspace()
-	 * @return
-	 * @throws Exception
-	 */
-	@Bean
-	public SpringDataKeyspace keyspace() throws Exception {
-		return new SpringDataKeyspace(getKeyspaceName(), session(), converter());
 	}
 
 	/**
@@ -138,7 +123,7 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 */
 	@Bean
 	public CassandraAdminOperations cassandraAdminTemplate() throws Exception {
-		return new CassandraAdminTemplate(keyspace());
+		return new CassandraAdminTemplate(session(), converter(), keyspace());
 	}
 
 	/**

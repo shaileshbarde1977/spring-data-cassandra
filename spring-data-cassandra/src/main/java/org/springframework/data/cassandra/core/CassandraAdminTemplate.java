@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.cassandra.core.SpringDataKeyspace;
 import org.springframework.cassandra.core.SessionCallback;
 import org.springframework.cassandra.support.CassandraExceptionTranslator;
 import org.springframework.cassandra.support.exception.CassandraTableExistsException;
@@ -40,12 +39,14 @@ import com.datastax.driver.core.TableMetadata;
 
 /**
  * Default implementation of {@link CassandraAdminOperations}.
+ * 
+ * @author Alex Shvid
  */
 public class CassandraAdminTemplate implements CassandraAdminOperations {
 
 	private static final Logger log = LoggerFactory.getLogger(CassandraAdminTemplate.class);
 
-	private SpringDataKeyspace keyspace;
+	private String keyspace;
 	private Session session;
 	private CassandraConverter converter;
 	private MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
@@ -57,18 +58,19 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	 * 
 	 * @param keyspace must not be {@literal null}.
 	 */
-	public CassandraAdminTemplate(SpringDataKeyspace keyspace) {
-		setKeyspace(keyspace);
+	public CassandraAdminTemplate(Session session, CassandraConverter converter, String keyspace) {
+		setKeyspace(keyspace).setSession(session).setCassandraConverter(converter);
 	}
 
-	protected CassandraAdminTemplate setKeyspace(SpringDataKeyspace keyspace) {
+	protected CassandraAdminTemplate setKeyspace(String keyspace) {
 		Assert.notNull(keyspace);
 		this.keyspace = keyspace;
-		return setSession(keyspace.getSession()).setCassandraConverter(keyspace.getCassandraConverter());
+		return this;
 	}
 
 	protected CassandraAdminTemplate setSession(Session session) {
 		Assert.notNull(session);
+		this.session = session;
 		return this;
 	}
 
@@ -208,9 +210,9 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 
 			public TableMetadata doInSession(Session s) throws DataAccessException {
 
-				log.info("Keyspace => " + keyspace.getKeyspace());
+				log.info("Keyspace => " + keyspace);
 
-				return s.getCluster().getMetadata().getKeyspace(keyspace.getKeyspace()).getTable(tableName);
+				return s.getCluster().getMetadata().getKeyspace(keyspace).getTable(tableName);
 			}
 		});
 	}
