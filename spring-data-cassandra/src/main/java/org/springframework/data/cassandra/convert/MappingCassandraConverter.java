@@ -18,7 +18,9 @@ package org.springframework.data.cassandra.convert;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +48,8 @@ import org.springframework.data.util.ClassTypeInformation;
 import org.springframework.data.util.TypeInformation;
 import org.springframework.util.ClassUtils;
 
+import com.datastax.driver.core.ColumnMetadata;
+import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.TableMetadata;
 import com.datastax.driver.core.querybuilder.Delete.Where;
@@ -327,21 +331,48 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 		spec.name(entity.getTable());
 
+		final Set<String> definedColumns = new HashSet<String>();
+
 		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
-				if (prop.isIdProperty()) {
+				String columnName = prop.getColumnName();
+				DataType columnDataType = prop.getDataType();
 
-				} else if (prop.isPartitioned()) {
+				String tableColumnName = columnName.toLowerCase();
+				definedColumns.add(tableColumnName);
 
-				} else if (prop.isClustered()) {
+				ColumnMetadata columnMetadata = table.getColumn(tableColumnName);
 
+				if (columnMetadata != null && columnDataType.equals(columnMetadata.getType())) {
+					return;
+				}
+
+				if (prop.isIdProperty() || prop.isPartitioned() || prop.isClustered()) {
+					throw new MappingException("unable to add or alter column in the primary index " + columnName
+							+ " for entity " + entity.getName());
 				} else {
+
+					if (columnMetadata == null) {
+						spec.add(columnName, columnDataType);
+					} else {
+						spec.alter(columnName, columnDataType);
+					}
 
 				}
 
 			}
 		});
+
+		for (ColumnMetadata column : table.getColumns()) {
+
+			String columnName = column.getName();
+
+			if (!definedColumns.contains(columnName)) {
+				spec.drop(columnName);
+			}
+
+		}
 
 		return spec;
 
