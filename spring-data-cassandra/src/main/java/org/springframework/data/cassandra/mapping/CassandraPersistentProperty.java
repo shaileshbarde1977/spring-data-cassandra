@@ -63,18 +63,18 @@ public interface CassandraPersistentProperty extends PersistentProperty<Cassandr
 	boolean isIndexed();
 
 	/**
-	 * Returns true if the property has Partitioned annotation.
+	 * Returns true if the property has PartitionKey annotation.
 	 * 
 	 * @return
 	 */
-	boolean isPartitioned();
+	boolean isPartitionKey();
 
 	/**
-	 * Returns true if the property has Clustered annotation.
+	 * Returns true if the property has ClusteringKey annotation.
 	 * 
 	 * @return
 	 */
-	boolean isClustered();
+	boolean isClusteringKey();
 
 	/**
 	 * Returns key ordinal, number of the property in the composite key.

@@ -46,7 +46,7 @@ public class CqlTableSpecificationAssertions {
 	}
 
 	public static void assertPartitionKeyColumns(TableDescriptor expected, TableMetadata actual) {
-		assertColumns(expected.getPartitionedKeyColumns(), actual.getPartitionKey());
+		assertColumns(expected.getPartitionKeyColumns(), actual.getPartitionKey());
 	}
 
 	public static void assertPrimaryKeyColumns(TableDescriptor expected, TableMetadata actual) {

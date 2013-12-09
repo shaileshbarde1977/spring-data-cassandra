@@ -163,20 +163,20 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	}
 
 	/**
-	 * Returns true if the property has Partitioned annotation on this column.
+	 * Returns true if the property has PartitionKey annotation on this column.
 	 * 
 	 * @return
 	 */
-	public boolean isPartitioned() {
+	public boolean isPartitionKey() {
 		return getField().isAnnotationPresent(PartitionKey.class);
 	}
 
 	/**
-	 * Returns true if the property has Clustered annotation on this column.
+	 * Returns true if the property has ClusteringKey annotation on this column.
 	 * 
 	 * @return
 	 */
-	public boolean isClustered() {
+	public boolean isClusteringKey() {
 		return getField().isAnnotationPresent(ClusteringKey.class);
 	}
 
@@ -186,16 +186,16 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public int getOrdinal() {
-		PartitionKey partitioned = getField().getAnnotation(PartitionKey.class);
-		if (partitioned != null) {
-			return partitioned.ordinal();
+		PartitionKey partitionKeyPart = getField().getAnnotation(PartitionKey.class);
+		if (partitionKeyPart != null) {
+			return partitionKeyPart.ordinal();
 		}
-		ClusteringKey clustered = getField().getAnnotation(ClusteringKey.class);
-		if (clustered != null) {
-			return clustered.ordinal();
+		ClusteringKey clusteringKeyPart = getField().getAnnotation(ClusteringKey.class);
+		if (clusteringKeyPart != null) {
+			return clusteringKeyPart.ordinal();
 		}
 		throw new InvalidDataAccessApiUsageException(
-				"only columns annotated by Partitioned and Clustered have ordinal for the property  '" + this.getName()
+				"only columns annotated by PartitionKey and ClusteringKey have ordinal for the property  '" + this.getName()
 						+ "' type is '" + this.getType() + "' in the entity " + this.getOwner().getName());
 	}
 

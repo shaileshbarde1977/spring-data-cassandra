@@ -15,14 +15,14 @@
  */
 package org.springframework.cassandra.core.cql.spec;
 
+import static org.springframework.cassandra.core.KeyPart.CLUSTERING;
+import static org.springframework.cassandra.core.KeyPart.PARTITION;
+import static org.springframework.cassandra.core.Ordering.ASCENDING;
 import static org.springframework.cassandra.core.cql.CqlStringUtils.checkIdentifier;
 import static org.springframework.cassandra.core.cql.CqlStringUtils.identifize;
 import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
-import static org.springframework.cassandra.core.PrimaryKey.PARTITIONED;
-import static org.springframework.cassandra.core.PrimaryKey.CLUSTERED;
-import static org.springframework.cassandra.core.Ordering.ASCENDING;
 
-import org.springframework.cassandra.core.PrimaryKey;
+import org.springframework.cassandra.core.KeyPart;
 import org.springframework.cassandra.core.Ordering;
 
 import com.datastax.driver.core.DataType;
@@ -31,9 +31,9 @@ import com.datastax.driver.core.DataType;
  * Builder class to help construct CQL statements that involve column manipulation. Not threadsafe.
  * <p/>
  * Use {@link #name(String)} and {@link #type(String)} to set the name and type of the column, respectively. To specify
- * a <code>PRIMARY KEY</code> column, use {@link #clustered()} or {@link #clustered(Ordering)}. To specify that the
- * <code>PRIMARY KEY</code> column is or is part of the partition key, use {@link #partition()} instead of
- * {@link #clustered()} or {@link #clustered(Ordering)}.
+ * a <code>PRIMARY KEY</code> column, use {@link #clusteringKeyPart()} or {@link #clusteringKeyPart(Ordering)}. To
+ * specify that the <code>PRIMARY KEY</code> column is or is part of the partition key, use {@link #partitionKeyPart()}
+ * instead of {@link #clusteringKeyPart()} or {@link #clusteringKeyPart(Ordering)}.
  * 
  * @author Matthew T. Adams
  * @author Alex Shvid
@@ -47,7 +47,7 @@ public class ColumnSpecification {
 
 	private String name;
 	private DataType type; // TODO: determining if we should be coupling this to Datastax Java Driver type?
-	private PrimaryKey primary;
+	private KeyPart keyPart;
 	private Ordering ordering;
 
 	/**
@@ -72,68 +72,94 @@ public class ColumnSpecification {
 	}
 
 	/**
-	 * Identifies this column as a primary key column that is also part of a partition key. Sets the column's
-	 * {@link #primary} to {@link PrimaryKey#PARTITIONED} and its {@link #ordering} to <code>null</code>.
+	 * Identifies this column as a primary key column. Sets the column's {@link #keyPart} and {@link #ordering} for
+	 * {@link KeyPart#CLUSTERING} key part.
 	 * 
 	 * @return this
 	 */
-	public ColumnSpecification partitioned() {
-		return partitioned(true);
+	public ColumnSpecification primaryKeyPart(KeyPart keyPart, Ordering ordering) {
+		return primaryKeyPart(keyPart, ordering);
+	}
+
+	/**
+	 * Identifies this column as a primary key column. Sets the column's {@link #keyPart} and {@link #ordering} for
+	 * {@link KeyPart#CLUSTERING} key part.
+	 * 
+	 * @return this
+	 */
+	public ColumnSpecification primaryKeyPart(KeyPart keyPart, Ordering ordering, boolean enable) {
+		if (keyPart == KeyPart.PARTITION) {
+			return partitionKeyPart(enable);
+		} else if (keyPart == KeyPart.CLUSTERING) {
+			return clusteringKeyPart(ordering, enable);
+		} else {
+			throw new IllegalArgumentException("null or unknown KeyPart " + keyPart);
+		}
+	}
+
+	/**
+	 * Identifies this column as a primary key column that is also part of a partition key. Sets the column's
+	 * {@link #keyPart} to {@link KeyPart#PARTITION} and its {@link #ordering} to <code>null</code>.
+	 * 
+	 * @return this
+	 */
+	public ColumnSpecification partitionKeyPart() {
+		return partitionKeyPart(true);
 	}
 
 	/**
 	 * Toggles the identification of this column as a primary key column that also is or is part of a partition key. Sets
 	 * {@link #ordering} to <code>null</code> and, if the given boolean is <code>true</code>, then sets the column's
-	 * {@link #primary} to {@link PrimaryKey#PARTITIONED}, else sets it to <code>null</code>.
+	 * {@link #keyPart} to {@link KeyPart#PARTITION}, else sets it to <code>null</code>.
 	 * 
 	 * @return this
 	 */
-	public ColumnSpecification partitioned(boolean primaryKey) {
-		this.primary = primaryKey ? PARTITIONED : null;
+	public ColumnSpecification partitionKeyPart(boolean enable) {
+		this.keyPart = enable ? PARTITION : null;
 		this.ordering = null;
 		return this;
 	}
 
 	/**
-	 * Identifies this column as a primary key column with default ordering. Sets the column's {@link #primary} to
-	 * {@link PrimaryKey#CLUSTERED} and its {@link #ordering} to {@link #DEFAULT_ORDERING}.
+	 * Identifies this column as a primary key column with default ordering. Sets the column's {@link #keyPart} to
+	 * {@link KeyPart#CLUSTERING} and its {@link #ordering} to {@link #DEFAULT_ORDERING}.
 	 * 
 	 * @return this
 	 */
-	public ColumnSpecification clustered() {
-		return clustered(DEFAULT_ORDERING);
+	public ColumnSpecification clusteringKeyPart() {
+		return clusteringKeyPart(DEFAULT_ORDERING);
 	}
 
 	/**
-	 * Identifies this column as a primary key column with the given ordering. Sets the column's {@link #primary} to
-	 * {@link PrimaryKey#CLUSTERED} and its {@link #ordering} to the given {@link Ordering}.
+	 * Identifies this column as a primary key column with the given ordering. Sets the column's {@link #keyPart} to
+	 * {@link KeyPart#CLUSTERING} and its {@link #ordering} to the given {@link Ordering}.
 	 * 
 	 * @return this
 	 */
-	public ColumnSpecification clustered(Ordering order) {
-		return clustered(order, true);
+	public ColumnSpecification clusteringKeyPart(Ordering order) {
+		return clusteringKeyPart(order, true);
 	}
 
 	/**
 	 * Toggles the identification of this column as a primary key column. If the given boolean is <code>true</code>, then
-	 * sets the column's {@link #primary} to {@link PrimaryKey#PARTITIONED} and {@link #ordering} to the given
-	 * {@link Ordering} , else sets both {@link #primary} and {@link #ordering} to <code>null</code>.
+	 * sets the column's {@link #keyPart} to {@link KeyPart#PARTITION} and {@link #ordering} to the given {@link Ordering}
+	 * , else sets both {@link #keyPart} and {@link #ordering} to <code>null</code>.
 	 * 
 	 * @return this
 	 */
-	public ColumnSpecification clustered(Ordering ordering, boolean primaryKey) {
-		this.primary = primaryKey ? CLUSTERED : null;
-		this.ordering = primaryKey ? ordering : null;
+	public ColumnSpecification clusteringKeyPart(Ordering ordering, boolean enable) {
+		this.keyPart = enable ? CLUSTERING : null;
+		this.ordering = enable ? ordering : null;
 		return this;
 	}
 
 	/**
-	 * Sets the column's {@link #primary}.
+	 * Sets the column's {@link #keyPart}.
 	 * 
 	 * @return this
 	 */
-	/* package */ColumnSpecification primary(PrimaryKey primaryKey) {
-		this.primary = primaryKey;
+	/* package */ColumnSpecification keyPart(KeyPart keyPart) {
+		this.keyPart = keyPart;
 		return this;
 	}
 
@@ -159,8 +185,8 @@ public class ColumnSpecification {
 		return type;
 	}
 
-	public PrimaryKey getPrimary() {
-		return primary;
+	public KeyPart getKeyPart() {
+		return keyPart;
 	}
 
 	public Ordering getOrdering() {
@@ -177,7 +203,7 @@ public class ColumnSpecification {
 
 	@Override
 	public String toString() {
-		return toCql(null).append(" /* primary=").append(primary).append(", ordering=").append(ordering).append(" */ ")
+		return toCql(null).append(" /* keyPart=").append(keyPart).append(", ordering=").append(ordering).append(" */ ")
 				.toString();
 	}
 }

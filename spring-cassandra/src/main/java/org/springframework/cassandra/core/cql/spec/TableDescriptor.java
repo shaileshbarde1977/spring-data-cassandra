@@ -44,12 +44,12 @@ public interface TableDescriptor {
 	/**
 	 * Returns an unmodifiable list of all partition key columns.
 	 */
-	public List<ColumnSpecification> getPartitionedKeyColumns();
+	public List<ColumnSpecification> getPartitionKeyColumns();
 
 	/**
 	 * Returns an unmodifiable list of all primary key columns that are not also partition key columns.
 	 */
-	public List<ColumnSpecification> getClusteredKeyColumns();
+	public List<ColumnSpecification> getClusteringKeyColumns();
 
 	/**
 	 * Returns an unmodifiable list of all partition and primary key columns.

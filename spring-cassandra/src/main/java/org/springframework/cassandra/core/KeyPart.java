@@ -21,15 +21,15 @@ package org.springframework.cassandra.core;
  * @author Matthew T. Adams
  * @author Alex Shvid
  */
-public enum PrimaryKey {
+public enum KeyPart {
 
 	/**
 	 * Used for a column that is part of the partition key.
 	 */
-	PARTITIONED,
+	PARTITION,
 
 	/**
-	 * Used for a column that is clustered key.
+	 * Used for a column that is clustering key.
 	 */
-	CLUSTERED
+	CLUSTERING
 }

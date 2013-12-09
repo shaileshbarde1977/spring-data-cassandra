@@ -278,18 +278,18 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 		spec.name(entity.getTable());
 
-		final List<CassandraPersistentProperty> partitionedProperties = new ArrayList<CassandraPersistentProperty>(5);
-		final List<CassandraPersistentProperty> clusteredProperties = new ArrayList<CassandraPersistentProperty>(5);
+		final List<CassandraPersistentProperty> partitionKeyProperties = new ArrayList<CassandraPersistentProperty>(5);
+		final List<CassandraPersistentProperty> clusteringKeyProperties = new ArrayList<CassandraPersistentProperty>(5);
 
 		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
 				if (prop.isIdProperty()) {
-					partitionedProperties.add(prop);
-				} else if (prop.isPartitioned()) {
-					partitionedProperties.add(prop);
-				} else if (prop.isClustered()) {
-					clusteredProperties.add(prop);
+					partitionKeyProperties.add(prop);
+				} else if (prop.isPartitionKey()) {
+					partitionKeyProperties.add(prop);
+				} else if (prop.isClusteringKey()) {
+					clusteringKeyProperties.add(prop);
 				} else {
 					spec.column(prop.getColumnName(), prop.getDataType());
 				}
@@ -297,7 +297,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 			}
 		});
 
-		if (partitionedProperties.isEmpty()) {
+		if (partitionKeyProperties.isEmpty()) {
 			throw new MappingException("not found partition key in the entity " + entity.getType());
 		}
 
@@ -305,19 +305,19 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		 * Sort primary key properties by ordinal
 		 */
 
-		Collections.sort(partitionedProperties, ordinalBasedPropertyComparator);
-		Collections.sort(clusteredProperties, ordinalBasedPropertyComparator);
+		Collections.sort(partitionKeyProperties, ordinalBasedPropertyComparator);
+		Collections.sort(clusteringKeyProperties, ordinalBasedPropertyComparator);
 
 		/*
 		 * Add ordered primary key columns to the specification
 		 */
 
-		for (CassandraPersistentProperty prop : partitionedProperties) {
-			spec.partitionedKeyColumn(prop.getColumnName(), prop.getDataType());
+		for (CassandraPersistentProperty prop : partitionKeyProperties) {
+			spec.partitionKeyColumn(prop.getColumnName(), prop.getDataType());
 		}
 
-		for (CassandraPersistentProperty prop : clusteredProperties) {
-			spec.clusteredKeyColumn(prop.getColumnName(), prop.getDataType(), prop.getOrdering());
+		for (CassandraPersistentProperty prop : clusteringKeyProperties) {
+			spec.clusteringKeyColumn(prop.getColumnName(), prop.getDataType(), prop.getOrdering());
 		}
 
 		return spec;
@@ -348,7 +348,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 					return;
 				}
 
-				if (prop.isIdProperty() || prop.isPartitioned() || prop.isClustered()) {
+				if (prop.isIdProperty() || prop.isPartitionKey() || prop.isClusteringKey()) {
 					throw new MappingException("unable to add or alter column in the primary index " + columnName
 							+ " for entity " + entity.getName());
 				} else {
@@ -429,9 +429,9 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		pkEntity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty pkProp) {
 
-				if (!pkProp.isPartitioned() && !pkProp.isClustered()) {
+				if (!pkProp.isPartitionKey() && !pkProp.isClusteringKey()) {
 					throw new MappingException(
-							"all properties in composite private key must be annotated by Partitioned or Clustered annotations "
+							"all properties in composite private key must be annotated by PartitionKey or ClusteringKey annotations "
 									+ pkEntity.getType());
 				}
 
@@ -458,7 +458,8 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 	}
 
 	/**
-	 * Ordinal based column comparator is used for column ordering in partitioned and clustered parts of the primary key
+	 * Ordinal based column comparator is used for column ordering in partition and clustering key parts of the primary
+	 * key
 	 * 
 	 * @author Alex Shvid
 	 * 

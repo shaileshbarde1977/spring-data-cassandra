@@ -72,7 +72,7 @@ public class CreateTableCqlGeneratorTests {
 		public String column1 = "column1";
 
 		public CreateTableSpecification specification() {
-			return createTable().name(name).partitionedKeyColumn(partitionKey0, partitionKeyType0)
+			return createTable().name(name).partitionKeyColumn(partitionKey0, partitionKeyType0)
 					.column(column1, columnType1);
 		}
 
@@ -98,8 +98,8 @@ public class CreateTableCqlGeneratorTests {
 
 		@Override
 		public CreateTableSpecification specification() {
-			return createTable().name(name).partitionedKeyColumn(partKey0, partKeyType0)
-					.partitionedKeyColumn(partKey1, partKeyType1).column(column0, columnType0);
+			return createTable().name(name).partitionKeyColumn(partKey0, partKeyType0)
+					.partitionKeyColumn(partKey1, partKeyType1).column(column0, columnType0);
 		}
 
 		@Test

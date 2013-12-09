@@ -15,8 +15,8 @@
  */
 package org.springframework.cassandra.core.cql.generator;
 
-import static org.springframework.cassandra.core.PrimaryKey.CLUSTERED;
-import static org.springframework.cassandra.core.PrimaryKey.PARTITIONED;
+import static org.springframework.cassandra.core.KeyPart.CLUSTERING;
+import static org.springframework.cassandra.core.KeyPart.PARTITION;
 import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
 
 import java.util.ArrayList;
@@ -64,38 +64,38 @@ public class CreateTableCqlGenerator extends TableCqlGenerator<CreateTableSpecif
 		// begin columns
 		cql.append(" (");
 
-		List<ColumnSpecification> partitionKeys = new ArrayList<ColumnSpecification>();
-		List<ColumnSpecification> clusteredKeys = new ArrayList<ColumnSpecification>();
+		List<ColumnSpecification> partitionKey = new ArrayList<ColumnSpecification>();
+		List<ColumnSpecification> clusteringKey = new ArrayList<ColumnSpecification>();
 		for (ColumnSpecification col : spec().getAllColumns()) {
 			col.toCql(cql).append(", ");
 
-			if (col.getPrimary() == PARTITIONED) {
-				partitionKeys.add(col);
-			} else if (col.getPrimary() == CLUSTERED) {
-				clusteredKeys.add(col);
+			if (col.getKeyPart() == PARTITION) {
+				partitionKey.add(col);
+			} else if (col.getKeyPart() == CLUSTERING) {
+				clusteringKey.add(col);
 			}
 		}
 
 		// begin primary key clause
 		cql.append("PRIMARY KEY (");
 
-		if (partitionKeys.size() > 1) {
+		if (partitionKey.size() > 1) {
 			// begin partition key clause
 			cql.append("(");
 		}
 
-		appendColumnNames(cql, partitionKeys);
+		appendColumnNames(cql, partitionKey);
 
-		if (partitionKeys.size() > 1) {
+		if (partitionKey.size() > 1) {
 			cql.append(")");
 			// end partition key clause
 		}
 
-		if (!clusteredKeys.isEmpty()) {
+		if (!clusteringKey.isEmpty()) {
 			cql.append(", ");
 		}
 
-		appendColumnNames(cql, clusteredKeys);
+		appendColumnNames(cql, clusteringKey);
 
 		cql.append(")");
 		// end primary key clause
@@ -103,7 +103,7 @@ public class CreateTableCqlGenerator extends TableCqlGenerator<CreateTableSpecif
 		cql.append(")");
 		// end columns
 
-		StringBuilder ordering = createOrderingClause(clusteredKeys);
+		StringBuilder ordering = createOrderingClause(clusteringKey);
 		// begin options
 		// begin option clause
 		Map<String, Object> options = spec().getOptions();
