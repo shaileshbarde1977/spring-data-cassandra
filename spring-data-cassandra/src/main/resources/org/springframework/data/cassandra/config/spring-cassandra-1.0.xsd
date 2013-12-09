@@ -15,20 +15,6 @@ Defines the configuration elements for the Spring Data Cassandra support.
     ]]></xsd:documentation>
 	</xsd:annotation>
 
-	<xsd:element name="session" type="sessionType">
-		<xsd:annotation>
-			<xsd:documentation
-				source="org.springframework.cassandra.core.SessionFactoryBean"><![CDATA[
-Defines a Cassandra Session instance used for accessing Cassandra Keyspace'.
-			]]></xsd:documentation>
-			<xsd:appinfo>
-				<tool:annotation>
-					<tool:exports type="com.datastax.driver.core.Session" />
-				</tool:annotation>
-			</xsd:appinfo>
-		</xsd:annotation>
-	</xsd:element>
-
 	<xsd:element name="cluster" type="clusterType">
 		<xsd:annotation>
 			<xsd:documentation
@@ -421,34 +407,4 @@ Table name override.
 		</xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="sessionType">
-		<xsd:attribute name="id" type="xsd:ID" use="optional">
-			<xsd:annotation>
-				<xsd:documentation>
-					The name of the Session definition (by default
-					"cassandra-session")
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="cassandra-keyspace-ref" type="keyspaceRef"
-			use="required">
-			<xsd:annotation>
-				<xsd:documentation><![CDATA[
-The reference to a Cassandra Keyspace instance. Will default to 'cassandra-keyspace'.
-                                        ]]>
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-
-    <xsd:simpleType name="keyspaceRef">
-		<xsd:annotation>
-			<xsd:appinfo>
-				<tool:annotation kind="ref">
-					<tool:assignable-to type="com.datastax.driver.core.Session" />
-				</tool:annotation>
-			</xsd:appinfo>
-		</xsd:annotation>
-		<xsd:union memberTypes="xsd:string" />
-	</xsd:simpleType>
 </xsd:schema>

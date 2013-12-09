@@ -23,7 +23,6 @@ import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.core.CassandraDataOperations;
 import org.springframework.data.cassandra.core.CassandraDataTemplate;
 import org.springframework.data.cassandra.core.CassandraKeyspaceFactoryBean;
-import org.springframework.data.cassandra.core.SessionFactoryBean;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Cluster.Builder;
@@ -32,6 +31,7 @@ import com.datastax.driver.core.Cluster.Builder;
  * Setup any spring configuration for unit tests
  * 
  * @author David Webb
+ * @author Alex Shvid
  * 
  */
 @Configuration
@@ -71,17 +71,9 @@ public class TestConfig extends AbstractCassandraConfiguration {
 	}
 
 	@Bean
-	public SessionFactoryBean sessionFactoryBean() {
-
-		SessionFactoryBean bean = new SessionFactoryBean(keyspaceFactoryBean().getObject());
-		return bean;
-
-	}
-
-	@Bean
 	public CassandraOperations cassandraTemplate() {
 
-		CassandraOperations template = new CassandraTemplate(sessionFactoryBean().getObject());
+		CassandraOperations template = new CassandraTemplate(keyspaceFactoryBean().getObject().getSession());
 		return template;
 	}
 
