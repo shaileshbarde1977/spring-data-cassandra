@@ -18,7 +18,7 @@ package org.springframework.data.cassandra.test.integration.table;
 import java.util.Date;
 
 import org.springframework.cassandra.core.KeyPart;
-import org.springframework.data.cassandra.mapping.EmbeddedId;
+import org.springframework.data.cassandra.mapping.Embeddable;
 import org.springframework.data.cassandra.mapping.KeyColumn;
 import org.springframework.data.cassandra.mapping.Qualify;
 
@@ -32,7 +32,7 @@ import com.datastax.driver.core.DataType;
  * 
  * @author Alex Shvid
  */
-@EmbeddedId
+@Embeddable
 public class NotificationPK {
 
 	/*

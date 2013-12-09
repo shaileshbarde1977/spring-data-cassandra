@@ -72,9 +72,9 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	@Override
-	public boolean isEmbeddedIdProperty() {
+	public boolean hasEmbeddableType() {
 		Class<?> fieldType = getField().getType();
-		return fieldType.isAnnotationPresent(EmbeddedId.class);
+		return fieldType.isAnnotationPresent(Embeddable.class);
 	}
 
 	/**

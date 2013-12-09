@@ -33,7 +33,7 @@ public interface CassandraPersistentProperty extends PersistentProperty<Cassandr
 	 * 
 	 * @return
 	 */
-	boolean isEmbeddedIdProperty();
+	boolean hasEmbeddableType();
 
 	/**
 	 * Returns the name of the field a property is persisted to.
