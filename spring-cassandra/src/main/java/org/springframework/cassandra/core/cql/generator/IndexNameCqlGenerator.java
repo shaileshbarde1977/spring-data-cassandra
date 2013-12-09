@@ -15,7 +15,7 @@
  */
 package org.springframework.cassandra.core.cql.generator;
 
-import org.springframework.cassandra.core.keyspace.IndexNameSpecification;
+import org.springframework.cassandra.core.keyspace.IndexChangeSpecification;
 import org.springframework.util.Assert;
 
 /**
@@ -23,17 +23,17 @@ import org.springframework.util.Assert;
  * 
  * @author Alex Shvid
  */
-public abstract class IndexNameCqlGenerator<T extends IndexNameSpecification<T>> {
+public abstract class IndexNameCqlGenerator<T extends IndexChangeSpecification<T>> {
 
 	public abstract StringBuilder toCql(StringBuilder cql);
 
-	private IndexNameSpecification<T> specification;
+	private IndexChangeSpecification<T> specification;
 
-	public IndexNameCqlGenerator(IndexNameSpecification<T> specification) {
+	public IndexNameCqlGenerator(IndexChangeSpecification<T> specification) {
 		setSpecification(specification);
 	}
 
-	protected void setSpecification(IndexNameSpecification<T> specification) {
+	protected void setSpecification(IndexChangeSpecification<T> specification) {
 		Assert.notNull(specification);
 		this.specification = specification;
 	}

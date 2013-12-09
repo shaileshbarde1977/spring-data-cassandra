@@ -15,8 +15,12 @@
  */
 package org.springframework.data.cassandra.convert;
 
+import java.util.List;
+
 import org.springframework.cassandra.core.keyspace.AlterTableSpecification;
+import org.springframework.cassandra.core.keyspace.CreateIndexSpecification;
 import org.springframework.cassandra.core.keyspace.CreateTableSpecification;
+import org.springframework.cassandra.core.keyspace.IndexChangeSpecification;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.convert.EntityConverter;
@@ -49,5 +53,24 @@ public interface CassandraConverter extends
 	 */
 
 	AlterTableSpecification getAlterTableSpecificationIfDifferent(CassandraPersistentEntity<?> entity, TableMetadata table);
+
+	/**
+	 * Get all create index specifications for the entity
+	 * 
+	 * @param entity
+	 * @return list of all CreateIndexSpecifications in the indexes
+	 */
+
+	List<CreateIndexSpecification> getAllCreateIndexSpecifications(CassandraPersistentEntity<?> entity);
+
+	/**
+	 * Get index change specifications for the entity
+	 * 
+	 * @param entity
+	 * @return list of all CreateIndexSpecifications in the indexes
+	 */
+
+	List<? extends IndexChangeSpecification<?>> getIndexChangeSpecifications(CassandraPersistentEntity<?> entity,
+			TableMetadata table);
 
 }

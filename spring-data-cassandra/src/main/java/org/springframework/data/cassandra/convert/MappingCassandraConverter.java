@@ -25,7 +25,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.cassandra.core.keyspace.AlterTableSpecification;
+import org.springframework.cassandra.core.keyspace.CreateIndexSpecification;
 import org.springframework.cassandra.core.keyspace.CreateTableSpecification;
+import org.springframework.cassandra.core.keyspace.IndexChangeSpecification;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -343,6 +345,15 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 		return spec;
 
+	}
+
+	public List<CreateIndexSpecification> getAllCreateIndexSpecifications(CassandraPersistentEntity<?> entity) {
+		return Collections.emptyList();
+	}
+
+	public List<? extends IndexChangeSpecification<?>> getIndexChangeSpecifications(CassandraPersistentEntity<?> entity,
+			TableMetadata table) {
+		return Collections.emptyList();
 	}
 
 	private void doWithAllProperties(final CassandraPersistentEntity<?> entity,

@@ -22,9 +22,9 @@ import static org.springframework.cassandra.core.cql.CqlStringUtils.identifize;
  * Abstract builder class to support the construction of index specifications.
  * 
  * @author Alex Shvid
- * @param <T> The subtype of the {@link IndexNameSpecification}
+ * @param <T> The subtype of the {@link IndexChangeSpecification}
  */
-public abstract class IndexNameSpecification<T extends IndexNameSpecification<T>> {
+public abstract class IndexChangeSpecification<T extends IndexChangeSpecification<T>> {
 
 	/**
 	 * The optional name of the index.
