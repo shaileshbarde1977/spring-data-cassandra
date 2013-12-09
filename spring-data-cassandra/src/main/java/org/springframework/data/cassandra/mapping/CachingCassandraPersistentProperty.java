@@ -32,7 +32,7 @@ import com.datastax.driver.core.DataType;
 public class CachingCassandraPersistentProperty extends BasicCassandraPersistentProperty {
 
 	private Boolean isIdProperty;
-	private Boolean isCompositePrimaryKey;
+	private Boolean isEmbeddedIdProperty;
 	private String columnName;
 	private Caching<Ordering> ordering = new Caching<Ordering>();
 	private DataType dataType;
@@ -72,13 +72,13 @@ public class CachingCassandraPersistentProperty extends BasicCassandraPersistent
 	 * @see org.springframework.data.cassandra.core.mapping.BasicCassandraPersistentProperty#isCompositePrimaryKey()
 	 */
 	@Override
-	public boolean isCompositePrimaryKey() {
+	public boolean isEmbeddedIdProperty() {
 
-		if (this.isCompositePrimaryKey == null) {
-			this.isCompositePrimaryKey = super.isCompositePrimaryKey();
+		if (this.isEmbeddedIdProperty == null) {
+			this.isEmbeddedIdProperty = super.isEmbeddedIdProperty();
 		}
 
-		return this.isCompositePrimaryKey;
+		return this.isEmbeddedIdProperty;
 	}
 
 	/*

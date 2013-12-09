@@ -396,7 +396,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 				if (prop.isIdProperty()) {
 
-					if (prop.isCompositePrimaryKey()) {
+					if (prop.isEmbeddedIdProperty()) {
 
 						final CassandraPersistentEntity<?> pkEntity = mappingContext.getPersistentEntity(prop.getRawType());
 

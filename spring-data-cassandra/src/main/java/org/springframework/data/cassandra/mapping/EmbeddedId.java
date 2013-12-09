@@ -22,9 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines composite primary key class in the Cassandra table that contains several fields. Example:
+ * Defines composite primary key class in the Cassandra table that contains several primary key fields. Example:
  * 
- * @CompositePrimaryKey class AccountPK { String account; String region; }
+ * @EmbeddedId class AccountPK { String account; String region; }
  * 
  * @Table class Account {
  * @Id AccountPK pk; }
@@ -36,6 +36,6 @@ import java.lang.annotation.Target;
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface CompositePrimaryKey {
+public @interface EmbeddedId {
 
 }
