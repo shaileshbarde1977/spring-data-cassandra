@@ -25,6 +25,7 @@ import com.datastax.driver.core.DataType;
  * Builder class to construct an <code>ALTER TABLE</code> specification.
  * 
  * @author Matthew T. Adams
+ * @author Alex Shvid
  */
 public class AlterTableSpecification extends TableOptionsSpecification<AlterTableSpecification> {
 
@@ -63,4 +64,12 @@ public class AlterTableSpecification extends TableOptionsSpecification<AlterTabl
 	public List<ColumnChangeSpecification> getChanges() {
 		return Collections.unmodifiableList(changes);
 	}
+
+	/**
+	 * Returns true is it has changes.
+	 */
+	public boolean hasChanges() {
+		return !changes.isEmpty();
+	}
+
 }

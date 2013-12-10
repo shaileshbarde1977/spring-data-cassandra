@@ -327,7 +327,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 	}
 
-	public AlterTableSpecification getAlterTableSpecificationIfDifferent(final CassandraPersistentEntity<?> entity,
+	public AlterTableSpecification getAlterTableSpecification(final CassandraPersistentEntity<?> entity,
 			final TableMetadata table) {
 
 		final AlterTableSpecification spec = new AlterTableSpecification();
@@ -389,20 +389,24 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
 				if (prop.isIdProperty() || prop.getKeyPart() != null) {
-					throw new MappingException("unable to create index on column in the primary key " + prop.getColumnName()
-							+ " for entity " + entity.getName());
+					if (prop.isIndexed()) {
+						throw new MappingException("unable to create index on column in the primary key " + prop.getColumnName()
+								+ " for entity " + entity.getName());
+					}
+					return;
 				}
 
-				indexList.add(new CreateIndexSpecification().name(prop.getIndexName()).on(entity.getTable())
-						.column(prop.getColumnName()));
-
+				if (prop.isIndexed()) {
+					indexList.add(new CreateIndexSpecification().name(prop.getIndexName()).on(entity.getTable())
+							.column(prop.getColumnName()));
+				}
 			}
 		});
 
 		return indexList;
 	}
 
-	public List<IndexChangeSpecification<?>> getAlterIndexSpecifications(final CassandraPersistentEntity<?> entity,
+	public List<IndexChangeSpecification<?>> getIndexChangeSpecifications(final CassandraPersistentEntity<?> entity,
 			final TableMetadata table) {
 
 		final List<IndexChangeSpecification<?>> list = new ArrayList<IndexChangeSpecification<?>>();

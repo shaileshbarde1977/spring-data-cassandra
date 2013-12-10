@@ -38,7 +38,9 @@ public abstract class IndexChangeSpecification<T extends IndexChangeSpecificatio
 	 */
 	@SuppressWarnings("unchecked")
 	public T name(String name) {
-		checkIdentifier(name);
+		if (name != null) {
+			checkIdentifier(name);
+		}
 		this.name = name;
 		return (T) this;
 	}

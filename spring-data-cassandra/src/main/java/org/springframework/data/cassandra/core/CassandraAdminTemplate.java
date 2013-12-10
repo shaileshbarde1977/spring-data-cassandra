@@ -145,16 +145,17 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 
 		final TableMetadata tableMetadata = getTableMetadata(tableName);
 
-		final List<String> queryList = CqlUtils.alterTable(tableName, entity, tableMetadata);
+		final String query = CqlUtils.alterTable(tableName, entity, tableMetadata, converter);
+
+		if (query == null) {
+			return;
+		}
 
 		execute(new SessionCallback<Object>() {
 
 			public Object doInSession(Session s) throws DataAccessException {
 
-				for (String q : queryList) {
-					log.info(q);
-					s.execute(q);
-				}
+				s.execute(query);
 
 				return null;
 

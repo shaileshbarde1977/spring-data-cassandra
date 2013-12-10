@@ -212,9 +212,10 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 							createNewTable(session, useTableName, entity);
 						} else {
 							// alter table columns
-							for (String cql : CqlUtils.alterTable(useTableName, entity, table)) {
-								log.info("Execute on keyspace " + keyspace + " CQL " + cql);
-								session.execute(cql);
+							String query = CqlUtils.alterTable(useTableName, entity, table, converter);
+							if (query != null) {
+								log.info("Execute on keyspace " + keyspace + " CQL " + query);
+								session.execute(query);
 							}
 						}
 					} else if (keyspaceAttributes.isValidate()) {
@@ -224,10 +225,10 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 									+ entityClassName);
 						}
 						// validate columns
-						List<String> alter = CqlUtils.alterTable(useTableName, entity, table);
-						if (!alter.isEmpty()) {
+						String query = CqlUtils.alterTable(useTableName, entity, table, converter);
+						if (query != null) {
 							throw new InvalidDataAccessApiUsageException("invalid table " + useTableName + " for entity "
-									+ entityClassName + ". modify it by " + alter);
+									+ entityClassName + ". modify it by " + query);
 						}
 					}
 
@@ -248,9 +249,15 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 		String cql = CqlUtils.createTable(useTableName, entity, converter);
 		log.info("Execute on keyspace " + keyspace + " CQL " + cql);
 		session.execute(cql);
-		for (String indexCQL : CqlUtils.createIndexes(useTableName, entity)) {
+		for (String indexCQL : CqlUtils.createIndexes(useTableName, entity, converter)) {
 			log.info("Execute on keyspace " + keyspace + " CQL " + indexCQL);
-			session.execute(indexCQL);
+			try {
+				session.execute(indexCQL);
+			} catch (RuntimeException e) {
+				log.info("fail to execute " + indexCQL, e);
+				throw e;
+			}
+
 		}
 	}
 

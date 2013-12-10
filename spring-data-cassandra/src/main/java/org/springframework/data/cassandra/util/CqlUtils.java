@@ -26,17 +26,19 @@ import org.springframework.cassandra.core.ConsistencyLevelResolver;
 import org.springframework.cassandra.core.QueryOptions;
 import org.springframework.cassandra.core.RetryPolicy;
 import org.springframework.cassandra.core.RetryPolicyResolver;
+import org.springframework.cassandra.core.cql.generator.AlterTableCqlGenerator;
+import org.springframework.cassandra.core.cql.generator.CreateIndexCqlGenerator;
 import org.springframework.cassandra.core.cql.generator.CreateTableCqlGenerator;
+import org.springframework.cassandra.core.cql.generator.DropTableCqlGenerator;
+import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
+import org.springframework.cassandra.core.cql.spec.CreateIndexSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
+import org.springframework.cassandra.core.cql.spec.DropTableSpecification;
 import org.springframework.data.cassandra.convert.CassandraConverter;
 import org.springframework.data.cassandra.exception.EntityWriterException;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
-import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.convert.EntityWriter;
-import org.springframework.data.mapping.PropertyHandler;
 
-import com.datastax.driver.core.ColumnMetadata;
-import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.Query;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.TableMetadata;
@@ -83,26 +85,16 @@ public abstract class CqlUtils {
 	 * @param entity
 	 * @return The list of CQL statements to run with session.execute()
 	 */
-	public static List<String> createIndexes(final String tableName, final CassandraPersistentEntity<?> entity) {
-		final List<String> result = new ArrayList<String>();
+	public static List<String> createIndexes(final String tableName, final CassandraPersistentEntity<?> entity,
+			CassandraConverter cassandraConverter) {
 
-		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
-			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
+		List<CreateIndexSpecification> specList = cassandraConverter.getCreateIndexSpecifications(entity);
 
-				if (prop.isIndexed()) {
+		List<String> result = new ArrayList<String>(specList.size());
 
-					final StringBuilder str = new StringBuilder();
-					str.append("CREATE INDEX ON ");
-					str.append(tableName);
-					str.append(" (");
-					str.append(prop.getColumnName());
-					str.append(");");
-
-					result.add(str.toString());
-				}
-
-			}
-		});
+		for (CreateIndexSpecification spec : specList) {
+			result.add(new CreateIndexCqlGenerator(spec).toCql());
+		}
 
 		return result;
 	}
@@ -115,46 +107,21 @@ public abstract class CqlUtils {
 	 * @param table
 	 * @return
 	 */
-	public static List<String> alterTable(final String tableName, final CassandraPersistentEntity<?> entity,
-			final TableMetadata table) {
-		final List<String> result = new ArrayList<String>();
+	public static String alterTable(final String tableName, final CassandraPersistentEntity<?> entity,
+			final TableMetadata table, CassandraConverter cassandraConverter) {
 
-		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
-			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
+		AlterTableSpecification spec = cassandraConverter.getAlterTableSpecification(entity, table);
 
-				String columnName = prop.getColumnName();
-				DataType columnDataType = prop.getDataType();
-				ColumnMetadata columnMetadata = table.getColumn(columnName.toLowerCase());
+		if (!spec.hasChanges()) {
+			return null;
+		}
 
-				if (columnMetadata != null && columnDataType.equals(columnMetadata.getType())) {
-					return;
-				}
+		spec.name(tableName);
 
-				final StringBuilder str = new StringBuilder();
-				str.append("ALTER TABLE ");
-				str.append(tableName);
-				if (columnMetadata == null) {
-					str.append(" ADD ");
-				} else {
-					str.append(" ALTER ");
-				}
+		AlterTableCqlGenerator generator = new AlterTableCqlGenerator(spec);
 
-				str.append(columnName);
-				str.append(' ');
+		return generator.toCql();
 
-				if (columnMetadata != null) {
-					str.append("TYPE ");
-				}
-
-				str.append(toCQL(columnDataType));
-
-				str.append(';');
-				result.add(str.toString());
-
-			}
-		});
-
-		return result;
 	}
 
 	/**
@@ -329,28 +296,6 @@ public abstract class CqlUtils {
 	}
 
 	/**
-	 * @param dataType
-	 * @return
-	 */
-	public static String toCQL(DataType dataType) {
-		if (dataType.getTypeArguments().isEmpty()) {
-			return dataType.getName().name();
-		} else {
-			StringBuilder str = new StringBuilder();
-			str.append(dataType.getName().name());
-			str.append('<');
-			for (DataType argDataType : dataType.getTypeArguments()) {
-				if (str.charAt(str.length() - 1) != '<') {
-					str.append(',');
-				}
-				str.append(argDataType.getName().name());
-			}
-			str.append('>');
-			return str.toString();
-		}
-	}
-
-	/**
 	 * @param tableName
 	 * @return
 	 */
@@ -360,9 +305,9 @@ public abstract class CqlUtils {
 			return null;
 		}
 
-		StringBuilder str = new StringBuilder();
-		str.append("DROP TABLE " + tableName + ";");
-		return str.toString();
+		DropTableSpecification spec = new DropTableSpecification().name(tableName);
+		return new DropTableCqlGenerator(spec).toCql();
+
 	}
 
 	/**
