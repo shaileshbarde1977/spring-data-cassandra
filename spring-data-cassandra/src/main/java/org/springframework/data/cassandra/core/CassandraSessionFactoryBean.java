@@ -23,6 +23,10 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.cassandra.core.cql.options.KeyspaceOptions;
+import org.springframework.cassandra.core.cql.options.KeyspaceReplicationOptions;
+import org.springframework.cassandra.core.cql.spec.KeyspaceOption;
+import org.springframework.cassandra.core.cql.spec.KeyspaceOption.ReplicationOption;
 import org.springframework.cassandra.support.CassandraExceptionTranslator;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -152,15 +156,16 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 			if (!keyspaceExists
 					&& (keyspaceAttributes.isCreate() || keyspaceAttributes.isCreateDrop() || keyspaceAttributes.isUpdate())) {
 
-				String query = String
-						.format(
-								"CREATE KEYSPACE %1$s WITH replication = { 'class' : '%2$s', 'replication_factor' : %3$d } AND DURABLE_WRITES = %4$b",
-								keyspace, keyspaceAttributes.getReplicationStrategy(), keyspaceAttributes.getReplicationFactor(),
-								keyspaceAttributes.isDurableWrites());
+				KeyspaceReplicationOptions keyspaceReplicationOptions = new KeyspaceReplicationOptions().with(
+						ReplicationOption.CLASS, keyspaceAttributes.getReplicationStrategy()).with(
+						ReplicationOption.REPLICATION_FACTOR, keyspaceAttributes.getReplicationFactor());
 
-				log.info("Create keyspace " + keyspace + " on afterPropertiesSet " + query);
+				KeyspaceOptions keyspaceOptions = new KeyspaceOptions().with(KeyspaceOption.REPLICATION,
+						keyspaceReplicationOptions).with(KeyspaceOption.DURABLE_WRITES, keyspaceAttributes.isDurableWrites());
 
-				session.execute(query);
+				log.info("Create keyspace " + keyspace + " on afterPropertiesSet ");
+
+				cassandraAdminTemplate.createKeyspace(keyspace, keyspaceOptions.getOptions());
 				keyspaceCreated = true;
 			}
 

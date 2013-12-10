@@ -15,7 +15,6 @@
  */
 package org.springframework.cassandra.core.cql.generator;
 
-import static org.springframework.cassandra.core.cql.CqlStringUtils.escapeSingle;
 import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
 import static org.springframework.cassandra.core.cql.CqlStringUtils.singleQuote;
 
@@ -76,7 +75,7 @@ public abstract class WithOptionsCqlGenerator<O extends Option, T extends WithOp
 			cql.append(" = ");
 
 			if (value instanceof Map) {
-				optionValueMap((Map<Option, Object>) value, cql);
+				optionValueMap((Map<String, Object>) value, cql);
 			} else {
 				cql.append(value.toString());
 			}
@@ -84,7 +83,7 @@ public abstract class WithOptionsCqlGenerator<O extends Option, T extends WithOp
 		return cql;
 	}
 
-	protected StringBuilder optionValueMap(Map<Option, Object> valueMap, StringBuilder cql) {
+	protected StringBuilder optionValueMap(Map<String, Object> valueMap, StringBuilder cql) {
 		cql = noNull(cql);
 
 		if (valueMap == null || valueMap.isEmpty()) {
@@ -95,24 +94,18 @@ public abstract class WithOptionsCqlGenerator<O extends Option, T extends WithOp
 		// append { 'name' : 'value', ... }
 		cql.append("{ ");
 		boolean mapFirst = true;
-		for (Map.Entry<Option, Object> entry : valueMap.entrySet()) {
+		for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
 			if (mapFirst) {
 				mapFirst = false;
 			} else {
 				cql.append(", ");
 			}
 
-			Option option = entry.getKey();
-			cql.append(singleQuote(option.getName())); // entries in map keys are always quoted
+			String option = entry.getKey();
+			cql.append(singleQuote(option)); // entries in map keys are always quoted
 			cql.append(" : ");
 			Object entryValue = entry.getValue();
 			entryValue = entryValue == null ? "" : entryValue.toString();
-			if (option.escapesValue()) {
-				entryValue = escapeSingle(entryValue);
-			}
-			if (option.quotesValue()) {
-				entryValue = singleQuote(entryValue);
-			}
 			cql.append(entryValue);
 		}
 		cql.append(" }");

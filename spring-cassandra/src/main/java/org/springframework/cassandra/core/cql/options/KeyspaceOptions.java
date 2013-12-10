@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cassandra.core.cql.generator;
+package org.springframework.cassandra.core.cql.options;
 
-import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
-
-import org.springframework.cassandra.core.cql.spec.CreateKeyspaceSpecification;
 import org.springframework.cassandra.core.cql.spec.KeyspaceOption;
+import org.springframework.cassandra.core.cql.spec.OptionsCreator;
 
 /**
- * CQL generator for generating a <code>CREATE KEYSPACE</code> statement.
+ * Keyspace Options Builder
  * 
  * @author Alex Shvid
+ * 
+ * @param <T>
  */
-public class CreateKeyspaceCqlGenerator extends WithOptionsCqlGenerator<KeyspaceOption, CreateKeyspaceSpecification> {
-
-	public CreateKeyspaceCqlGenerator(CreateKeyspaceSpecification spec) {
-		super(spec);
-	}
-
-	public StringBuilder toCql(StringBuilder cql) {
-		cql = noNull(cql).append("CREATE KEYSPACE ").append(spec().getNameAsIdentifier());
-		return optionsCql(cql, null).append(";");
-	}
+public class KeyspaceOptions extends OptionsCreator<KeyspaceOption, KeyspaceOptions> {
 
 }

@@ -15,39 +15,31 @@
  */
 package org.springframework.cassandra.core.cql.spec;
 
-import java.util.Collections;
+import static org.springframework.cassandra.core.cql.CqlStringUtils.escapeSingle;
+import static org.springframework.cassandra.core.cql.CqlStringUtils.singleQuote;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.cassandra.core.cql.CqlStringUtils;
 
 /**
- * Abstract options specification based on Map<String, Object>.
+ * Options builder
  * 
  * @author Alex Shvid
- * @author Matthew T. Adams
  * 
+ * @param <T>
  */
-public class WithOptionsSpecification<O extends Option, T extends WithOptionsSpecification<O, T>> extends
-		WithNameSpecification<T> {
+public class OptionsCreator<O extends Option, T extends OptionsCreator<O, T>> {
 
-	protected Map<String, Object> options = new LinkedHashMap<String, Object>();
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private OptionsCreator<O, ?> creator = new OptionsCreator(options);
+	protected Map<String, Object> options;
 
-	public T name(String name) {
-		return (T) super.name(name);
+	public OptionsCreator() {
+		options = new LinkedHashMap<String, Object>();
 	}
 
-	/**
-	 * Expected right quotation for all options
-	 * 
-	 * @return this
-	 */
-	@SuppressWarnings("unchecked")
-	public T with(Map<String, Object> optionsByName) {
-		options.putAll(optionsByName);
-		return (T) this;
+	public OptionsCreator(Map<String, Object> delegate) {
+		this.options = delegate;
 	}
 
 	/**
@@ -55,10 +47,8 @@ public class WithOptionsSpecification<O extends Option, T extends WithOptionsSpe
 	 * 
 	 * @return this
 	 */
-	@SuppressWarnings("unchecked")
 	public T with(O option) {
-		creator.with(option);
-		return (T) this;
+		return with(option, null);
 	}
 
 	/**
@@ -70,10 +60,12 @@ public class WithOptionsSpecification<O extends Option, T extends WithOptionsSpe
 	 * @return this
 	 * @see #with(String, Object, boolean, boolean)
 	 */
-	@SuppressWarnings("unchecked")
 	public T with(O option, Object value) {
-		creator.with(option, value);
-		return (T) this;
+		if (value instanceof OptionsCreator) {
+			value = ((OptionsCreator<?, ?>) value).getOptions();
+		}
+		option.checkValue(value);
+		return (T) with(option.getName(), value, option.escapesValue(), option.quotesValue());
 	}
 
 	/**
@@ -95,12 +87,20 @@ public class WithOptionsSpecification<O extends Option, T extends WithOptionsSpe
 	 */
 	@SuppressWarnings("unchecked")
 	public T with(String name, Object value, boolean escape, boolean quote) {
-		creator.with(name, value, escape, quote);
+		if (!(value instanceof Map)) {
+			if (escape) {
+				value = escapeSingle(value);
+			}
+			if (quote) {
+				value = singleQuote(value);
+			}
+		}
+		options.put(name, value);
 		return (T) this;
 	}
 
 	public Map<String, Object> getOptions() {
-		return Collections.unmodifiableMap(options);
+		return options;
 	}
 
 }
