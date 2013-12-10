@@ -183,6 +183,19 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	}
 
 	/**
+	 * Returns index name for the column.
+	 * 
+	 * @return
+	 */
+	public String getIndexName() {
+		Indexed indexed = getField().getAnnotation(Indexed.class);
+		if (indexed != null) {
+			return StringUtils.hasText(indexed.name()) ? indexed.name() : null;
+		}
+		return null;
+	}
+
+	/**
 	 * Returns true if the property has PartitionKey annotation on this column.
 	 * 
 	 * @return

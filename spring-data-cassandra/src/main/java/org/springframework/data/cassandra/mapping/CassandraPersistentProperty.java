@@ -63,11 +63,18 @@ public interface CassandraPersistentProperty extends PersistentProperty<Cassandr
 	DataType getDataType();
 
 	/**
-	 * Returns true if the property has secondary index on this column.
+	 * Returns true if the property has index on this column.
 	 * 
 	 * @return
 	 */
 	boolean isIndexed();
+
+	/**
+	 * Returns index name for the column.
+	 * 
+	 * @return
+	 */
+	String getIndexName();
 
 	/**
 	 * Returns keyPart if the property has KeyColumn annotation.

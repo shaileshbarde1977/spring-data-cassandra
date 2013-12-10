@@ -28,8 +28,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.cassandra.core.KeyPart;
 import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
+import org.springframework.cassandra.core.cql.spec.ColumnSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateIndexSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
+import org.springframework.cassandra.core.cql.spec.DropIndexSpecification;
 import org.springframework.cassandra.core.cql.spec.IndexChangeSpecification;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -379,13 +381,126 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 	}
 
-	public List<CreateIndexSpecification> getAllCreateIndexSpecifications(CassandraPersistentEntity<?> entity) {
-		return Collections.emptyList();
+	public List<CreateIndexSpecification> getCreateIndexSpecifications(final CassandraPersistentEntity<?> entity) {
+
+		final List<CreateIndexSpecification> indexList = new ArrayList<CreateIndexSpecification>();
+
+		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
+			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
+
+				if (prop.isIdProperty() || prop.getKeyPart() != null) {
+					throw new MappingException("unable to create index on column in the primary key " + prop.getColumnName()
+							+ " for entity " + entity.getName());
+				}
+
+				indexList.add(new CreateIndexSpecification().name(prop.getIndexName()).on(entity.getTable())
+						.column(prop.getColumnName()));
+
+			}
+		});
+
+		return indexList;
 	}
 
-	public List<? extends IndexChangeSpecification<?>> getIndexChangeSpecifications(CassandraPersistentEntity<?> entity,
-			TableMetadata table) {
-		return Collections.emptyList();
+	public List<IndexChangeSpecification<?>> getAlterIndexSpecifications(final CassandraPersistentEntity<?> entity,
+			final TableMetadata table) {
+
+		final List<IndexChangeSpecification<?>> list = new ArrayList<IndexChangeSpecification<?>>();
+
+		final Set<String> definedColumns = new HashSet<String>();
+
+		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
+			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
+
+				if (prop.isIdProperty() || prop.getKeyPart() != null) {
+					throw new MappingException("unable to create index on column in the primary key " + prop.getColumnName()
+							+ " for entity " + entity.getName());
+				}
+
+				String columnName = prop.getColumnName();
+
+				String tableColumnName = columnName.toLowerCase();
+				definedColumns.add(tableColumnName);
+
+				ColumnMetadata columnMetadata = table.getColumn(tableColumnName);
+
+				if (prop.isIndexed() && (columnMetadata == null || columnMetadata.getIndex() == null)) {
+					list.add(new CreateIndexSpecification().name(prop.getIndexName()).on(entity.getTable())
+							.column(prop.getColumnName()));
+				} else if (!prop.isIndexed() && columnMetadata != null && columnMetadata.getIndex() != null) {
+					list.add(new DropIndexSpecification().name(columnMetadata.getIndex().getName()));
+				}
+
+			}
+		});
+
+		for (ColumnMetadata column : table.getColumns()) {
+
+			String columnName = column.getName();
+
+			if (!definedColumns.contains(columnName) && column.getIndex() != null) {
+				list.add(new DropIndexSpecification().name(column.getIndex().getName()));
+			}
+
+		}
+
+		return list;
+
+	}
+
+	public List<ColumnSpecification> getPrimaryKeySpecifications(CassandraPersistentEntity<?> entity) {
+
+		final List<CassandraPersistentProperty> partitionKeyProperties = new ArrayList<CassandraPersistentProperty>(5);
+		final List<CassandraPersistentProperty> clusteringKeyProperties = new ArrayList<CassandraPersistentProperty>(5);
+
+		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
+			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
+
+				if (prop.isIdProperty()) {
+					partitionKeyProperties.add(prop);
+				} else if (prop.getKeyPart() == KeyPart.PARTITION) {
+					partitionKeyProperties.add(prop);
+				} else if (prop.getKeyPart() == KeyPart.CLUSTERING) {
+					clusteringKeyProperties.add(prop);
+				}
+
+			}
+		});
+
+		if (partitionKeyProperties.isEmpty()) {
+			throw new MappingException("not found partition key in the entity " + entity.getType());
+		}
+
+		/*
+		 * Sort primary key properties by ordinal
+		 */
+
+		Collections.sort(partitionKeyProperties, OrdinalBasedPropertyComparator.INSTANCE);
+		Collections.sort(clusteringKeyProperties, OrdinalBasedPropertyComparator.INSTANCE);
+
+		/*
+		 * Add ordered primary key columns to the specification
+		 */
+		List<ColumnSpecification> primaryKeyColumns = new ArrayList<ColumnSpecification>(partitionKeyProperties.size()
+				+ clusteringKeyProperties.size());
+
+		for (CassandraPersistentProperty prop : partitionKeyProperties) {
+
+			ColumnSpecification column = new ColumnSpecification().name(prop.getColumnName()).type(prop.getDataType())
+					.partitionKeyPart();
+
+			primaryKeyColumns.add(column);
+		}
+
+		for (CassandraPersistentProperty prop : clusteringKeyProperties) {
+
+			ColumnSpecification column = new ColumnSpecification().name(prop.getColumnName()).type(prop.getDataType())
+					.clusteringKeyPart(prop.getOrdering());
+
+			primaryKeyColumns.add(column);
+		}
+
+		return primaryKeyColumns;
 	}
 
 	private void doWithAllProperties(final CassandraPersistentEntity<?> entity,
@@ -394,13 +509,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
-				if (prop.isEmbeddedIdProperty()) {
-
-					if (!prop.hasEmbeddableType()) {
-						throw new MappingException(
-								"field annotated by EmbeddedId annotation must have Embeddable type, error in property "
-										+ prop.getName() + " for entity " + entity.getName());
-					}
+				if (prop.hasEmbeddableType()) {
 
 					final CassandraPersistentEntity<?> pkEntity = mappingContext.getPersistentEntity(prop.getRawType());
 
@@ -408,9 +517,11 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 						throw new MappingException("entity not found for " + prop.getRawType());
 					}
 
-					validatePkEntity(pkEntity);
+					if (prop.isEmbeddedIdProperty()) {
+						validatePkEntity(pkEntity);
+					}
 
-					pkEntity.doWithProperties(handler);
+					doWithAllProperties(pkEntity, handler);
 
 				}
 

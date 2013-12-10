@@ -38,6 +38,7 @@ public class CachingCassandraPersistentProperty extends BasicCassandraPersistent
 	private Caching<Ordering> ordering = new Caching<Ordering>();
 	private DataType dataType;
 	private Boolean isIndexed;
+	private Caching<String> indexName = new Caching<String>();
 	private Caching<KeyPart> keyPart = new Caching<KeyPart>();
 	private Caching<Integer> ordinal = new Caching<Integer>();
 
@@ -150,6 +151,21 @@ public class CachingCassandraPersistentProperty extends BasicCassandraPersistent
 		}
 
 		return this.isIndexed;
+	}
+
+	/**
+	 * Returns index name for the column.
+	 * 
+	 * @return
+	 */
+	public String getIndexName() {
+
+		if (this.indexName.isNotCached()) {
+			this.indexName.set(super.getIndexName());
+		}
+
+		return this.indexName.get();
+
 	}
 
 	/*

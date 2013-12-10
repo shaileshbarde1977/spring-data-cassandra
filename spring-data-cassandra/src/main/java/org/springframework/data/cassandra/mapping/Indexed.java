@@ -32,4 +32,12 @@ import java.lang.annotation.Target;
 @Target(value = { ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 public @interface Indexed {
 
+	/**
+	 * The name of the index in the keyspace.
+	 * 
+	 * @return
+	 */
+
+	String name() default "";
+
 }
