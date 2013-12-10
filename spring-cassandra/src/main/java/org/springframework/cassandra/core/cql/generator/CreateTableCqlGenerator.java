@@ -21,11 +21,9 @@ import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.cassandra.core.cql.spec.ColumnSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
-import org.springframework.cassandra.core.cql.spec.Option;
 
 /**
  * CQL generator for generating a <code>CREATE TABLE</code> statement.
@@ -40,15 +38,8 @@ public class CreateTableCqlGenerator extends TableCqlGenerator<CreateTableSpecif
 	}
 
 	public StringBuilder toCql(StringBuilder cql) {
-
-		cql = noNull(cql);
-
-		preambleCql(cql);
-		columnsAndOptionsCql(cql);
-
-		cql.append(";");
-
-		return cql;
+		cql = preambleCql(cql);
+		return columnsAndOptionsCql(cql).append(";");
 	}
 
 	protected StringBuilder preambleCql(StringBuilder cql) {
@@ -56,7 +47,6 @@ public class CreateTableCqlGenerator extends TableCqlGenerator<CreateTableSpecif
 				.append(spec().getNameAsIdentifier());
 	}
 
-	@SuppressWarnings("unchecked")
 	protected StringBuilder columnsAndOptionsCql(StringBuilder cql) {
 
 		cql = noNull(cql);
@@ -103,54 +93,8 @@ public class CreateTableCqlGenerator extends TableCqlGenerator<CreateTableSpecif
 		cql.append(")");
 		// end columns
 
-		StringBuilder ordering = createOrderingClause(clusteringKey);
-		// begin options
-		// begin option clause
-		Map<String, Object> options = spec().getOptions();
+		return optionsCql(cql, createOrderingClause(clusteringKey));
 
-		if (ordering != null || !options.isEmpty()) {
-
-			// option preamble
-			boolean first = true;
-			cql.append(" WITH ");
-			// end option preamble
-
-			if (ordering != null) {
-				cql.append(ordering);
-				first = false;
-			}
-			if (!options.isEmpty()) {
-				for (String name : options.keySet()) {
-					// append AND if we're not on first option
-					if (first) {
-						first = false;
-					} else {
-						cql.append(" AND ");
-					}
-
-					// append <name> = <value>
-					cql.append(name);
-
-					Object value = options.get(name);
-					if (value == null) { // then assume string-only, valueless option like "COMPACT STORAGE"
-						continue;
-					}
-
-					cql.append(" = ");
-
-					if (value instanceof Map) {
-						optionValueMap((Map<Option, Object>) value, cql);
-						continue; // end non-empty value map
-					}
-
-					// else just use value as string
-					cql.append(value.toString());
-				}
-			}
-		}
-		// end options
-
-		return cql;
 	}
 
 	private static StringBuilder createOrderingClause(List<ColumnSpecification> columns) {

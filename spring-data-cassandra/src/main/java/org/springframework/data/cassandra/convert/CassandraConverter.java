@@ -21,7 +21,7 @@ import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
 import org.springframework.cassandra.core.cql.spec.ColumnSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateIndexSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
-import org.springframework.cassandra.core.cql.spec.IndexChangeSpecification;
+import org.springframework.cassandra.core.cql.spec.WithNameSpecification;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.convert.EntityConverter;
@@ -71,7 +71,7 @@ public interface CassandraConverter extends
 	 * @return list of all CreateIndexSpecifications in the indexes
 	 */
 
-	List<IndexChangeSpecification<?>> getIndexChangeSpecifications(CassandraPersistentEntity<?> entity, TableMetadata table);
+	List<WithNameSpecification<?>> getIndexChangeSpecifications(CassandraPersistentEntity<?> entity, TableMetadata table);
 
 	/**
 	 * Find all columns that are part of primary key. Order is important. Returns sorted partition key columns and sorted

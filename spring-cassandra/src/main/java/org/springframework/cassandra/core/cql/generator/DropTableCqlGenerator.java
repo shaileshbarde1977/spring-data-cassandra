@@ -24,7 +24,7 @@ import org.springframework.cassandra.core.cql.spec.DropTableSpecification;
  * 
  * @author Matthew T. Adams
  */
-public class DropTableCqlGenerator extends TableNameCqlGenerator<DropTableSpecification> {
+public class DropTableCqlGenerator extends WithNameCqlGenerator<DropTableSpecification> {
 
 	public DropTableCqlGenerator(DropTableSpecification specification) {
 		super(specification);

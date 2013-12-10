@@ -24,7 +24,7 @@ import org.springframework.cassandra.core.cql.spec.DropKeyspaceSpecification;
  * 
  * @author Alex Shvid
  */
-public class DropKeyspaceCqlGenerator extends KeyspaceNameCqlGenerator<DropKeyspaceSpecification> {
+public class DropKeyspaceCqlGenerator extends WithNameCqlGenerator<DropKeyspaceSpecification> {
 
 	public DropKeyspaceCqlGenerator(DropKeyspaceSpecification spec) {
 		super(spec);

@@ -24,7 +24,7 @@ import org.springframework.cassandra.core.cql.spec.DropIndexSpecification;
  * 
  * @author Alex Shvid
  */
-public class DropIndexCqlGenerator extends IndexNameCqlGenerator<DropIndexSpecification> {
+public class DropIndexCqlGenerator extends WithNameCqlGenerator<DropIndexSpecification> {
 
 	public DropIndexCqlGenerator(DropIndexSpecification spec) {
 		super(spec);

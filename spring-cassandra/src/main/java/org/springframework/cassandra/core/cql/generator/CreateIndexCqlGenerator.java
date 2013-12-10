@@ -24,7 +24,7 @@ import org.springframework.cassandra.core.cql.spec.CreateIndexSpecification;
  * 
  * @author Alex Shvid
  */
-public class CreateIndexCqlGenerator extends IndexNameCqlGenerator<CreateIndexSpecification> {
+public class CreateIndexCqlGenerator extends WithNameCqlGenerator<CreateIndexSpecification> {
 
 	public CreateIndexCqlGenerator(CreateIndexSpecification spec) {
 		super(spec);

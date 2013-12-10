@@ -23,7 +23,7 @@ import static org.springframework.cassandra.core.cql.CqlStringUtils.identifize;
  * 
  * @author Alex Shvid
  */
-public class CreateIndexSpecification extends IndexChangeSpecification<CreateIndexSpecification> {
+public class CreateIndexSpecification extends WithNameSpecification<CreateIndexSpecification> {
 
 	/**
 	 * The name of the table.

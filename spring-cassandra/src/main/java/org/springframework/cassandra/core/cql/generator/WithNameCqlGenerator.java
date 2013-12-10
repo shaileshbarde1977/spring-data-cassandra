@@ -15,25 +15,20 @@
  */
 package org.springframework.cassandra.core.cql.generator;
 
-import org.springframework.cassandra.core.cql.spec.KeyspaceChangeSpecification;
+import org.springframework.cassandra.core.cql.spec.WithNameSpecification;
 import org.springframework.util.Assert;
 
-/**
- * Abstract base class for keyspace generator {@link CreateKeyspaceCqlGenerator}.
- * 
- * @author Alex Shvid
- */
-public abstract class KeyspaceNameCqlGenerator<T extends KeyspaceChangeSpecification<T>> {
+public abstract class WithNameCqlGenerator<T extends WithNameSpecification<T>> {
 
 	public abstract StringBuilder toCql(StringBuilder cql);
 
-	private KeyspaceChangeSpecification<T> specification;
+	private WithNameSpecification<T> specification;
 
-	public KeyspaceNameCqlGenerator(KeyspaceChangeSpecification<T> specification) {
+	public WithNameCqlGenerator(WithNameSpecification<T> specification) {
 		setSpecification(specification);
 	}
 
-	protected void setSpecification(KeyspaceChangeSpecification<T> specification) {
+	protected void setSpecification(WithNameSpecification<T> specification) {
 		Assert.notNull(specification);
 		this.specification = specification;
 	}

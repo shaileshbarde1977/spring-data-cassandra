@@ -22,24 +22,66 @@ import static org.springframework.cassandra.core.cql.CqlStringUtils.singleQuote;
 import java.util.Map;
 
 import org.springframework.cassandra.core.cql.spec.Option;
-import org.springframework.cassandra.core.cql.spec.TableOptionsSpecification;
+import org.springframework.cassandra.core.cql.spec.WithOptionsSpecification;
 
 /**
- * Base class that contains behavior common to CQL generation for table operations.
+ * Abstract class for entities that have options.
  * 
+ * @author Alex Shvid
  * @author Matthew T. Adams
  * @param T The subtype of this class for which this is a CQL generator.
  */
-public abstract class TableOptionsCqlGenerator<T extends TableOptionsSpecification<T>> extends
-		TableNameCqlGenerator<TableOptionsSpecification<T>> {
+public abstract class WithOptionsCqlGenerator<O extends Option, T extends WithOptionsSpecification<O, T>> extends
+		WithNameCqlGenerator<T> {
 
-	public TableOptionsCqlGenerator(TableOptionsSpecification<T> specification) {
+	public WithOptionsCqlGenerator(WithOptionsSpecification<O, T> specification) {
 		super(specification);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected T spec() {
 		return (T) getSpecification();
+	}
+
+	@SuppressWarnings("unchecked")
+	protected StringBuilder optionsCql(StringBuilder cql, StringBuilder ordering) {
+		cql = noNull(cql);
+
+		Map<String, Object> options = spec().getOptions();
+		if (options.isEmpty() && ordering == null) {
+			return cql;
+		}
+
+		cql.append(" WITH ");
+		boolean first = true;
+
+		if (ordering != null) {
+			cql.append(ordering);
+			first = false;
+		}
+
+		for (String key : options.keySet()) {
+			if (first) {
+				first = false;
+			} else {
+				cql.append(" AND ");
+			}
+
+			cql.append(key);
+
+			Object value = options.get(key);
+			if (value == null) {
+				continue;
+			}
+			cql.append(" = ");
+
+			if (value instanceof Map) {
+				optionValueMap((Map<Option, Object>) value, cql);
+			} else {
+				cql.append(value.toString());
+			}
+		}
+		return cql;
 	}
 
 	protected StringBuilder optionValueMap(Map<Option, Object> valueMap, StringBuilder cql) {

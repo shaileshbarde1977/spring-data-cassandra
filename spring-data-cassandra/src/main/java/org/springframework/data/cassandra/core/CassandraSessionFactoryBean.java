@@ -125,6 +125,8 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 		if (StringUtils.hasText(keyspace)) {
 
+			CassandraAdminTemplate cassandraAdminTemplate = new CassandraAdminTemplate(session, converter, keyspace);
+
 			KeyspaceMetadata keyspaceMetadata = cluster.getMetadata().getKeyspace(keyspace.toLowerCase());
 			boolean keyspaceExists = keyspaceMetadata != null;
 			boolean keyspaceCreated = false;
@@ -139,9 +141,11 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 			// drop the old keyspace if needed
 			if (keyspaceExists && (keyspaceAttributes.isCreate() || keyspaceAttributes.isCreateDrop())) {
+
 				log.info("Drop keyspace " + keyspace + " on afterPropertiesSet");
-				session.execute("DROP KEYSPACE " + keyspace + ";");
+				cassandraAdminTemplate.dropKeyspace(keyspace);
 				keyspaceExists = false;
+
 			}
 
 			// create the new keyspace if needed

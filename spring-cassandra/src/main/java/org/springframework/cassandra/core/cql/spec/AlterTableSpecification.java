@@ -27,7 +27,7 @@ import com.datastax.driver.core.DataType;
  * @author Matthew T. Adams
  * @author Alex Shvid
  */
-public class AlterTableSpecification extends TableOptionsSpecification<AlterTableSpecification> {
+public class AlterTableSpecification extends WithOptionsSpecification<TableOption, AlterTableSpecification> {
 
 	/**
 	 * The list of column changes.

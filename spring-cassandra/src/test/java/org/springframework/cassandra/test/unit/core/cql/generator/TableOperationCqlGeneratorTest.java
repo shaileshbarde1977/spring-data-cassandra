@@ -15,8 +15,9 @@
  */
 package org.springframework.cassandra.test.unit.core.cql.generator;
 
-import org.springframework.cassandra.core.cql.generator.TableNameCqlGenerator;
-import org.springframework.cassandra.core.cql.spec.TableNameSpecification;
+import org.junit.Test;
+import org.springframework.cassandra.core.cql.generator.WithNameCqlGenerator;
+import org.springframework.cassandra.core.cql.spec.WithNameSpecification;
 
 /**
  * Useful test class that specifies just about as much as you can for a CQL generation test. Intended to be extended by
@@ -26,9 +27,9 @@ import org.springframework.cassandra.core.cql.spec.TableNameSpecification;
  * @author Matthew T. Adams
  * 
  * @param <S> The type of the {@link TableNameSpecification}
- * @param <G> The type of the {@link TableNameCqlGenerator}
+ * @param <G> The type of the {@link WithNameCqlGenerator}
  */
-public abstract class TableOperationCqlGeneratorTest<S extends TableNameSpecification<?>, G extends TableNameCqlGenerator<?>> {
+public abstract class TableOperationCqlGeneratorTest<S extends WithNameSpecification<?>, G extends WithNameCqlGenerator<?>> {
 
 	public abstract S specification();
 

@@ -18,13 +18,14 @@ package org.springframework.cassandra.core.cql.generator;
 import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
 
 import org.springframework.cassandra.core.cql.spec.CreateKeyspaceSpecification;
+import org.springframework.cassandra.core.cql.spec.KeyspaceOption;
 
 /**
  * CQL generator for generating a <code>CREATE KEYSPACE</code> statement.
  * 
  * @author Alex Shvid
  */
-public class CreateKeyspaceCqlGenerator extends KeyspaceNameCqlGenerator<CreateKeyspaceSpecification> {
+public class CreateKeyspaceCqlGenerator extends WithOptionsCqlGenerator<KeyspaceOption, CreateKeyspaceSpecification> {
 
 	public CreateKeyspaceCqlGenerator(CreateKeyspaceSpecification spec) {
 		super(spec);

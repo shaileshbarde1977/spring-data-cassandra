@@ -32,7 +32,7 @@ import org.springframework.cassandra.core.cql.spec.ColumnSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateIndexSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
 import org.springframework.cassandra.core.cql.spec.DropIndexSpecification;
-import org.springframework.cassandra.core.cql.spec.IndexChangeSpecification;
+import org.springframework.cassandra.core.cql.spec.WithNameSpecification;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -367,9 +367,9 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 			}
 		});
 
-		for (ColumnMetadata column : table.getColumns()) {
+		for (ColumnMetadata columnMetadata : table.getColumns()) {
 
-			String columnName = column.getName();
+			String columnName = columnMetadata.getName();
 
 			if (!definedColumns.contains(columnName)) {
 				spec.drop(columnName);
@@ -397,7 +397,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 				}
 
 				if (prop.isIndexed()) {
-					indexList.add(new CreateIndexSpecification().name(prop.getIndexName()).on(entity.getTable())
+					indexList.add(new CreateIndexSpecification().optionalName(prop.getIndexName()).on(entity.getTable())
 							.column(prop.getColumnName()));
 				}
 			}
@@ -406,10 +406,10 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		return indexList;
 	}
 
-	public List<IndexChangeSpecification<?>> getIndexChangeSpecifications(final CassandraPersistentEntity<?> entity,
+	public List<WithNameSpecification<?>> getIndexChangeSpecifications(final CassandraPersistentEntity<?> entity,
 			final TableMetadata table) {
 
-		final List<IndexChangeSpecification<?>> list = new ArrayList<IndexChangeSpecification<?>>();
+		final List<WithNameSpecification<?>> list = new ArrayList<WithNameSpecification<?>>();
 
 		final Set<String> definedColumns = new HashSet<String>();
 
@@ -429,7 +429,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 				ColumnMetadata columnMetadata = table.getColumn(tableColumnName);
 
 				if (prop.isIndexed() && (columnMetadata == null || columnMetadata.getIndex() == null)) {
-					list.add(new CreateIndexSpecification().name(prop.getIndexName()).on(entity.getTable())
+					list.add(new CreateIndexSpecification().optionalName(prop.getIndexName()).on(entity.getTable())
 							.column(prop.getColumnName()));
 				} else if (!prop.isIndexed() && columnMetadata != null && columnMetadata.getIndex() != null) {
 					list.add(new DropIndexSpecification().name(columnMetadata.getIndex().getName()));
@@ -438,12 +438,12 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 			}
 		});
 
-		for (ColumnMetadata column : table.getColumns()) {
+		for (ColumnMetadata columnMetadata : table.getColumns()) {
 
-			String columnName = column.getName();
+			String columnName = columnMetadata.getName();
 
-			if (!definedColumns.contains(columnName) && column.getIndex() != null) {
-				list.add(new DropIndexSpecification().name(column.getIndex().getName()));
+			if (!definedColumns.contains(columnName) && columnMetadata.getIndex() != null) {
+				list.add(new DropIndexSpecification().name(columnMetadata.getIndex().getName()));
 			}
 
 		}

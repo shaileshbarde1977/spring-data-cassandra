@@ -20,6 +20,6 @@ package org.springframework.cassandra.core.cql.spec;
  * 
  * @author Alex Shvid
  */
-public class DropKeyspaceSpecification extends KeyspaceChangeSpecification<DropKeyspaceSpecification> {
+public class DropKeyspaceSpecification extends WithNameSpecification<DropKeyspaceSpecification> {
 
 }

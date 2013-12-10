@@ -17,36 +17,28 @@ package org.springframework.cassandra.core.cql.generator;
 
 import static org.springframework.cassandra.core.cql.CqlStringUtils.noNull;
 
-import java.util.Map;
-
 import org.springframework.cassandra.core.cql.spec.AddColumnSpecification;
 import org.springframework.cassandra.core.cql.spec.AlterColumnSpecification;
 import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
 import org.springframework.cassandra.core.cql.spec.ColumnChangeSpecification;
 import org.springframework.cassandra.core.cql.spec.DropColumnSpecification;
-import org.springframework.cassandra.core.cql.spec.Option;
+import org.springframework.cassandra.core.cql.spec.TableOption;
 
 /**
  * CQL generator for generating <code>ALTER TABLE</code> statements.
  * 
  * @author Matthew T. Adams
  */
-public class AlterTableCqlGenerator extends TableOptionsCqlGenerator<AlterTableSpecification> {
+public class AlterTableCqlGenerator extends WithOptionsCqlGenerator<TableOption, AlterTableSpecification> {
 
 	public AlterTableCqlGenerator(AlterTableSpecification specification) {
 		super(specification);
 	}
 
 	public StringBuilder toCql(StringBuilder cql) {
-		cql = noNull(cql);
-
-		preambleCql(cql);
-		changesCql(cql);
-		optionsCql(cql);
-
-		cql.append(";");
-
-		return cql;
+		cql = preambleCql(cql);
+		cql = changesCql(cql);
+		return optionsCql(cql, null).append(";");
 	}
 
 	protected StringBuilder preambleCql(StringBuilder cql) {
@@ -82,40 +74,4 @@ public class AlterTableCqlGenerator extends TableOptionsCqlGenerator<AlterTableS
 		throw new IllegalArgumentException("unknown ColumnChangeSpecification type: " + change.getClass().getName());
 	}
 
-	@SuppressWarnings("unchecked")
-	protected StringBuilder optionsCql(StringBuilder cql) {
-		cql = noNull(cql);
-
-		Map<String, Object> options = spec().getOptions();
-		if (options == null || options.isEmpty()) {
-			return cql;
-		}
-
-		cql.append(" WITH ");
-		boolean first = true;
-		for (String key : options.keySet()) {
-			if (first) {
-				first = false;
-			} else {
-				cql.append(" AND ");
-			}
-
-			cql.append(key);
-
-			Object value = options.get(key);
-			if (value == null) {
-				continue;
-			}
-			cql.append(" = ");
-
-			if (value instanceof Map) {
-				optionValueMap((Map<Option, Object>) value, cql);
-				continue;
-			}
-
-			// else just use value as string
-			cql.append(value.toString());
-		}
-		return cql;
-	}
 }

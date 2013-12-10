@@ -19,20 +19,21 @@ import static org.springframework.cassandra.core.cql.CqlStringUtils.checkIdentif
 import static org.springframework.cassandra.core.cql.CqlStringUtils.identifize;
 
 /**
- * Abstract builder class to support the construction of table specifications.
+ * Abstract builder class to support the construction of named entities specifications.
  * 
  * @author Matthew T. Adams
- * @param <T> The subtype of the {@link TableNameSpecification}
+ * @author Alex Shvid
+ * @param <T> The subtype of the {@link WithNameSpecification}
  */
-public abstract class TableNameSpecification<T extends TableNameSpecification<T>> {
+public abstract class WithNameSpecification<T extends WithNameSpecification<T>> {
 
 	/**
-	 * The name of the table.
+	 * The name of the entity.
 	 */
 	private String name;
 
 	/**
-	 * Sets the table name.
+	 * Sets the entity name.
 	 * 
 	 * @return this
 	 */
@@ -43,11 +44,25 @@ public abstract class TableNameSpecification<T extends TableNameSpecification<T>
 		return (T) this;
 	}
 
+	/**
+	 * Sets the optional entity name.
+	 * 
+	 * @return this
+	 */
+	@SuppressWarnings("unchecked")
+	public T optionalName(String name) {
+		if (name != null) {
+			checkIdentifier(name);
+		}
+		this.name = name;
+		return (T) this;
+	}
+
 	public String getName() {
 		return name;
 	}
 
 	public String getNameAsIdentifier() {
-		return identifize(name);
+		return name != null ? identifize(name) : "";
 	}
 }

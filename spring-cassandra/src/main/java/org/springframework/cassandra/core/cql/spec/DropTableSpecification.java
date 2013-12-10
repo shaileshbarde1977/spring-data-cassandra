@@ -20,7 +20,7 @@ package org.springframework.cassandra.core.cql.spec;
  * 
  * @author Matthew T. Adams
  */
-public class DropTableSpecification extends TableNameSpecification<DropTableSpecification> {
+public class DropTableSpecification extends WithNameSpecification<DropTableSpecification> {
 
 	private boolean ifExists;
 

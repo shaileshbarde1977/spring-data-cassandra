@@ -25,20 +25,14 @@ import java.util.Map;
 import org.springframework.cassandra.core.cql.CqlStringUtils;
 
 /**
- * Abstract builder class to support the construction of table specifications that have table options, that is, those
- * options normally specified by <code>WITH ... AND ...</code>.
- * <p/>
- * It is important to note that although this class depends on {@link TableOption} for convenient and typesafe use, it
- * ultimately stores its options in a <code>Map<String,Object></code> for flexibility. This means that
- * {@link #with(TableOption)} and {@link #with(TableOption, Object)} delegate to
- * {@link #with(String, Object, boolean, boolean)}. This design allows the API to support new Cassandra options as they
- * are introduced without having to update the code immediately.
+ * Abstract options specification based on Map<String, Object>.
  * 
+ * @author Alex Shvid
  * @author Matthew T. Adams
- * @param <T> The subtype of the {@link TableOptionsSpecification}.
+ * 
  */
-public abstract class TableOptionsSpecification<T extends TableOptionsSpecification<T>> extends
-		TableNameSpecification<TableOptionsSpecification<T>> {
+public class WithOptionsSpecification<O extends Option, T extends WithOptionsSpecification<O, T>> extends
+		WithNameSpecification<T> {
 
 	protected Map<String, Object> options = new LinkedHashMap<String, Object>();
 
@@ -52,21 +46,20 @@ public abstract class TableOptionsSpecification<T extends TableOptionsSpecificat
 	 * 
 	 * @return this
 	 */
-	public T with(TableOption option) {
+	public T with(O option) {
 		return with(option, null);
 	}
 
 	/**
-	 * Sets the given table option. This is a convenience method that calls
-	 * {@link #with(String, Object, boolean, boolean)} appropriately from the given {@link TableOption} and value for that
-	 * option.
+	 * Sets the given option. This is a convenience method that calls {@link #with(String, Object, boolean, boolean)}
+	 * appropriately from the given {@link TableOption} and value for that option.
 	 * 
 	 * @param option The option to set.
 	 * @param value The value of the option. Must be type-compatible with the {@link TableOption}.
 	 * @return this
 	 * @see #with(String, Object, boolean, boolean)
 	 */
-	public T with(TableOption option, Object value) {
+	public T with(O option, Object value) {
 		option.checkValue(value);
 		return (T) with(option.getName(), value, option.escapesValue(), option.quotesValue());
 	}
@@ -105,4 +98,5 @@ public abstract class TableOptionsSpecification<T extends TableOptionsSpecificat
 	public Map<String, Object> getOptions() {
 		return Collections.unmodifiableMap(options);
 	}
+
 }

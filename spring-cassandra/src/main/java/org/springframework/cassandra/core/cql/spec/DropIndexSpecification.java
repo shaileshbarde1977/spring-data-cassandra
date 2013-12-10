@@ -20,7 +20,7 @@ package org.springframework.cassandra.core.cql.spec;
  * 
  * @author Alex Shvid
  */
-public class DropIndexSpecification extends IndexChangeSpecification<DropIndexSpecification> {
+public class DropIndexSpecification extends WithNameSpecification<DropIndexSpecification> {
 
 	/**
 	 * Sets the default index name based on table and column name.

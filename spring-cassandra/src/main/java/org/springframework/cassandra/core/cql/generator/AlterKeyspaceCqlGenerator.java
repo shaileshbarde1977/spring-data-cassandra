@@ -24,7 +24,7 @@ import org.springframework.cassandra.core.cql.spec.AlterKeyspaceSpecification;
  * 
  * @author Alex Shvid
  */
-public class AlterKeyspaceCqlGenerator extends KeyspaceNameCqlGenerator<AlterKeyspaceSpecification> {
+public class AlterKeyspaceCqlGenerator extends WithNameCqlGenerator<AlterKeyspaceSpecification> {
 
 	public AlterKeyspaceCqlGenerator(AlterKeyspaceSpecification spec) {
 		super(spec);
