@@ -20,6 +20,6 @@ package org.springframework.cassandra.core.cql.spec;
  * 
  * @author Alex Shvid
  */
-public class AlterKeyspaceSpecification extends WithNameSpecification<AlterKeyspaceSpecification> {
+public class AlterKeyspaceSpecification extends WithOptionsSpecification<KeyspaceOption, AlterKeyspaceSpecification> {
 
 }

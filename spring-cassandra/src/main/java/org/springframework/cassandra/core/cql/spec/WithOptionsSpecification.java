@@ -42,6 +42,16 @@ public class WithOptionsSpecification<O extends Option, T extends WithOptionsSpe
 	}
 
 	/**
+	 * Expected right quotation for all options
+	 * 
+	 * @return this
+	 */
+	public T with(Map<String, Object> optionsByName) {
+		options.putAll(optionsByName);
+		return (T) this;
+	}
+
+	/**
 	 * Convenience method that calls <code>with(option, null)</code>.
 	 * 
 	 * @return this

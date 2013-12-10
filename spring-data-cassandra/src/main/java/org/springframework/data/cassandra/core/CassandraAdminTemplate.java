@@ -93,7 +93,8 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 
 	public void createKeyspace(final String keyspace, final Map<String, Object> optionsByName) {
 
-		CreateKeyspaceSpecification spec = new CreateKeyspaceSpecification().name(keyspace);
+		CreateKeyspaceSpecification spec = new CreateKeyspaceSpecification().name(keyspace).with(optionsByName);
+
 		CreateKeyspaceCqlGenerator generator = new CreateKeyspaceCqlGenerator(spec);
 
 		final String cql = generator.toCql();
@@ -111,7 +112,8 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 
 	public void alterKeyspace(String keyspace, Map<String, Object> optionsByName) {
 
-		AlterKeyspaceSpecification spec = new AlterKeyspaceSpecification().name(keyspace);
+		AlterKeyspaceSpecification spec = new AlterKeyspaceSpecification().name(keyspace).with(optionsByName);
+
 		AlterKeyspaceCqlGenerator generator = new AlterKeyspaceCqlGenerator(spec);
 
 		final String cql = generator.toCql();
