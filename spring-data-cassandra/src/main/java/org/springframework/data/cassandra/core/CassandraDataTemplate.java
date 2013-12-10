@@ -25,21 +25,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.cassandra.core.CassandraTemplate;
-import org.springframework.cassandra.core.ConsistencyLevel;
-import org.springframework.cassandra.core.ConsistencyLevelResolver;
 import org.springframework.cassandra.core.QueryOptions;
-import org.springframework.cassandra.core.QueryOptions.QueryOptionMapKeys;
-import org.springframework.cassandra.core.RetryPolicy;
-import org.springframework.cassandra.core.RetryPolicyResolver;
 import org.springframework.cassandra.core.SessionCallback;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.cassandra.convert.CassandraConverter;
-import org.springframework.data.cassandra.exception.EntityWriterException;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
-import org.springframework.data.convert.EntityWriter;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.util.Assert;
 
@@ -50,7 +43,6 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Batch;
 import com.datastax.driver.core.querybuilder.Delete;
-import com.datastax.driver.core.querybuilder.Delete.Selection;
 import com.datastax.driver.core.querybuilder.Delete.Where;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
@@ -1008,43 +1000,37 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 		Assert.notEmpty(entities);
 
-		try {
+		/*
+		 * Return variable is a Batch statement
+		 */
+		final Batch batch = QueryBuilder.batch();
 
-			/*
-			 * Return variable is a Batch statement
-			 */
-			final Batch b1 = QueryBuilder.batch();
-			
-			for (final T objectToSave : entities) {
-			
-				b1.add((Statement) CassandraDataTemplate.toDeleteQuery(keyspace, tableName, objectToSave, optionsByName, cassandraConverter));
-			
-			}
-			
-			CassandraDataTemplate.addQueryOptions(b1, optionsByName);
-			final Batch b = b1;
-			logger.info(b.toString());
+		for (final T objectToSave : entities) {
 
-			doExecute(new SessionCallback<Object>() {
+			batch.add((Statement) toDeleteQuery(keyspace, tableName, objectToSave, optionsByName));
 
-				@Override
-				public Object doInSession(Session s) throws DataAccessException {
-
-					if (deleteAsynchronously) {
-						s.executeAsync(b);
-					} else {
-						s.execute(b);
-					}
-
-					return null;
-
-				}
-			});
-
-		} catch (EntityWriterException e) {
-			throw getExceptionTranslator().translateExceptionIfPossible(
-					new RuntimeException("Failed to translate Object to Query", e));
 		}
+
+		addQueryOptions(batch, optionsByName);
+
+		logger.info(batch.toString());
+
+		doExecute(new SessionCallback<Object>() {
+
+			@Override
+			public Object doInSession(Session s) throws DataAccessException {
+
+				if (deleteAsynchronously) {
+					s.executeAsync(batch);
+				} else {
+					s.execute(batch);
+				}
+
+				return null;
+
+			}
+		});
+
 	}
 
 	/**
@@ -1061,43 +1047,37 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 		Assert.notEmpty(entities);
 
-		try {
+		/*
+		 * Return variable is a Batch statement
+		 */
+		final Batch b1 = QueryBuilder.batch();
 
-			/*
-			 * Return variable is a Batch statement
-			 */
-			final Batch b1 = QueryBuilder.batch();
-			
-			for (final T objectToSave : entities) {
-			
-				b1.add((Statement) CassandraDataTemplate.toInsertQuery(keyspace, tableName, objectToSave, optionsByName, cassandraConverter));
-			
-			}
-			
-			CassandraDataTemplate.addQueryOptions(b1, optionsByName);
-			final Batch b = b1;
-			logger.info(b.getQueryString());
+		for (final T objectToSave : entities) {
 
-			return doExecute(new SessionCallback<List<T>>() {
+			b1.add((Statement) toInsertQuery(keyspace, tableName, objectToSave, optionsByName));
 
-				@Override
-				public List<T> doInSession(Session s) throws DataAccessException {
-
-					if (insertAsychronously) {
-						s.executeAsync(b);
-					} else {
-						s.execute(b);
-					}
-
-					return entities;
-
-				}
-			});
-
-		} catch (EntityWriterException e) {
-			throw getExceptionTranslator().translateExceptionIfPossible(
-					new RuntimeException("Failed to translate Object to Query", e));
 		}
+
+		CassandraDataTemplate.addQueryOptions(b1, optionsByName);
+		final Batch b = b1;
+		logger.info(b.getQueryString());
+
+		return doExecute(new SessionCallback<List<T>>() {
+
+			@Override
+			public List<T> doInSession(Session s) throws DataAccessException {
+
+				if (insertAsychronously) {
+					s.executeAsync(b);
+				} else {
+					s.execute(b);
+				}
+
+				return entities;
+
+			}
+		});
+
 	}
 
 	/**
@@ -1114,43 +1094,37 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 		Assert.notEmpty(entities);
 
-		try {
+		/*
+		 * Return variable is a Batch statement
+		 */
+		final Batch b1 = QueryBuilder.batch();
 
-			/*
-			 * Return variable is a Batch statement
-			 */
-			final Batch b1 = QueryBuilder.batch();
-			
-			for (final T objectToSave : entities) {
-			
-				b1.add((Statement) CassandraDataTemplate.toUpdateQuery(keyspace, tableName, objectToSave, optionsByName, cassandraConverter));
-			
-			}
-			
-			CassandraDataTemplate.addQueryOptions(b1, optionsByName);
-			final Batch b = b1;
-			logger.info(b.toString());
+		for (final T objectToSave : entities) {
 
-			return doExecute(new SessionCallback<List<T>>() {
+			b1.add((Statement) toUpdateQuery(keyspace, tableName, objectToSave, optionsByName));
 
-				@Override
-				public List<T> doInSession(Session s) throws DataAccessException {
-
-					if (updateAsychronously) {
-						s.executeAsync(b);
-					} else {
-						s.execute(b);
-					}
-
-					return entities;
-
-				}
-			});
-
-		} catch (EntityWriterException e) {
-			throw getExceptionTranslator().translateExceptionIfPossible(
-					new RuntimeException("Failed to translate Object to Query", e));
 		}
+
+		CassandraDataTemplate.addQueryOptions(b1, optionsByName);
+		final Batch b = b1;
+		logger.info(b.toString());
+
+		return doExecute(new SessionCallback<List<T>>() {
+
+			@Override
+			public List<T> doInSession(Session s) throws DataAccessException {
+
+				if (updateAsychronously) {
+					s.executeAsync(b);
+				} else {
+					s.execute(b);
+				}
+
+				return entities;
+
+			}
+		});
+
 	}
 
 	/**
@@ -1162,31 +1136,25 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	protected <T> void doDelete(final String tableName, final T objectToRemove, Map<String, Object> optionsByName,
 			final boolean deleteAsynchronously) {
 
-		try {
+		final Query q = toDeleteQuery(keyspace, tableName, objectToRemove, optionsByName);
+		logger.info(q.toString());
 
-			final Query q = CassandraDataTemplate.toDeleteQuery(keyspace, tableName, objectToRemove, optionsByName, cassandraConverter);
-			logger.info(q.toString());
+		doExecute(new SessionCallback<Object>() {
 
-			doExecute(new SessionCallback<Object>() {
+			@Override
+			public Object doInSession(Session s) throws DataAccessException {
 
-				@Override
-				public Object doInSession(Session s) throws DataAccessException {
-
-					if (deleteAsynchronously) {
-						s.executeAsync(q);
-					} else {
-						s.execute(q);
-					}
-
-					return null;
-
+				if (deleteAsynchronously) {
+					s.executeAsync(q);
+				} else {
+					s.execute(q);
 				}
-			});
 
-		} catch (EntityWriterException e) {
-			throw getExceptionTranslator().translateExceptionIfPossible(
-					new RuntimeException("Failed to translate Object to Query", e));
-		}
+				return null;
+
+			}
+		});
+
 	}
 
 	/**
@@ -1217,38 +1185,31 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	protected <T> T doInsert(final String tableName, final T entity, final Map<String, Object> optionsByName,
 			final boolean insertAsychronously) {
 
-		try {
+		final Query q = toInsertQuery(keyspace, tableName, entity, optionsByName);
 
-			final Query q = CassandraDataTemplate.toInsertQuery(keyspace, tableName, entity, optionsByName, cassandraConverter);
-
-			logger.info(q.toString());
-			if (q.getConsistencyLevel() != null) {
-				logger.info(q.getConsistencyLevel().name());
-			}
-			if (q.getRetryPolicy() != null) {
-				logger.info(q.getRetryPolicy().toString());
-			}
-
-			return doExecute(new SessionCallback<T>() {
-
-				@Override
-				public T doInSession(Session s) throws DataAccessException {
-
-					if (insertAsychronously) {
-						s.executeAsync(q);
-					} else {
-						s.execute(q);
-					}
-
-					return entity;
-
-				}
-			});
-
-		} catch (EntityWriterException e) {
-			throw getExceptionTranslator().translateExceptionIfPossible(
-					new RuntimeException("Failed to translate Object to Query", e));
+		logger.info(q.toString());
+		if (q.getConsistencyLevel() != null) {
+			logger.info(q.getConsistencyLevel().name());
 		}
+		if (q.getRetryPolicy() != null) {
+			logger.info(q.getRetryPolicy().toString());
+		}
+
+		return doExecute(new SessionCallback<T>() {
+
+			@Override
+			public T doInSession(Session s) throws DataAccessException {
+
+				if (insertAsychronously) {
+					s.executeAsync(q);
+				} else {
+					s.execute(q);
+				}
+
+				return entity;
+
+			}
+		});
 
 	}
 
@@ -1264,31 +1225,24 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	protected <T> T doUpdate(final String tableName, final T entity, final Map<String, Object> optionsByName,
 			final boolean updateAsychronously) {
 
-		try {
+		final Query q = toUpdateQuery(keyspace, tableName, entity, optionsByName);
+		logger.info(q.toString());
 
-			final Query q = CassandraDataTemplate.toUpdateQuery(keyspace, tableName, entity, optionsByName, cassandraConverter);
-			logger.info(q.toString());
+		return doExecute(new SessionCallback<T>() {
 
-			return doExecute(new SessionCallback<T>() {
+			@Override
+			public T doInSession(Session s) throws DataAccessException {
 
-				@Override
-				public T doInSession(Session s) throws DataAccessException {
-
-					if (updateAsychronously) {
-						s.executeAsync(q);
-					} else {
-						s.execute(q);
-					}
-
-					return entity;
-
+				if (updateAsychronously) {
+					s.executeAsync(q);
+				} else {
+					s.execute(q);
 				}
-			});
 
-		} catch (EntityWriterException e) {
-			throw getExceptionTranslator().translateExceptionIfPossible(
-					new RuntimeException("Failed to translate Object to Query", e));
-		}
+				return entity;
+
+			}
+		});
 
 	}
 
@@ -1306,32 +1260,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	/**
-	 * Add common Query options for all types of queries.
-	 * 
-	 * @param q
-	 * @param optionsByName
-	 */
-	public static void addQueryOptions(Query q, Map<String, Object> optionsByName) {
-	
-		if (optionsByName == null) {
-			return;
-		}
-	
-		/*
-		 * Add Query Options
-		 */
-		if (optionsByName.get(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL) != null) {
-			q.setConsistencyLevel(ConsistencyLevelResolver.resolve((ConsistencyLevel) optionsByName
-					.get(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL)));
-		}
-		if (optionsByName.get(QueryOptions.QueryOptionMapKeys.RETRY_POLICY) != null) {
-			q.setRetryPolicy(RetryPolicyResolver.resolve((RetryPolicy) optionsByName
-					.get(QueryOptions.QueryOptionMapKeys.RETRY_POLICY)));
-		}
-	
-	}
-
-	/**
 	 * Generates a Query Object for an insert
 	 * 
 	 * @param keyspaceName
@@ -1341,32 +1269,31 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param optionsByName
 	 * 
 	 * @return The Query object to run with session.execute();
-	 * @throws EntityWriterException
 	 */
-	public static Query toInsertQuery(String keyspaceName, String tableName, final Object objectToSave,
-			Map<String, Object> optionsByName, EntityWriter<Object, Object> entityWriter) throws EntityWriterException {
-	
+	public Query toInsertQuery(String keyspaceName, String tableName, final Object objectToSave,
+			Map<String, Object> optionsByName) {
+
 		final Insert q = QueryBuilder.insertInto(keyspaceName, tableName);
-	
+
 		/*
 		 * Write properties
 		 */
-		entityWriter.write(objectToSave, q);
-	
+		cassandraConverter.write(objectToSave, q);
+
 		/*
 		 * Add Query Options
 		 */
-		CassandraDataTemplate.addQueryOptions(q, optionsByName);
-	
+		addQueryOptions(q, optionsByName);
+
 		/*
 		 * Add TTL to Insert object
 		 */
 		if (optionsByName.get(QueryOptions.QueryOptionMapKeys.TTL) != null) {
 			q.using(QueryBuilder.ttl((Integer) optionsByName.get(QueryOptions.QueryOptionMapKeys.TTL)));
 		}
-	
+
 		return q;
-	
+
 	}
 
 	/**
@@ -1379,32 +1306,31 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param optionsByName
 	 * 
 	 * @return The Query object to run with session.execute();
-	 * @throws EntityWriterException
 	 */
-	public static Query toUpdateQuery(String keyspaceName, String tableName, final Object objectToSave,
-			Map<String, Object> optionsByName, EntityWriter<Object, Object> entityWriter) throws EntityWriterException {
-	
+	public Query toUpdateQuery(String keyspaceName, String tableName, final Object objectToSave,
+			Map<String, Object> optionsByName) {
+
 		final Update q = QueryBuilder.update(keyspaceName, tableName);
-	
+
 		/*
 		 * Write properties
 		 */
-		entityWriter.write(objectToSave, q);
-	
+		cassandraConverter.write(objectToSave, q);
+
 		/*
 		 * Add Query Options
 		 */
-		CassandraDataTemplate.addQueryOptions(q, optionsByName);
-	
+		addQueryOptions(q, optionsByName);
+
 		/*
 		 * Add TTL to Insert object
 		 */
 		if (optionsByName.get(QueryOptions.QueryOptionMapKeys.TTL) != null) {
 			q.using(QueryBuilder.ttl((Integer) optionsByName.get(QueryOptions.QueryOptionMapKeys.TTL)));
 		}
-	
+
 		return q;
-	
+
 	}
 
 	/**
@@ -1416,23 +1342,22 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param entity
 	 * @param optionsByName
 	 * @return
-	 * @throws EntityWriterException
 	 */
-	public static Query toDeleteQuery(String keyspace, String tableName, final Object objectToRemove,
-			Map<String, Object> optionsByName, EntityWriter<Object, Object> entityWriter) throws EntityWriterException {
-	
+	public Query toDeleteQuery(String keyspace, String tableName, final Object objectToRemove,
+			Map<String, Object> optionsByName) {
+
 		final Delete.Selection ds = QueryBuilder.delete();
 		final Delete q = ds.from(keyspace, tableName);
 		final Where w = q.where();
-	
+
 		/*
 		 * Write where condition to find by Id
 		 */
-		entityWriter.write(objectToRemove, w);
-	
-		CassandraDataTemplate.addQueryOptions(q, optionsByName);
-	
+		cassandraConverter.write(objectToRemove, w);
+
+		addQueryOptions(q, optionsByName);
+
 		return q;
-	
+
 	}
 }
