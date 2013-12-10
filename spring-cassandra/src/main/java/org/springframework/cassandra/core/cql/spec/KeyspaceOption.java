@@ -23,6 +23,7 @@ import java.util.Map;
  * Implements {@link Option} via delegation, since {@link Enum}s can't extend anything.
  * 
  * @author Alex Shvid
+ * @see ReplicationOption
  */
 public enum KeyspaceOption implements Option {
 
@@ -75,5 +76,70 @@ public enum KeyspaceOption implements Option {
 
 	public String toString(Object value) {
 		return delegate.toString(value);
+	}
+
+	/**
+	 * Known replication options.
+	 * 
+	 * @author Alex Shvid
+	 */
+	public enum ReplicationOption implements Option {
+		/**
+		 * <code>class</code>
+		 */
+		CLASS("class", String.class, true, false, false),
+
+		/**
+		 * <code>replication_factor</code>
+		 */
+		REPLICATION_FACTOR("replication_factor", Integer.class, true, false, false);
+
+		private Option delegate;
+
+		private ReplicationOption(String name, Class<?> type, boolean requiresValue, boolean escapesValue,
+				boolean quotesValue) {
+			this.delegate = new DefaultOption(name, type, requiresValue, escapesValue, quotesValue);
+		}
+
+		public Class<?> getType() {
+			return delegate.getType();
+		}
+
+		public boolean takesValue() {
+			return delegate.takesValue();
+		}
+
+		public String getName() {
+			return delegate.getName();
+		}
+
+		public boolean escapesValue() {
+			return delegate.escapesValue();
+		}
+
+		public boolean quotesValue() {
+			return delegate.quotesValue();
+		}
+
+		public boolean requiresValue() {
+			return delegate.requiresValue();
+		}
+
+		public void checkValue(Object value) {
+			delegate.checkValue(value);
+		}
+
+		public boolean isCoerceable(Object value) {
+			return delegate.isCoerceable(value);
+		}
+
+		public String toString() {
+			return delegate.toString();
+		}
+
+		public String toString(Object value) {
+			return delegate.toString(value);
+		}
+
 	}
 }
