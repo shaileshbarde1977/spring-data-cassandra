@@ -40,9 +40,10 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cassandra.core.ConsistencyLevel;
-import org.springframework.cassandra.core.QueryOptions;
-import org.springframework.cassandra.core.RetryPolicy;
+import org.springframework.cassandra.core.query.ConsistencyLevel;
+import org.springframework.cassandra.core.query.QueryOptionNames;
+import org.springframework.cassandra.core.query.QueryOptions;
+import org.springframework.cassandra.core.query.RetryPolicy;
 import org.springframework.data.cassandra.core.CassandraDataOperations;
 import org.springframework.data.cassandra.test.integration.config.TestConfig;
 import org.springframework.data.cassandra.test.integration.table.Book;
@@ -138,9 +139,9 @@ public class CassandraDataOperationsTest {
 		b4.setPages(465);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.TTL, 30);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
 
 		cassandraDataTemplate.insert(b4, "book", optionsByName);
 
@@ -215,9 +216,9 @@ public class CassandraDataOperationsTest {
 		b4.setPages(465);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.TTL, 30);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
 
 		cassandraDataTemplate.insertAsynchronously(b4, "book", optionsByName);
 
@@ -253,9 +254,9 @@ public class CassandraDataOperationsTest {
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.TTL, 30);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
 
 		List<Book> books = null;
 
@@ -293,9 +294,9 @@ public class CassandraDataOperationsTest {
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.TTL, 30);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
 
 		List<Book> books = null;
 
@@ -355,9 +356,9 @@ public class CassandraDataOperationsTest {
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.TTL, 30);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
 
 		/*
 		 * Test Single Insert with entity
@@ -434,9 +435,9 @@ public class CassandraDataOperationsTest {
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.TTL, 30);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
 
 		/*
 		 * Test Single Insert with entity
@@ -511,9 +512,9 @@ public class CassandraDataOperationsTest {
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.TTL, 30);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
 
 		List<Book> books = null;
 
@@ -575,9 +576,9 @@ public class CassandraDataOperationsTest {
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.TTL, 30);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
 
 		List<Book> books = null;
 
@@ -653,8 +654,8 @@ public class CassandraDataOperationsTest {
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
 
 		/*
 		 * Test Single Insert with entity
@@ -713,8 +714,8 @@ public class CassandraDataOperationsTest {
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
 
 		/*
 		 * Test Single Insert with entity
@@ -770,9 +771,9 @@ public class CassandraDataOperationsTest {
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.TTL, 30);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
 
 		List<Book> books = null;
 
@@ -822,9 +823,9 @@ public class CassandraDataOperationsTest {
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptions.QueryOptionMapKeys.TTL, 30);
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
 
 		List<Book> books = null;
 

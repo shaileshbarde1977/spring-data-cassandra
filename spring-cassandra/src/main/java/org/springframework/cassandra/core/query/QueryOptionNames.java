@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cassandra.core;
+package org.springframework.cassandra.core.query;
 
 /**
- * Retry Policies associated with Cassandra.
+ * Constants for looking up Map Elements by Key
  * 
  * @author David Webb
+ * @author Alex Shvid
  * 
  */
-public enum RetryPolicy {
+public abstract class QueryOptionNames {
 
-	DEFAULT, DOWNGRADING_CONSISTENCY, FALLTHROUGH, LOGGING
+	public static final String CONSISTENCY_LEVEL = "ConsistencyLevel";
+	public static final String RETRY_POLICY = "RetryPolicy";
+	public static final String TTL = "TTL";
+	public static final String TIMESTAMP = "TIMESTAMP";
 
 }

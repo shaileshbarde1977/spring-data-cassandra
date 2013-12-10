@@ -23,6 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.cassandra.core.query.ConsistencyLevel;
+import org.springframework.cassandra.core.query.ConsistencyLevelResolver;
+import org.springframework.cassandra.core.query.QueryOptionNames;
+import org.springframework.cassandra.core.query.QueryOptions;
+import org.springframework.cassandra.core.query.RetryPolicy;
+import org.springframework.cassandra.core.query.RetryPolicyResolver;
 import org.springframework.cassandra.support.CassandraAccessor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
@@ -42,8 +48,11 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SimpleStatement;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.exceptions.DriverException;
+import com.datastax.driver.core.querybuilder.Delete;
+import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Truncate;
+import com.datastax.driver.core.querybuilder.Update;
 
 /**
  * <b>This is the Central class in the Cassandra core package.</b> It simplifies the use of Cassandra and helps to avoid
@@ -53,7 +62,7 @@ import com.datastax.driver.core.querybuilder.Truncate;
  * package.
  * 
  * <p>
- * For working with POJOs, use the {@link CassandraDataTemplate}.
+ * For working with POJOs, use the CassandraDataTemplate.
  * </p>
  * 
  * @author David Webb
@@ -250,7 +259,7 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 			return callback.doInSession(getSession());
 
 		} catch (DataAccessException e) {
-			throw throwTranslated(e);
+			throw translateIfPossible(e);
 		}
 	}
 
@@ -320,7 +329,7 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 		for (Definition def : cols.asList()) {
 			String name = def.getName();
 			DataType dataType = def.getType();
-			map.put(name, def.getType().deserialize(row.getBytesUnsafe(name)));
+			map.put(name, dataType.deserialize(row.getBytesUnsafe(name)));
 		}
 
 		return map;
@@ -394,7 +403,7 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 				rch.processRow(row);
 			}
 		} catch (DriverException dx) {
-			throwTranslated(dx);
+			translateIfPossible(dx);
 		}
 	}
 
@@ -410,7 +419,7 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 				mappedRows.add(rowMapper.mapRow(row, i++));
 			}
 		} catch (DriverException dx) {
-			throwTranslated(dx);
+			translateIfPossible(dx);
 		}
 		return mappedRows;
 	}
@@ -428,7 +437,7 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 			Assert.isTrue(rows.size() == 1, "row list has " + rows.size() + " rows instead of one");
 			row = rowMapper.mapRow(rows.get(0), 0);
 		} catch (DriverException dx) {
-			throwTranslated(dx);
+			translateIfPossible(dx);
 		}
 		return row;
 	}
@@ -492,7 +501,7 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 	 * @param ex
 	 * @return
 	 */
-	protected RuntimeException throwTranslated(RuntimeException ex) {
+	protected RuntimeException translateIfPossible(RuntimeException ex) {
 		RuntimeException resolved = getExceptionTranslator().translateExceptionIfPossible(ex);
 		return resolved == null ? ex : resolved;
 	}
@@ -507,10 +516,9 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 			PreparedStatement ps = psc.createPreparedStatement(getSession());
 			return action.doInPreparedStatement(ps);
 		} catch (DriverException dx) {
-			throwTranslated(dx);
+			throw translateIfPossible(dx);
 		}
 
-		return null;
 	}
 
 	/* (non-Javadoc)
@@ -898,13 +906,81 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 		/*
 		 * Add Query Options
 		 */
-		if (optionsByName.get(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL) != null) {
+		if (optionsByName.get(QueryOptionNames.CONSISTENCY_LEVEL) != null) {
 			q.setConsistencyLevel(ConsistencyLevelResolver.resolve((ConsistencyLevel) optionsByName
-					.get(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL)));
+					.get(QueryOptionNames.CONSISTENCY_LEVEL)));
 		}
-		if (optionsByName.get(QueryOptions.QueryOptionMapKeys.RETRY_POLICY) != null) {
-			q.setRetryPolicy(RetryPolicyResolver.resolve((RetryPolicy) optionsByName
-					.get(QueryOptions.QueryOptionMapKeys.RETRY_POLICY)));
+		if (optionsByName.get(QueryOptionNames.RETRY_POLICY) != null) {
+			q.setRetryPolicy(RetryPolicyResolver.resolve((RetryPolicy) optionsByName.get(QueryOptionNames.RETRY_POLICY)));
+		}
+
+	}
+
+	/**
+	 * Add common insert options for all types of queries.
+	 * 
+	 * @param q
+	 * @param optionsByName
+	 */
+	public static void addInsertOptions(Insert query, Map<String, Object> optionsByName) {
+
+		if (optionsByName == null) {
+			return;
+		}
+
+		/*
+		 * Add TTL to Insert object
+		 */
+		if (optionsByName.get(QueryOptionNames.TTL) != null) {
+			query.using(QueryBuilder.ttl((Integer) optionsByName.get(QueryOptionNames.TTL)));
+		}
+		if (optionsByName.get(QueryOptionNames.TIMESTAMP) != null) {
+			query.using(QueryBuilder.timestamp((Long) optionsByName.get(QueryOptionNames.TIMESTAMP)));
+		}
+
+	}
+
+	/**
+	 * Add common update options for all types of queries.
+	 * 
+	 * @param q
+	 * @param optionsByName
+	 */
+	public static void addUpdateOptions(Update query, Map<String, Object> optionsByName) {
+
+		if (optionsByName == null) {
+			return;
+		}
+
+		/*
+		 * Add TTL to Insert object
+		 */
+		if (optionsByName.get(QueryOptionNames.TTL) != null) {
+			query.using(QueryBuilder.ttl((Integer) optionsByName.get(QueryOptionNames.TTL)));
+		}
+		if (optionsByName.get(QueryOptionNames.TIMESTAMP) != null) {
+			query.using(QueryBuilder.timestamp((Long) optionsByName.get(QueryOptionNames.TIMESTAMP)));
+		}
+
+	}
+
+	/**
+	 * Add common delete options for all types of queries.
+	 * 
+	 * @param q
+	 * @param optionsByName
+	 */
+	public static void addDeleteOptions(Delete query, Map<String, Object> optionsByName) {
+
+		if (optionsByName == null) {
+			return;
+		}
+
+		/*
+		 * Add TTL to Insert object
+		 */
+		if (optionsByName.get(QueryOptionNames.TIMESTAMP) != null) {
+			query.using(QueryBuilder.timestamp((Long) optionsByName.get(QueryOptionNames.TIMESTAMP)));
 		}
 
 	}
@@ -924,13 +1000,12 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 		/*
 		 * Add Query Options
 		 */
-		if (optionsByName.get(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL) != null) {
+		if (optionsByName.get(QueryOptionNames.CONSISTENCY_LEVEL) != null) {
 			s.setConsistencyLevel(ConsistencyLevelResolver.resolve((ConsistencyLevel) optionsByName
-					.get(QueryOptions.QueryOptionMapKeys.CONSISTENCY_LEVEL)));
+					.get(QueryOptionNames.CONSISTENCY_LEVEL)));
 		}
-		if (optionsByName.get(QueryOptions.QueryOptionMapKeys.RETRY_POLICY) != null) {
-			s.setRetryPolicy(RetryPolicyResolver.resolve((RetryPolicy) optionsByName
-					.get(QueryOptions.QueryOptionMapKeys.RETRY_POLICY)));
+		if (optionsByName.get(QueryOptionNames.RETRY_POLICY) != null) {
+			s.setRetryPolicy(RetryPolicyResolver.resolve((RetryPolicy) optionsByName.get(QueryOptionNames.RETRY_POLICY)));
 		}
 
 	}

@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.cassandra.core.query.QueryOptions;
 import org.springframework.dao.DataAccessException;
 
 import com.datastax.driver.core.ResultSet;

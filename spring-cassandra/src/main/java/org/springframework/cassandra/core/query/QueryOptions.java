@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cassandra.core;
+package org.springframework.cassandra.core.query;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +22,7 @@ import java.util.Map;
  * Contains Query Options for Cassandra queries. This controls the Consistency Tuning and Retry Policy for a Query.
  * 
  * @author David Webb
+ * @author Alex Shvid
  * 
  */
 public class QueryOptions {
@@ -29,6 +30,7 @@ public class QueryOptions {
 	private ConsistencyLevel consistencyLevel;
 	private RetryPolicy retryPolicy;
 	private Integer ttl;
+	private Long timestamp;
 
 	/**
 	 * Create a Map of all these options.
@@ -38,13 +40,13 @@ public class QueryOptions {
 		Map<String, Object> m = new HashMap<String, Object>();
 
 		if (getConsistencyLevel() != null) {
-			m.put(QueryOptionMapKeys.CONSISTENCY_LEVEL, getConsistencyLevel());
+			m.put(QueryOptionNames.CONSISTENCY_LEVEL, getConsistencyLevel());
 		}
 		if (getRetryPolicy() != null) {
-			m.put(QueryOptionMapKeys.RETRY_POLICY, getRetryPolicy());
+			m.put(QueryOptionNames.RETRY_POLICY, getRetryPolicy());
 		}
 		if (getTtl() != null) {
-			m.put(QueryOptionMapKeys.TTL, getTtl());
+			m.put(QueryOptionNames.TTL, getTtl());
 		}
 
 		return m;
@@ -79,28 +81,30 @@ public class QueryOptions {
 	}
 
 	/**
-	 * @return Returns the ttl.
+	 * @return Returns the ttl of the entry.
 	 */
 	public Integer getTtl() {
 		return ttl;
 	}
 
 	/**
-	 * @param ttl The ttl to set.
+	 * @param ttl The ttl of the entry to set.
 	 */
 	public void setTtl(Integer ttl) {
 		this.ttl = ttl;
 	}
 
 	/**
-	 * Constants for looking up Map Elements by Key
-	 * 
-	 * @author David Webb
-	 * 
+	 * @return Returns the timestamp of the entry.
 	 */
-	public static interface QueryOptionMapKeys {
-		public final String CONSISTENCY_LEVEL = "ConsistencyLevel";
-		public final String RETRY_POLICY = "RetryPolicy";
-		public final String TTL = "TTL";
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	/**
+	 * @param timestamp The timestamp of the entry to set.
+	 */
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
 	}
 }

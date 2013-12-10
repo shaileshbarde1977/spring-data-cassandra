@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.cassandra.core.CassandraTemplate;
-import org.springframework.cassandra.core.QueryOptions;
 import org.springframework.cassandra.core.SessionCallback;
+import org.springframework.cassandra.core.query.QueryOptions;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -144,7 +144,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 */
 	@Override
 	public <T> void delete(List<T> entities, String tableName) {
-
 		delete(entities, tableName, Collections.<String, Object> emptyMap());
 	}
 
@@ -203,7 +202,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 */
 	@Override
 	public <T> void delete(T entity, String tableName) {
-
 		delete(entity, tableName, Collections.<String, Object> emptyMap());
 	}
 
@@ -261,7 +259,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 */
 	@Override
 	public <T> void deleteAsynchronously(List<T> entities, String tableName) {
-
 		insertAsynchronously(entities, tableName, Collections.<String, Object> emptyMap());
 	}
 
@@ -320,7 +317,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 */
 	@Override
 	public <T> void deleteAsynchronously(T entity, String tableName) {
-
 		deleteAsynchronously(entity, tableName, Collections.<String, Object> emptyMap());
 	}
 
@@ -413,7 +409,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 */
 	@Override
 	public <T> List<T> insert(List<T> entities, String tableName) {
-
 		return insert(entities, tableName, Collections.<String, Object> emptyMap());
 	}
 
@@ -472,7 +467,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 */
 	@Override
 	public <T> T insert(T entity, String tableName) {
-
 		return insert(entity, tableName, Collections.<String, Object> emptyMap());
 	}
 
@@ -530,7 +524,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 */
 	@Override
 	public <T> List<T> insertAsynchronously(List<T> entities, String tableName) {
-
 		return insertAsynchronously(entities, tableName, Collections.<String, Object> emptyMap());
 	}
 
@@ -589,7 +582,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 */
 	@Override
 	public <T> T insertAsynchronously(T entity, String tableName) {
-
 		return insertAsynchronously(entity, tableName, Collections.<String, Object> emptyMap());
 	}
 
@@ -682,7 +674,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 */
 	@Override
 	public <T> List<T> update(List<T> entities, String tableName) {
-
 		return update(entities, tableName, Collections.<String, Object> emptyMap());
 	}
 
@@ -1007,7 +998,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 		for (final T objectToSave : entities) {
 
-			batch.add((Statement) toDeleteQuery(keyspace, tableName, objectToSave, optionsByName));
+			batch.add((Statement) toDeleteQuery(tableName, objectToSave, optionsByName));
 
 		}
 
@@ -1050,17 +1041,17 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		/*
 		 * Return variable is a Batch statement
 		 */
-		final Batch b1 = QueryBuilder.batch();
+		final Batch batch = QueryBuilder.batch();
 
 		for (final T objectToSave : entities) {
 
-			b1.add((Statement) toInsertQuery(keyspace, tableName, objectToSave, optionsByName));
+			batch.add((Statement) toInsertQuery(tableName, objectToSave, optionsByName));
 
 		}
 
-		CassandraDataTemplate.addQueryOptions(b1, optionsByName);
-		final Batch b = b1;
-		logger.info(b.getQueryString());
+		addQueryOptions(batch, optionsByName);
+
+		logger.info(batch.getQueryString());
 
 		return doExecute(new SessionCallback<List<T>>() {
 
@@ -1068,9 +1059,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 			public List<T> doInSession(Session s) throws DataAccessException {
 
 				if (insertAsychronously) {
-					s.executeAsync(b);
+					s.executeAsync(batch);
 				} else {
-					s.execute(b);
+					s.execute(batch);
 				}
 
 				return entities;
@@ -1097,17 +1088,17 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		/*
 		 * Return variable is a Batch statement
 		 */
-		final Batch b1 = QueryBuilder.batch();
+		final Batch batch = QueryBuilder.batch();
 
 		for (final T objectToSave : entities) {
 
-			b1.add((Statement) toUpdateQuery(keyspace, tableName, objectToSave, optionsByName));
+			batch.add((Statement) toUpdateQuery(tableName, objectToSave, optionsByName));
 
 		}
 
-		CassandraDataTemplate.addQueryOptions(b1, optionsByName);
-		final Batch b = b1;
-		logger.info(b.toString());
+		addQueryOptions(batch, optionsByName);
+
+		logger.info(batch.toString());
 
 		return doExecute(new SessionCallback<List<T>>() {
 
@@ -1115,9 +1106,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 			public List<T> doInSession(Session s) throws DataAccessException {
 
 				if (updateAsychronously) {
-					s.executeAsync(b);
+					s.executeAsync(batch);
 				} else {
-					s.execute(b);
+					s.execute(batch);
 				}
 
 				return entities;
@@ -1136,8 +1127,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	protected <T> void doDelete(final String tableName, final T objectToRemove, Map<String, Object> optionsByName,
 			final boolean deleteAsynchronously) {
 
-		final Query q = toDeleteQuery(keyspace, tableName, objectToRemove, optionsByName);
-		logger.info(q.toString());
+		final Query query = toDeleteQuery(tableName, objectToRemove, optionsByName);
+
+		logger.info(query.toString());
 
 		doExecute(new SessionCallback<Object>() {
 
@@ -1145,9 +1137,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 			public Object doInSession(Session s) throws DataAccessException {
 
 				if (deleteAsynchronously) {
-					s.executeAsync(q);
+					s.executeAsync(query);
 				} else {
-					s.execute(q);
+					s.execute(query);
 				}
 
 				return null;
@@ -1172,7 +1164,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 			return callback.doInSession(getSession());
 
 		} catch (DataAccessException e) {
-			throw throwTranslated(e);
+			throw translateIfPossible(e);
 		}
 	}
 
@@ -1185,14 +1177,14 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	protected <T> T doInsert(final String tableName, final T entity, final Map<String, Object> optionsByName,
 			final boolean insertAsychronously) {
 
-		final Query q = toInsertQuery(keyspace, tableName, entity, optionsByName);
+		final Query query = toInsertQuery(tableName, entity, optionsByName);
 
-		logger.info(q.toString());
-		if (q.getConsistencyLevel() != null) {
-			logger.info(q.getConsistencyLevel().name());
+		logger.info(query.toString());
+		if (query.getConsistencyLevel() != null) {
+			logger.info(query.getConsistencyLevel().name());
 		}
-		if (q.getRetryPolicy() != null) {
-			logger.info(q.getRetryPolicy().toString());
+		if (query.getRetryPolicy() != null) {
+			logger.info(query.getRetryPolicy().toString());
 		}
 
 		return doExecute(new SessionCallback<T>() {
@@ -1201,9 +1193,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 			public T doInSession(Session s) throws DataAccessException {
 
 				if (insertAsychronously) {
-					s.executeAsync(q);
+					s.executeAsync(query);
 				} else {
-					s.execute(q);
+					s.execute(query);
 				}
 
 				return entity;
@@ -1225,7 +1217,8 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	protected <T> T doUpdate(final String tableName, final T entity, final Map<String, Object> optionsByName,
 			final boolean updateAsychronously) {
 
-		final Query q = toUpdateQuery(keyspace, tableName, entity, optionsByName);
+		final Query q = toUpdateQuery(tableName, entity, optionsByName);
+
 		logger.info(q.toString());
 
 		return doExecute(new SessionCallback<T>() {
@@ -1270,29 +1263,26 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * 
 	 * @return The Query object to run with session.execute();
 	 */
-	public Query toInsertQuery(String keyspaceName, String tableName, final Object objectToSave,
-			Map<String, Object> optionsByName) {
+	public Query toInsertQuery(String tableName, final Object objectToSave, Map<String, Object> optionsByName) {
 
-		final Insert q = QueryBuilder.insertInto(keyspaceName, tableName);
+		final Insert query = QueryBuilder.insertInto(keyspace, tableName);
 
 		/*
 		 * Write properties
 		 */
-		cassandraConverter.write(objectToSave, q);
+		cassandraConverter.write(objectToSave, query);
 
 		/*
 		 * Add Query Options
 		 */
-		addQueryOptions(q, optionsByName);
+		addQueryOptions(query, optionsByName);
 
 		/*
 		 * Add TTL to Insert object
 		 */
-		if (optionsByName.get(QueryOptions.QueryOptionMapKeys.TTL) != null) {
-			q.using(QueryBuilder.ttl((Integer) optionsByName.get(QueryOptions.QueryOptionMapKeys.TTL)));
-		}
+		addInsertOptions(query, optionsByName);
 
-		return q;
+		return query;
 
 	}
 
@@ -1307,29 +1297,26 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * 
 	 * @return The Query object to run with session.execute();
 	 */
-	public Query toUpdateQuery(String keyspaceName, String tableName, final Object objectToSave,
-			Map<String, Object> optionsByName) {
+	public Query toUpdateQuery(String tableName, final Object objectToSave, Map<String, Object> optionsByName) {
 
-		final Update q = QueryBuilder.update(keyspaceName, tableName);
+		final Update query = QueryBuilder.update(keyspace, tableName);
 
 		/*
 		 * Write properties
 		 */
-		cassandraConverter.write(objectToSave, q);
+		cassandraConverter.write(objectToSave, query);
 
 		/*
 		 * Add Query Options
 		 */
-		addQueryOptions(q, optionsByName);
+		addQueryOptions(query, optionsByName);
 
 		/*
 		 * Add TTL to Insert object
 		 */
-		if (optionsByName.get(QueryOptions.QueryOptionMapKeys.TTL) != null) {
-			q.using(QueryBuilder.ttl((Integer) optionsByName.get(QueryOptions.QueryOptionMapKeys.TTL)));
-		}
+		addUpdateOptions(query, optionsByName);
 
-		return q;
+		return query;
 
 	}
 
@@ -1343,21 +1330,22 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param optionsByName
 	 * @return
 	 */
-	public Query toDeleteQuery(String keyspace, String tableName, final Object objectToRemove,
-			Map<String, Object> optionsByName) {
+	public Query toDeleteQuery(String tableName, final Object objectToRemove, Map<String, Object> optionsByName) {
 
 		final Delete.Selection ds = QueryBuilder.delete();
-		final Delete q = ds.from(keyspace, tableName);
-		final Where w = q.where();
+		final Delete query = ds.from(keyspace, tableName);
+		final Where w = query.where();
 
 		/*
 		 * Write where condition to find by Id
 		 */
 		cassandraConverter.write(objectToRemove, w);
 
-		addQueryOptions(q, optionsByName);
+		addQueryOptions(query, optionsByName);
 
-		return q;
+		addDeleteOptions(query, optionsByName);
+
+		return query;
 
 	}
 }
