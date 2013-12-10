@@ -15,7 +15,6 @@
  */
 package org.springframework.data.cassandra.core;
 
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;

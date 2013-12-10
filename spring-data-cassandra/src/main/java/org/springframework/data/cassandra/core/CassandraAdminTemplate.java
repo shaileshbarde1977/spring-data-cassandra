@@ -15,12 +15,17 @@
  */
 package org.springframework.data.cassandra.core;
 
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cassandra.core.SessionCallback;
+import org.springframework.cassandra.core.cql.generator.AlterKeyspaceCqlGenerator;
+import org.springframework.cassandra.core.cql.generator.CreateKeyspaceCqlGenerator;
+import org.springframework.cassandra.core.cql.generator.DropKeyspaceCqlGenerator;
+import org.springframework.cassandra.core.cql.spec.AlterKeyspaceSpecification;
+import org.springframework.cassandra.core.cql.spec.CreateKeyspaceSpecification;
+import org.springframework.cassandra.core.cql.spec.DropKeyspaceSpecification;
 import org.springframework.cassandra.support.CassandraExceptionTranslator;
 import org.springframework.cassandra.support.exception.CassandraTableExistsException;
 import org.springframework.dao.DataAccessException;
@@ -84,6 +89,60 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 			MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext) {
 		Assert.notNull(mappingContext);
 		return this;
+	}
+
+	public void createKeyspace(final String keyspace, final Map<String, Object> optionsByName) {
+
+		CreateKeyspaceSpecification spec = new CreateKeyspaceSpecification().name(keyspace);
+		CreateKeyspaceCqlGenerator generator = new CreateKeyspaceCqlGenerator(spec);
+
+		final String cql = generator.toCql();
+
+		execute(new SessionCallback<Object>() {
+			public Object doInSession(Session s) throws DataAccessException {
+
+				log.info("CREATE KEYSPACE CQL -> " + cql);
+				s.execute(cql);
+				return null;
+			}
+		});
+
+	}
+
+	public void alterKeyspace(String keyspace, Map<String, Object> optionsByName) {
+
+		AlterKeyspaceSpecification spec = new AlterKeyspaceSpecification().name(keyspace);
+		AlterKeyspaceCqlGenerator generator = new AlterKeyspaceCqlGenerator(spec);
+
+		final String cql = generator.toCql();
+
+		execute(new SessionCallback<Object>() {
+			public Object doInSession(Session s) throws DataAccessException {
+
+				log.info("ALTER KEYSPACE CQL -> " + cql);
+				s.execute(cql);
+				return null;
+			}
+		});
+
+	}
+
+	public void dropKeyspace(String keyspace) {
+
+		DropKeyspaceSpecification spec = new DropKeyspaceSpecification().name(keyspace);
+		DropKeyspaceCqlGenerator generator = new DropKeyspaceCqlGenerator(spec);
+
+		final String cql = generator.toCql();
+
+		execute(new SessionCallback<Object>() {
+			public Object doInSession(Session s) throws DataAccessException {
+
+				log.info("DROP KEYSPACE CQL -> " + cql);
+				s.execute(cql);
+				return null;
+			}
+		});
+
 	}
 
 	/* (non-Javadoc)

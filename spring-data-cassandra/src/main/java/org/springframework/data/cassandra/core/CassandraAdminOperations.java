@@ -24,8 +24,31 @@ import com.datastax.driver.core.TableMetadata;
  * 
  * @author David Webb
  * @author Matthew T. Adams
+ * @author Alex Shvid
  */
 public interface CassandraAdminOperations {
+
+	/**
+	 * Creates Keyspace with given name
+	 * 
+	 * @param keyspace Name of the keyspace
+	 * @param optionsByName Table options, given by the string option name and the appropriate option value.
+	 * @return returns true if a keyspace was created, false if not.
+	 */
+	void createKeyspace(String keyspace, Map<String, Object> optionsByName);
+
+	/**
+	 * Alters Keyspace with given name and options
+	 * 
+	 * @param keyspace Name of the keyspace
+	 * @param optionsByName Table options, given by the string option name and the appropriate option value.
+	 */
+	void alterKeyspace(String keyspace, Map<String, Object> optionsByName);
+
+	/**
+	 * Drop keyspace
+	 */
+	void dropKeyspace(String keyspace);
 
 	/**
 	 * Get the given table's metadata.
