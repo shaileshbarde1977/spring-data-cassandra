@@ -328,13 +328,14 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 	}
 
 	public AlterTableSpecification getAlterTableSpecification(final CassandraPersistentEntity<?> entity,
-			final TableMetadata table) {
+			final TableMetadata table, final boolean dropRemovedAttributeColumns) {
 
 		final AlterTableSpecification spec = new AlterTableSpecification();
 
 		spec.name(entity.getTable());
 
-		final Set<String> definedColumns = new HashSet<String>();
+		final Set<String> definedColumns = dropRemovedAttributeColumns ? new HashSet<String>() : Collections
+				.<String> emptySet();
 
 		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
@@ -343,7 +344,10 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 				DataType columnDataType = prop.getDataType();
 
 				String tableColumnName = columnName.toLowerCase();
-				definedColumns.add(tableColumnName);
+
+				if (dropRemovedAttributeColumns) {
+					definedColumns.add(tableColumnName);
+				}
 
 				ColumnMetadata columnMetadata = table.getColumn(tableColumnName);
 
@@ -367,14 +371,16 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 			}
 		});
 
-		for (ColumnMetadata columnMetadata : table.getColumns()) {
+		if (dropRemovedAttributeColumns) {
+			for (ColumnMetadata columnMetadata : table.getColumns()) {
 
-			String columnName = columnMetadata.getName();
+				String columnName = columnMetadata.getName();
 
-			if (!definedColumns.contains(columnName)) {
-				spec.drop(columnName);
+				if (!definedColumns.contains(columnName)) {
+					spec.drop(columnName);
+				}
+
 			}
-
 		}
 
 		return spec;

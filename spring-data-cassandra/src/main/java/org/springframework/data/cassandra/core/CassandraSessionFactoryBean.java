@@ -15,6 +15,8 @@
  */
 package org.springframework.data.cassandra.core;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -38,7 +40,6 @@ import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
-import org.springframework.data.cassandra.util.CqlUtils;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -131,7 +132,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 			CassandraAdminTemplate cassandraAdminTemplate = new CassandraAdminTemplate(session, converter, keyspace);
 
-			KeyspaceMetadata keyspaceMetadata = cluster.getMetadata().getKeyspace(keyspace.toLowerCase());
+			KeyspaceMetadata keyspaceMetadata = cassandraAdminTemplate.getKeyspaceMetadata();
 			boolean keyspaceExists = keyspaceMetadata != null;
 			boolean keyspaceCreated = false;
 
@@ -156,16 +157,9 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 			if (!keyspaceExists
 					&& (keyspaceAttributes.isCreate() || keyspaceAttributes.isCreateDrop() || keyspaceAttributes.isUpdate())) {
 
-				KeyspaceReplicationOptions keyspaceReplicationOptions = new KeyspaceReplicationOptions().with(
-						ReplicationOption.CLASS, keyspaceAttributes.getReplicationStrategy()).with(
-						ReplicationOption.REPLICATION_FACTOR, keyspaceAttributes.getReplicationFactor());
+				log.info("Create keyspace " + keyspace + " on afterPropertiesSet");
 
-				KeyspaceOptions keyspaceOptions = new KeyspaceOptions().with(KeyspaceOption.REPLICATION,
-						keyspaceReplicationOptions).with(KeyspaceOption.DURABLE_WRITES, keyspaceAttributes.isDurableWrites());
-
-				log.info("Create keyspace " + keyspace + " on afterPropertiesSet ");
-
-				cassandraAdminTemplate.createKeyspace(keyspace, keyspaceOptions.getOptions());
+				cassandraAdminTemplate.createKeyspace(keyspace, createKeyspaceOptions().getOptions());
 				keyspaceCreated = true;
 			}
 
@@ -174,14 +168,10 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 				if (compareKeyspaceAttributes(keyspaceAttributes, keyspaceMetadata) != null) {
 
-					String query = String
-							.format(
-									"ALTER KEYSPACE %1$s WITH replication = { 'class' : '%2$s', 'replication_factor' : %3$d } AND DURABLE_WRITES = %4$b",
-									keyspace, keyspaceAttributes.getReplicationStrategy(), keyspaceAttributes.getReplicationFactor(),
-									keyspaceAttributes.isDurableWrites());
+					log.info("Update keyspace " + keyspace + " on afterPropertiesSet");
 
-					log.info("Update keyspace " + keyspace + " on afterPropertiesSet " + query);
-					session.execute(query);
+					cassandraAdminTemplate.alterKeyspace(keyspace, createKeyspaceOptions().getOptions());
+
 				}
 
 			}
@@ -201,7 +191,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 			}
 
-			session.execute("USE " + keyspace);
+			cassandraAdminTemplate.useKeyspace(keyspace);
 
 			if (!CollectionUtils.isEmpty(keyspaceAttributes.getTables())) {
 
@@ -209,38 +199,46 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 					String entityClassName = tableAttributes.getEntity();
 					Class<?> entityClass = ClassUtils.forName(entityClassName, this.beanClassLoader);
-					CassandraPersistentEntity<?> entity = determineEntity(entityClass);
-					String useTableName = tableAttributes.getName() != null ? tableAttributes.getName() : entity.getTable();
+
+					String useTableName = tableAttributes.getName() != null ? tableAttributes.getName() : cassandraAdminTemplate
+							.getTableName(entityClass);
 
 					if (keyspaceCreated) {
-						createNewTable(session, useTableName, entity);
+						createNewTable(cassandraAdminTemplate, useTableName, entityClass);
 					} else if (keyspaceAttributes.isUpdate()) {
-						TableMetadata table = keyspaceMetadata.getTable(useTableName.toLowerCase());
+						TableMetadata table = cassandraAdminTemplate.getTableMetadata(useTableName);
 						if (table == null) {
-							createNewTable(session, useTableName, entity);
+							createNewTable(cassandraAdminTemplate, useTableName, entityClass);
 						} else {
-							// alter table columns
-							String query = CqlUtils.alterTable(useTableName, entity, table, converter);
-							if (query != null) {
-								log.info("Execute on keyspace " + keyspace + " CQL " + query);
-								session.execute(query);
-							}
+
+							cassandraAdminTemplate.alterTable(useTableName, entityClass, true);
+
+							cassandraAdminTemplate.alterIndexes(useTableName, entityClass);
+
 						}
 					} else if (keyspaceAttributes.isValidate()) {
-						TableMetadata table = keyspaceMetadata.getTable(useTableName.toLowerCase());
+
+						TableMetadata table = cassandraAdminTemplate.getTableMetadata(useTableName);
 						if (table == null) {
 							throw new InvalidDataAccessApiUsageException("not found table " + useTableName + " for entity "
 									+ entityClassName);
 						}
-						// validate columns
-						String query = CqlUtils.alterTable(useTableName, entity, table, converter);
+
+						String query = cassandraAdminTemplate.validateTable(useTableName, entityClass);
+
 						if (query != null) {
 							throw new InvalidDataAccessApiUsageException("invalid table " + useTableName + " for entity "
 									+ entityClassName + ". modify it by " + query);
 						}
-					}
 
-					// System.out.println("tableAttributes, entityClass=" + entityClass + ", table = " + entity.getTable());
+						List<String> queryList = cassandraAdminTemplate.validateIndexes(useTableName, entityClass);
+
+						if (!queryList.isEmpty()) {
+							throw new InvalidDataAccessApiUsageException("invalid indexes in table " + useTableName + " for entity "
+									+ entityClassName + ". modify it by " + queryList);
+						}
+
+					}
 
 				}
 			}
@@ -252,21 +250,24 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 	}
 
-	private void createNewTable(Session session, String useTableName, CassandraPersistentEntity<?> entity)
-			throws NoHostAvailableException {
-		String cql = CqlUtils.createTable(useTableName, entity, converter);
-		log.info("Execute on keyspace " + keyspace + " CQL " + cql);
-		session.execute(cql);
-		for (String indexCQL : CqlUtils.createIndexes(useTableName, entity, converter)) {
-			log.info("Execute on keyspace " + keyspace + " CQL " + indexCQL);
-			try {
-				session.execute(indexCQL);
-			} catch (RuntimeException e) {
-				log.info("fail to execute " + indexCQL, e);
-				throw e;
-			}
+	private KeyspaceOptions createKeyspaceOptions() {
+		KeyspaceReplicationOptions keyspaceReplicationOptions = new KeyspaceReplicationOptions().with(
+				ReplicationOption.CLASS, keyspaceAttributes.getReplicationStrategy()).with(
+				ReplicationOption.REPLICATION_FACTOR, keyspaceAttributes.getReplicationFactor());
 
-		}
+		KeyspaceOptions keyspaceOptions = new KeyspaceOptions()
+				.with(KeyspaceOption.REPLICATION, keyspaceReplicationOptions).with(KeyspaceOption.DURABLE_WRITES,
+						keyspaceAttributes.isDurableWrites());
+		return keyspaceOptions;
+	}
+
+	private void createNewTable(CassandraAdminTemplate cassandraAdminTemplate, String useTableName, Class<?> entityClass)
+			throws NoHostAvailableException {
+
+		cassandraAdminTemplate.createTable(false, useTableName, entityClass, Collections.<String, Object> emptyMap());
+
+		cassandraAdminTemplate.createIndexes(useTableName, entityClass);
+
 	}
 
 	/* 
@@ -327,21 +328,6 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 			return "replication_class";
 		}
 		return null;
-	}
-
-	CassandraPersistentEntity<?> determineEntity(Class<?> entityClass) {
-
-		if (entityClass == null) {
-			throw new InvalidDataAccessApiUsageException(
-					"No class parameter provided, entity table name can't be determined!");
-		}
-
-		CassandraPersistentEntity<?> entity = mappingContext.getPersistentEntity(entityClass);
-		if (entity == null) {
-			throw new InvalidDataAccessApiUsageException("No Persitent Entity information found for the class "
-					+ entityClass.getName());
-		}
-		return entity;
 	}
 
 	private static final CassandraConverter getDefaultCassandraConverter() {

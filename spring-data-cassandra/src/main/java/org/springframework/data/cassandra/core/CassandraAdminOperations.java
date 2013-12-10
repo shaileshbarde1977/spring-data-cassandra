@@ -15,8 +15,10 @@
  */
 package org.springframework.data.cassandra.core;
 
+import java.util.List;
 import java.util.Map;
 
+import com.datastax.driver.core.KeyspaceMetadata;
 import com.datastax.driver.core.TableMetadata;
 
 /**
@@ -47,8 +49,22 @@ public interface CassandraAdminOperations {
 
 	/**
 	 * Drop keyspace
+	 * 
+	 * @param keyspace Name of the keyspace
 	 */
 	void dropKeyspace(String keyspace);
+
+	/**
+	 * Use keyspace
+	 * 
+	 * @param keyspace Name of the keyspace
+	 */
+	void useKeyspace(String keyspace);
+
+	/**
+	 * Get the keyspace metadata.
+	 */
+	KeyspaceMetadata getKeyspaceMetadata();
 
 	/**
 	 * Get the given table's metadata.
@@ -56,6 +72,14 @@ public interface CassandraAdminOperations {
 	 * @param tableName The name of the table.
 	 */
 	TableMetadata getTableMetadata(String tableName);
+
+	/**
+	 * Get table name defined in the entity class
+	 * 
+	 * @param entityClass
+	 * @return String tableName
+	 */
+	String getTableName(Class<?> entityClass);
 
 	/**
 	 * Create a table with the name given and fields corresponding to the given class. If the table already exists and
@@ -84,6 +108,15 @@ public interface CassandraAdminOperations {
 	void alterTable(String tableName, Class<?> entityClass, boolean dropRemovedAttributeColumns);
 
 	/**
+	 * Validate columns in the given table from the given class.
+	 * 
+	 * @param tableName The name of the existing table.
+	 * @param entityClass The class whose fields determine the columns added.
+	 * @return Returns alter table statement or null
+	 */
+	String validateTable(String tableName, Class<?> entityClass);
+
+	/**
 	 * Drops the existing table with the given name and creates a new one; basically a {@link #dropTable(String)} followed
 	 * by a {@link #createTable(boolean, String, Class, Map)}.
 	 * 
@@ -99,4 +132,30 @@ public interface CassandraAdminOperations {
 	 * @param tableName The name of the table.
 	 */
 	void dropTable(String tableName);
+
+	/**
+	 * Create all indexed annotated in entityClass
+	 * 
+	 * @param tableName The name of the table.
+	 * @param entityClass The class whose fields determine the new table's columns.
+	 */
+	void createIndexes(String tableName, Class<?> entityClass);
+
+	/**
+	 * Create all indexed annotated in entityClass
+	 * 
+	 * @param tableName The name of the table.
+	 * @param entityClass The class whose fields determine the new table's columns.
+	 */
+	void alterIndexes(String tableName, Class<?> entityClass);
+
+	/**
+	 * Create all indexed annotated in entityClass
+	 * 
+	 * @param tableName The name of the table.
+	 * @param entityClass The class whose fields determine the new table's columns.
+	 * @return List of the cql statement to change indexes
+	 */
+	List<String> validateIndexes(String tableName, Class<?> entityClass);
+
 }

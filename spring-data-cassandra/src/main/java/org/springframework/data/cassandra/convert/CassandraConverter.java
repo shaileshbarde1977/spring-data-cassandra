@@ -53,7 +53,8 @@ public interface CassandraConverter extends
 	 * @return AlterTableSpecification or null
 	 */
 
-	AlterTableSpecification getAlterTableSpecification(CassandraPersistentEntity<?> entity, TableMetadata table);
+	AlterTableSpecification getAlterTableSpecification(CassandraPersistentEntity<?> entity, TableMetadata table,
+			boolean dropRemovedAttributeColumns);
 
 	/**
 	 * Get all create index specifications for the entity

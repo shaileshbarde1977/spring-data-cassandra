@@ -15,17 +15,33 @@
  */
 package org.springframework.data.cassandra.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cassandra.core.SessionCallback;
 import org.springframework.cassandra.core.cql.generator.AlterKeyspaceCqlGenerator;
+import org.springframework.cassandra.core.cql.generator.AlterTableCqlGenerator;
+import org.springframework.cassandra.core.cql.generator.CreateIndexCqlGenerator;
 import org.springframework.cassandra.core.cql.generator.CreateKeyspaceCqlGenerator;
+import org.springframework.cassandra.core.cql.generator.CreateTableCqlGenerator;
+import org.springframework.cassandra.core.cql.generator.DropIndexCqlGenerator;
 import org.springframework.cassandra.core.cql.generator.DropKeyspaceCqlGenerator;
+import org.springframework.cassandra.core.cql.generator.DropTableCqlGenerator;
+import org.springframework.cassandra.core.cql.generator.UseKeyspaceCqlGenerator;
 import org.springframework.cassandra.core.cql.spec.AlterKeyspaceSpecification;
+import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
+import org.springframework.cassandra.core.cql.spec.CreateIndexSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateKeyspaceSpecification;
+import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
+import org.springframework.cassandra.core.cql.spec.DropIndexSpecification;
 import org.springframework.cassandra.core.cql.spec.DropKeyspaceSpecification;
+import org.springframework.cassandra.core.cql.spec.DropTableSpecification;
+import org.springframework.cassandra.core.cql.spec.UseKeyspaceSpecification;
+import org.springframework.cassandra.core.cql.spec.WithNameSpecification;
 import org.springframework.cassandra.support.CassandraExceptionTranslator;
 import org.springframework.cassandra.support.exception.CassandraTableExistsException;
 import org.springframework.dao.DataAccessException;
@@ -34,11 +50,11 @@ import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.cassandra.convert.CassandraConverter;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
-import org.springframework.data.cassandra.util.CqlUtils;
 import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
 
-import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.KeyspaceMetadata;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.TableMetadata;
 
@@ -88,10 +104,14 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	protected CassandraAdminTemplate setMappingContext(
 			MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext) {
 		Assert.notNull(mappingContext);
+		this.mappingContext = mappingContext;
 		return this;
 	}
 
 	public void createKeyspace(final String keyspace, final Map<String, Object> optionsByName) {
+
+		Assert.notNull(keyspace);
+		Assert.notNull(optionsByName);
 
 		CreateKeyspaceSpecification spec = new CreateKeyspaceSpecification().name(keyspace).with(optionsByName);
 
@@ -99,18 +119,14 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 
 		final String cql = generator.toCql();
 
-		execute(new SessionCallback<Object>() {
-			public Object doInSession(Session s) throws DataAccessException {
-
-				log.info("CREATE KEYSPACE CQL -> " + cql);
-				s.execute(cql);
-				return null;
-			}
-		});
+		doExecute(cql);
 
 	}
 
 	public void alterKeyspace(String keyspace, Map<String, Object> optionsByName) {
+
+		Assert.notNull(keyspace);
+		Assert.notNull(optionsByName);
 
 		AlterKeyspaceSpecification spec = new AlterKeyspaceSpecification().name(keyspace).with(optionsByName);
 
@@ -118,32 +134,33 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 
 		final String cql = generator.toCql();
 
-		execute(new SessionCallback<Object>() {
-			public Object doInSession(Session s) throws DataAccessException {
-
-				log.info("ALTER KEYSPACE CQL -> " + cql);
-				s.execute(cql);
-				return null;
-			}
-		});
+		doExecute(cql);
 
 	}
 
 	public void dropKeyspace(String keyspace) {
+
+		Assert.notNull(keyspace);
 
 		DropKeyspaceSpecification spec = new DropKeyspaceSpecification().name(keyspace);
 		DropKeyspaceCqlGenerator generator = new DropKeyspaceCqlGenerator(spec);
 
 		final String cql = generator.toCql();
 
-		execute(new SessionCallback<Object>() {
-			public Object doInSession(Session s) throws DataAccessException {
+		doExecute(cql);
 
-				log.info("DROP KEYSPACE CQL -> " + cql);
-				s.execute(cql);
-				return null;
-			}
-		});
+	}
+
+	public void useKeyspace(String keyspace) {
+
+		Assert.notNull(keyspace);
+
+		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(keyspace);
+		UseKeyspaceCqlGenerator generator = new UseKeyspaceCqlGenerator(spec);
+
+		final String cql = generator.toCql();
+
+		doExecute(cql);
 
 	}
 
@@ -154,19 +171,22 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	public boolean createTable(boolean ifNotExists, final String tableName, Class<?> entityClass,
 			Map<String, Object> optionsByName) {
 
+		Assert.notNull(tableName);
+		Assert.notNull(entityClass);
+		Assert.notNull(optionsByName);
+
 		try {
 
-			final CassandraPersistentEntity<?> entity = mappingContext.getPersistentEntity(entityClass);
+			final CassandraPersistentEntity<?> entity = getEntity(entityClass);
+			CreateTableSpecification spec = converter.getCreateTableSpecification(entity);
+			spec.name(tableName);
 
-			execute(new SessionCallback<Object>() {
-				public Object doInSession(Session s) throws DataAccessException {
+			CreateTableCqlGenerator generator = new CreateTableCqlGenerator(spec);
 
-					String cql = CqlUtils.createTable(tableName, entity, converter);
-					log.info("CREATE TABLE CQL -> " + cql);
-					s.execute(cql);
-					return null;
-				}
-			});
+			String cql = generator.toCql();
+
+			doExecute(cql);
+
 			return true;
 
 		} catch (CassandraTableExistsException ctex) {
@@ -181,7 +201,52 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	 */
 	@Override
 	public void alterTable(String tableName, Class<?> entityClass, boolean dropRemovedAttributeColumns) {
-		// TODO Auto-generated method stub
+
+		Assert.notNull(tableName);
+		Assert.notNull(entityClass);
+
+		String cql = alterTableCql(tableName, entityClass, dropRemovedAttributeColumns);
+
+		if (cql != null) {
+			doExecute(cql);
+		}
+	}
+
+	@Override
+	public String validateTable(String tableName, Class<?> entityClass) {
+
+		Assert.notNull(tableName);
+		Assert.notNull(entityClass);
+
+		return alterTableCql(tableName, entityClass, true);
+
+	}
+
+	/**
+	 * Service method to generate cql query for the given table
+	 * 
+	 * @param tableName
+	 * @param entityClass
+	 * @param dropRemovedAttributeColumns
+	 * @return Cql query string or null if no changes
+	 */
+	protected String alterTableCql(String tableName, Class<?> entityClass, boolean dropRemovedAttributeColumns) {
+
+		final CassandraPersistentEntity<?> entity = getEntity(entityClass);
+
+		AlterTableSpecification spec = converter.getAlterTableSpecification(entity, getTableMetadata(tableName),
+				dropRemovedAttributeColumns);
+
+		if (!spec.hasChanges()) {
+			return null;
+		}
+
+		AlterTableCqlGenerator generator = new AlterTableCqlGenerator(spec);
+
+		String cql = generator.toCql();
+
+		return cql;
+
 	}
 
 	/* (non-Javadoc)
@@ -189,39 +254,6 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	 */
 	@Override
 	public void replaceTable(String tableName, Class<?> entityClass, Map<String, Object> optionsByName) {
-		// TODO
-	}
-
-	/**
-	 * Create a list of query operations to alter the table for the given entity
-	 * 
-	 * @param entityClass
-	 * @param tableName
-	 */
-	protected void doAlterTable(Class<?> entityClass, String tableName) {
-
-		CassandraPersistentEntity<?> entity = mappingContext.getPersistentEntity(entityClass);
-
-		Assert.notNull(entity);
-
-		final TableMetadata tableMetadata = getTableMetadata(tableName);
-
-		final String query = CqlUtils.alterTable(tableName, entity, tableMetadata, converter);
-
-		if (query == null) {
-			return;
-		}
-
-		execute(new SessionCallback<Object>() {
-
-			public Object doInSession(Session s) throws DataAccessException {
-
-				s.execute(query);
-
-				return null;
-
-			}
-		});
 
 	}
 
@@ -230,9 +262,9 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	 */
 	public void dropTable(Class<?> entityClass) {
 
-		final String tableName = determineTableName(entityClass);
+		Assert.notNull(entityClass);
 
-		dropTable(tableName);
+		dropTable(getTableName(entityClass));
 
 	}
 
@@ -242,20 +274,129 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	@Override
 	public void dropTable(String tableName) {
 
-		log.info("Dropping table => " + tableName);
+		Assert.notNull(tableName);
 
-		final String q = CqlUtils.dropTable(tableName);
-		log.info(q);
+		DropTableSpecification spec = new DropTableSpecification().name(tableName);
+		String cql = new DropTableCqlGenerator(spec).toCql();
 
-		execute(new SessionCallback<ResultSet>() {
+		doExecute(cql);
 
-			@Override
-			public ResultSet doInSession(Session s) throws DataAccessException {
+	}
 
-				return s.execute(q);
+	@Override
+	public void createIndexes(String tableName, Class<?> entityClass) {
 
+		Assert.notNull(tableName);
+		Assert.notNull(entityClass);
+
+		CassandraPersistentEntity<?> entity = getEntity(entityClass);
+
+		List<CreateIndexSpecification> specList = converter.getCreateIndexSpecifications(entity);
+
+		for (CreateIndexSpecification spec : specList) {
+			String cql = new CreateIndexCqlGenerator(spec).toCql();
+
+			doExecute(cql);
+		}
+
+	}
+
+	@Override
+	public void alterIndexes(String tableName, Class<?> entityClass) {
+
+		Assert.notNull(tableName);
+		Assert.notNull(entityClass);
+
+		List<String> cqlList = alterIndexesCql(tableName, entityClass);
+
+		for (String cql : cqlList) {
+			doExecute(cql);
+		}
+
+	}
+
+	@Override
+	public List<String> validateIndexes(String tableName, Class<?> entityClass) {
+
+		Assert.notNull(tableName);
+		Assert.notNull(entityClass);
+
+		return alterIndexesCql(tableName, entityClass);
+	}
+
+	/**
+	 * Service method to generate cql queries to alter indexes in table
+	 * 
+	 * @param tableName
+	 * @param entityClass
+	 * @return List of cql queries
+	 */
+
+	protected List<String> alterIndexesCql(String tableName, Class<?> entityClass) {
+
+		CassandraPersistentEntity<?> entity = getEntity(entityClass);
+
+		List<WithNameSpecification<?>> specList = converter.getIndexChangeSpecifications(entity,
+				getTableMetadata(tableName));
+
+		if (specList.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<String> result = new ArrayList<String>(specList.size());
+
+		for (WithNameSpecification<?> spec : specList) {
+
+			if (spec instanceof CreateIndexSpecification) {
+				result.add(new CreateIndexCqlGenerator((CreateIndexSpecification) spec).toCql());
+			} else if (spec instanceof DropIndexSpecification) {
+				result.add(new DropIndexCqlGenerator((DropIndexSpecification) spec).toCql());
+			} else {
+				throw new MappingException("unexpected index operation " + spec + " for " + entityClass);
 			}
 
+		}
+
+		return result;
+	}
+
+	/**
+	 * Service method for persistent entity lookup
+	 * 
+	 * @param entityClass
+	 * @return CassandraPertistentEntity
+	 */
+
+	protected CassandraPersistentEntity<?> getEntity(Class<?> entityClass) {
+
+		if (entityClass == null) {
+			throw new InvalidDataAccessApiUsageException(
+					"No class parameter provided, entity table name can't be determined!");
+		}
+
+		CassandraPersistentEntity<?> entity = mappingContext.getPersistentEntity(entityClass);
+
+		if (entity == null) {
+			throw new InvalidDataAccessApiUsageException("persistent entity not found for a given class " + entityClass);
+		}
+
+		return entity;
+	}
+
+	/**
+	 * Get the given keyspace metadata.
+	 * 
+	 * @param keyspace The name of the table.
+	 */
+	@Override
+	public KeyspaceMetadata getKeyspaceMetadata() {
+
+		return execute(new SessionCallback<KeyspaceMetadata>() {
+
+			public KeyspaceMetadata doInSession(Session s) throws DataAccessException {
+
+				return s.getCluster().getMetadata().getKeyspace(keyspace.toLowerCase());
+			}
 		});
 
 	}
@@ -272,11 +413,40 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 
 			public TableMetadata doInSession(Session s) throws DataAccessException {
 
-				log.info("Keyspace => " + keyspace);
+				log.info("getTableMetadata keyspace => " + keyspace + ", table => " + tableName);
 
-				return s.getCluster().getMetadata().getKeyspace(keyspace).getTable(tableName);
+				return s.getCluster().getMetadata().getKeyspace(keyspace.toLowerCase()).getTable(tableName.toLowerCase());
 			}
 		});
+	}
+
+	@Override
+	public String getTableName(Class<?> entityClass) {
+
+		Assert.notNull(entityClass);
+
+		final CassandraPersistentEntity<?> entity = getEntity(entityClass);
+
+		return entity.getTable();
+	}
+
+	/**
+	 * Service method to execute command
+	 * 
+	 * @param callback
+	 * @return
+	 */
+	protected void doExecute(final String cql) {
+
+		execute(new SessionCallback<Object>() {
+			public Object doInSession(Session s) throws DataAccessException {
+
+				log.info("EXECUTE CQL -> " + cql);
+				s.execute(cql);
+				return null;
+			}
+		});
+
 	}
 
 	/**
@@ -299,25 +469,6 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	protected RuntimeException tryToConvert(RuntimeException x) {
 		RuntimeException resolved = exceptionTranslator.translateExceptionIfPossible(x);
 		return resolved == null ? x : resolved;
-	}
-
-	/**
-	 * @param entityClass
-	 * @return
-	 */
-	public String determineTableName(Class<?> entityClass) {
-
-		if (entityClass == null) {
-			throw new InvalidDataAccessApiUsageException(
-					"No class parameter provided, entity table name can't be determined!");
-		}
-
-		CassandraPersistentEntity<?> entity = mappingContext.getPersistentEntity(entityClass);
-		if (entity == null) {
-			throw new InvalidDataAccessApiUsageException("No Persitent Entity information found for the class "
-					+ entityClass.getName());
-		}
-		return entity.getTable();
 	}
 
 }
