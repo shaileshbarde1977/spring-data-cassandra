@@ -101,7 +101,7 @@ public class UserRepositoryIntegrationTests {
 		scott.setPassword("444");
 		scott.setPlace("Boston");
 
-		all = dataOperations.insert(Arrays.asList(tom, bob, alice, scott));
+		all = dataOperations.saveNewList(Arrays.asList(tom, bob, alice, scott));
 	}
 
 	@Test

@@ -68,7 +68,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	public <S extends T> S save(S entity) {
 
 		Assert.notNull(entity, "Entity must not be null!");
-		cassandraDataTemplate.insert(entity, entityInformation.getTableName());
+		cassandraDataTemplate.saveNew(entity, entityInformation.getTableName());
 		return entity;
 	}
 
@@ -105,7 +105,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 		Select select = QueryBuilder.select().all().from(entityInformation.getTableName());
 		select.where(getIdClause(id));
 
-		return cassandraDataTemplate.selectOne(select, entityInformation.getJavaType());
+		return cassandraDataTemplate.findOneByQuery(select, entityInformation.getJavaType());
 	}
 
 	/*
@@ -119,7 +119,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 		Select select = QueryBuilder.select().all().from(entityInformation.getTableName());
 		select.where(getIdClause(id));
 
-		return cassandraDataTemplate.select(select, entityInformation.getJavaType());
+		return cassandraDataTemplate.findByQuery(select, entityInformation.getJavaType());
 	}
 
 	/*
@@ -133,7 +133,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 		Select select = QueryBuilder.select().countAll().from(entityInformation.getTableName());
 		select.where(getIdClause(id));
 
-		Long num = cassandraDataTemplate.count(select);
+		Long num = cassandraDataTemplate.countByQuery(select);
 		return num != null && num.longValue() > 0;
 	}
 
@@ -220,7 +220,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 			return Collections.emptyList();
 		}
 
-		return cassandraDataTemplate.select(query, entityInformation.getJavaType());
+		return cassandraDataTemplate.findByQuery(query, entityInformation.getJavaType());
 	}
 
 	/**
