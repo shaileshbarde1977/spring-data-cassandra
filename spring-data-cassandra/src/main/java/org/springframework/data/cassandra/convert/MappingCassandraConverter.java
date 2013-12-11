@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.cassandra.core.KeyPart;
 import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
-import org.springframework.cassandra.core.cql.spec.ColumnSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateIndexSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
 import org.springframework.cassandra.core.cql.spec.DropIndexSpecification;
@@ -55,10 +55,11 @@ import com.datastax.driver.core.ColumnMetadata;
 import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.TableMetadata;
-import com.datastax.driver.core.querybuilder.Delete.Where;
+import com.datastax.driver.core.querybuilder.Clause;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Update;
+import com.datastax.driver.core.querybuilder.Update.Where;
 
 /**
  * {@link CassandraConverter} that uses a {@link MappingContext} to do sophisticated mapping of domain objects to
@@ -200,8 +201,6 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 			writeInsertInternal(obj, (Insert) builtStatement, entity);
 		} else if (builtStatement instanceof Update) {
 			writeUpdateInternal(obj, (Update) builtStatement, entity);
-		} else if (builtStatement instanceof Where) {
-			writeDeleteWhereInternal(obj, (Where) builtStatement, entity);
 		} else {
 			throw new MappingException("Unknown buildStatement " + builtStatement.getClass().getName());
 		}
@@ -213,7 +212,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 				conversionService);
 
 		// Write the properties
-		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
+		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
 				Object propertyObj = wrapper.getProperty(prop, prop.getType(), useFieldAccessOnly);
@@ -232,41 +231,19 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		final BeanWrapper<CassandraPersistentEntity<Object>, Object> wrapper = BeanWrapper.create(objectToSave,
 				conversionService);
 
+		final Where w = update.where();
+
 		// Write the properties
-		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
+		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
 				Object propertyObj = wrapper.getProperty(prop, prop.getType(), useFieldAccessOnly);
 
 				if (propertyObj != null) {
-					if (prop.isIdProperty()) {
-						update.where(QueryBuilder.eq(prop.getColumnName(), propertyObj));
+					if (prop.isIdProperty() || prop.getKeyPart() != null) {
+						w.and(QueryBuilder.eq(prop.getColumnName(), propertyObj));
 					} else {
 						update.with(QueryBuilder.set(prop.getColumnName(), propertyObj));
-					}
-				}
-
-			}
-		});
-
-	}
-
-	private void writeDeleteWhereInternal(final Object objectToSave, final Where whereId,
-			CassandraPersistentEntity<?> entity) {
-
-		final BeanWrapper<CassandraPersistentEntity<Object>, Object> wrapper = BeanWrapper.create(objectToSave,
-				conversionService);
-
-		// Write the properties
-		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
-			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
-
-				if (prop.isIdProperty()) {
-
-					Object propertyObj = wrapper.getProperty(prop, prop.getType(), useFieldAccessOnly);
-
-					if (propertyObj != null) {
-						whereId.and(QueryBuilder.eq(prop.getColumnName(), propertyObj));
 					}
 				}
 
@@ -458,59 +435,66 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 	}
 
-	public List<ColumnSpecification> getPrimaryKeySpecifications(CassandraPersistentEntity<?> entity) {
+	public List<Clause> getPrimaryKey(final CassandraPersistentEntity<?> entity, final Object id) {
 
-		final List<CassandraPersistentProperty> partitionKeyProperties = new ArrayList<CassandraPersistentProperty>(5);
-		final List<CassandraPersistentProperty> clusteringKeyProperties = new ArrayList<CassandraPersistentProperty>(5);
+		final List<Clause> result = new LinkedList<Clause>();
 
-		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
+		entity.doWithProperties(new PropertyHandler<CassandraPersistentProperty>() {
 			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
 				if (prop.isIdProperty()) {
-					partitionKeyProperties.add(prop);
-				} else if (prop.getKeyPart() == KeyPart.PARTITION) {
-					partitionKeyProperties.add(prop);
-				} else if (prop.getKeyPart() == KeyPart.CLUSTERING) {
-					clusteringKeyProperties.add(prop);
+
+					if (prop.hasEmbeddableType()) {
+
+						if (!prop.getRawType().isAssignableFrom(id.getClass())) {
+							throw new MappingException("id class " + id.getClass() + " can not be converted to embeddedid property "
+									+ prop.getColumnName() + " in the entity " + entity.getName());
+						}
+
+						embeddedPrimaryKey(prop.getRawType(), id, result);
+
+					} else {
+						result.add(QueryBuilder.eq(prop.getColumnName(), id));
+						return;
+					}
+
 				}
 
 			}
 		});
 
-		if (partitionKeyProperties.isEmpty()) {
-			throw new MappingException("not found partition key in the entity " + entity.getType());
+		return result;
+	}
+
+	private void embeddedPrimaryKey(Class<?> idClass, Object id, final List<Clause> result) {
+
+		final BeanWrapper<CassandraPersistentEntity<Object>, Object> wrapper = BeanWrapper.create(id, conversionService);
+
+		final CassandraPersistentEntity<?> idEntity = mappingContext.getPersistentEntity(idClass);
+
+		if (idEntity == null) {
+			throw new MappingException("id entity not found for " + idClass);
 		}
 
-		/*
-		 * Sort primary key properties by ordinal
-		 */
+		// Write the properties
+		doWithAllProperties(idEntity, new PropertyHandler<CassandraPersistentProperty>() {
+			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
 
-		Collections.sort(partitionKeyProperties, OrdinalBasedPropertyComparator.INSTANCE);
-		Collections.sort(clusteringKeyProperties, OrdinalBasedPropertyComparator.INSTANCE);
+				if (prop.getKeyPart() != null) {
 
-		/*
-		 * Add ordered primary key columns to the specification
-		 */
-		List<ColumnSpecification> primaryKeyColumns = new ArrayList<ColumnSpecification>(partitionKeyProperties.size()
-				+ clusteringKeyProperties.size());
+					Object propertyObj = wrapper.getProperty(prop, prop.getType(), useFieldAccessOnly);
 
-		for (CassandraPersistentProperty prop : partitionKeyProperties) {
+					if (propertyObj == null) {
+						throw new MappingException("null primary key column " + prop.getColumnName() + " in entity "
+								+ idEntity.getName());
+					}
 
-			ColumnSpecification column = new ColumnSpecification().name(prop.getColumnName()).type(prop.getDataType())
-					.partitionKeyPart();
+					result.add(QueryBuilder.eq(prop.getColumnName(), propertyObj));
+				}
 
-			primaryKeyColumns.add(column);
-		}
+			}
+		});
 
-		for (CassandraPersistentProperty prop : clusteringKeyProperties) {
-
-			ColumnSpecification column = new ColumnSpecification().name(prop.getColumnName()).type(prop.getDataType())
-					.clusteringKeyPart(prop.getOrdering());
-
-			primaryKeyColumns.add(column);
-		}
-
-		return primaryKeyColumns;
 	}
 
 	private void doWithAllProperties(final CassandraPersistentEntity<?> entity,

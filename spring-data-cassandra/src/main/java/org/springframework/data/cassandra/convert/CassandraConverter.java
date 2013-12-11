@@ -18,7 +18,6 @@ package org.springframework.data.cassandra.convert;
 import java.util.List;
 
 import org.springframework.cassandra.core.cql.spec.AlterTableSpecification;
-import org.springframework.cassandra.core.cql.spec.ColumnSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateIndexSpecification;
 import org.springframework.cassandra.core.cql.spec.CreateTableSpecification;
 import org.springframework.cassandra.core.cql.spec.WithNameSpecification;
@@ -27,6 +26,7 @@ import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.data.convert.EntityConverter;
 
 import com.datastax.driver.core.TableMetadata;
+import com.datastax.driver.core.querybuilder.Clause;
 
 /**
  * Central Cassandra specific converter interface from Object to Row.
@@ -75,13 +75,12 @@ public interface CassandraConverter extends
 	List<WithNameSpecification<?>> getIndexChangeSpecifications(CassandraPersistentEntity<?> entity, TableMetadata table);
 
 	/**
-	 * Find all columns that are part of primary key. Order is important. Returns sorted partition key columns and sorted
-	 * clustering key columns
+	 * Get the primary key from entity
 	 * 
 	 * @param entity
-	 * @return list of primary key columns
+	 * @param id
+	 * @return
 	 */
-
-	List<ColumnSpecification> getPrimaryKeySpecifications(CassandraPersistentEntity<?> entity);
+	List<Clause> getPrimaryKey(CassandraPersistentEntity<?> entity, Object id);
 
 }
