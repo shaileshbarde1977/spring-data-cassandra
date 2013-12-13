@@ -56,6 +56,7 @@ import com.datastax.driver.core.DataType;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.TableMetadata;
 import com.datastax.driver.core.querybuilder.Clause;
+import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Update;
@@ -201,6 +202,8 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 			writeInsertInternal(obj, (Insert) builtStatement, entity);
 		} else if (builtStatement instanceof Update) {
 			writeUpdateInternal(obj, (Update) builtStatement, entity);
+		} else if (builtStatement instanceof Delete.Where) {
+			writeDeleteWhereInternal(obj, (Delete.Where) builtStatement, entity);
 		} else {
 			throw new MappingException("Unknown buildStatement " + builtStatement.getClass().getName());
 		}
@@ -244,6 +247,30 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 						w.and(QueryBuilder.eq(prop.getColumnName(), propertyObj));
 					} else {
 						update.with(QueryBuilder.set(prop.getColumnName(), propertyObj));
+					}
+				}
+
+			}
+		});
+
+	}
+
+	private void writeDeleteWhereInternal(final Object objectToSave, final Delete.Where whereId,
+			CassandraPersistentEntity<?> entity) {
+
+		final BeanWrapper<CassandraPersistentEntity<Object>, Object> wrapper = BeanWrapper.create(objectToSave,
+				conversionService);
+
+		// Write the properties
+		doWithAllProperties(entity, new PropertyHandler<CassandraPersistentProperty>() {
+			public void doWithPersistentProperty(CassandraPersistentProperty prop) {
+
+				if (prop.isIdProperty() || prop.getKeyPart() != null) {
+
+					Object propertyObj = wrapper.getProperty(prop, prop.getType(), useFieldAccessOnly);
+
+					if (propertyObj != null) {
+						whereId.and(QueryBuilder.eq(prop.getColumnName(), propertyObj));
 					}
 				}
 

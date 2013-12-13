@@ -663,12 +663,12 @@ public class CassandraDataOperationsTest {
 		Book b1 = new Book();
 		b1.setIsbn("123456-1");
 
-		cassandraDataTemplate.delete(b1.getIsbn(), Book.class);
+		cassandraDataTemplate.delete(false, b1);
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
 
-		cassandraDataTemplate.delete(b2.getIsbn(), Book.class, "book_alt");
+		cassandraDataTemplate.delete(false, b2, "book_alt");
 
 		/*
 		 * Test Single Insert with entity
@@ -676,7 +676,7 @@ public class CassandraDataOperationsTest {
 		Book b3 = new Book();
 		b3.setIsbn("123456-3");
 
-		cassandraDataTemplate.delete(b3.getIsbn(), Book.class, "book", options);
+		cassandraDataTemplate.delete(false, b3, "book", options);
 
 		/*
 		 * Test Single Insert with entity
@@ -684,7 +684,7 @@ public class CassandraDataOperationsTest {
 		Book b4 = new Book();
 		b4.setIsbn("123456-4");
 
-		cassandraDataTemplate.delete(b4.getIsbn(), Book.class, "book", optionsByName);
+		cassandraDataTemplate.delete(false, b4, "book", optionsByName);
 
 		/*
 		 * Test Single Insert with entity
@@ -692,7 +692,7 @@ public class CassandraDataOperationsTest {
 		Book b5 = new Book();
 		b5.setIsbn("123456-5");
 
-		cassandraDataTemplate.delete(b5.getIsbn(), Book.class, options);
+		cassandraDataTemplate.delete(false, b5, options);
 
 		/*
 		 * Test Single Insert with entity
@@ -700,7 +700,7 @@ public class CassandraDataOperationsTest {
 		Book b6 = new Book();
 		b6.setIsbn("123456-6");
 
-		cassandraDataTemplate.delete(b6.getIsbn(), Book.class, optionsByName);
+		cassandraDataTemplate.delete(false, b6, optionsByName);
 
 	}
 
@@ -723,12 +723,12 @@ public class CassandraDataOperationsTest {
 		Book b1 = new Book();
 		b1.setIsbn("123456-1");
 
-		cassandraDataTemplate.deleteAsynchronously(b1.getIsbn(), Book.class);
+		cassandraDataTemplate.delete(true, b1);
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
 
-		cassandraDataTemplate.deleteAsynchronously(b2.getIsbn(), Book.class, "book_alt");
+		cassandraDataTemplate.delete(true, b2, "book_alt");
 
 		/*
 		 * Test Single Insert with entity
@@ -736,7 +736,7 @@ public class CassandraDataOperationsTest {
 		Book b3 = new Book();
 		b3.setIsbn("123456-3");
 
-		cassandraDataTemplate.deleteAsynchronously(b3.getIsbn(), Book.class, "book", options);
+		cassandraDataTemplate.delete(true, b3, "book", options);
 
 		/*
 		 * Test Single Insert with entity
@@ -744,7 +744,7 @@ public class CassandraDataOperationsTest {
 		Book b4 = new Book();
 		b4.setIsbn("123456-4");
 
-		cassandraDataTemplate.deleteAsynchronously(b4.getIsbn(), Book.class, "book", optionsByName);
+		cassandraDataTemplate.delete(true, b4, "book", optionsByName);
 
 		/*
 		 * Test Single Insert with entity
@@ -752,7 +752,7 @@ public class CassandraDataOperationsTest {
 		Book b5 = new Book();
 		b5.setIsbn("123456-5");
 
-		cassandraDataTemplate.deleteAsynchronously(b5.getIsbn(), Book.class, options);
+		cassandraDataTemplate.delete(true, b5, options);
 
 		/*
 		 * Test Single Insert with entity
@@ -760,7 +760,7 @@ public class CassandraDataOperationsTest {
 		Book b6 = new Book();
 		b6.setIsbn("123456-6");
 
-		cassandraDataTemplate.deleteAsynchronously(b6.getIsbn(), Book.class, optionsByName);
+		cassandraDataTemplate.delete(true, b6, optionsByName);
 	}
 
 	@Test
@@ -781,46 +781,38 @@ public class CassandraDataOperationsTest {
 
 		cassandraDataTemplate.saveNewList(books);
 
-		cassandraDataTemplate.delete(ids(books), Book.class);
+		cassandraDataTemplate.delete(false, books);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book_alt");
 
-		cassandraDataTemplate.delete(ids(books), Book.class, "book_alt");
+		cassandraDataTemplate.delete(false, books, "book_alt");
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book", options);
 
-		cassandraDataTemplate.delete(ids(books), Book.class, "book", options);
+		cassandraDataTemplate.delete(false, books, "book", options);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book", optionsByName);
 
-		cassandraDataTemplate.delete(ids(books), Book.class, "book", optionsByName);
+		cassandraDataTemplate.delete(false, books, "book", optionsByName);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, options);
 
-		cassandraDataTemplate.delete(ids(books), Book.class, options);
+		cassandraDataTemplate.delete(false, books, options);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, optionsByName);
 
-		cassandraDataTemplate.delete(ids(books), Book.class, optionsByName);
+		cassandraDataTemplate.delete(false, books, optionsByName);
 
-	}
-
-	private List<String> ids(List<Book> books) {
-		List<String> ids = new ArrayList<String>(books.size());
-		for (Book book : books) {
-			ids.add(book.getIsbn());
-		}
-		return ids;
 	}
 
 	@Test
@@ -841,37 +833,268 @@ public class CassandraDataOperationsTest {
 
 		cassandraDataTemplate.saveNewList(books);
 
-		cassandraDataTemplate.deleteAsynchronously(ids(books), Book.class);
+		cassandraDataTemplate.delete(true, books);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book_alt");
 
-		cassandraDataTemplate.deleteAsynchronously(ids(books), Book.class, "book_alt");
+		cassandraDataTemplate.delete(true, books, "book_alt");
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book", options);
 
-		cassandraDataTemplate.deleteAsynchronously(ids(books), Book.class, "book", options);
+		cassandraDataTemplate.delete(true, books, "book", options);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book", optionsByName);
 
-		cassandraDataTemplate.deleteAsynchronously(ids(books), Book.class, "book", optionsByName);
+		cassandraDataTemplate.delete(true, books, "book", optionsByName);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, options);
 
-		cassandraDataTemplate.deleteAsynchronously(ids(books), Book.class, options);
+		cassandraDataTemplate.delete(true, books, options);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, optionsByName);
 
-		cassandraDataTemplate.deleteAsynchronously(ids(books), Book.class, optionsByName);
+		cassandraDataTemplate.delete(true, books, optionsByName);
+
+	}
+
+	@Test
+	public void deleteByIdTest() {
+
+		insertTest();
+
+		QueryOptions options = new QueryOptions();
+		options.setConsistencyLevel(ConsistencyLevel.ONE);
+		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+
+		Map<String, Object> optionsByName = new HashMap<String, Object>();
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b1 = new Book();
+		b1.setIsbn("123456-1");
+
+		cassandraDataTemplate.deleteById(false, b1.getIsbn(), Book.class);
+
+		Book b2 = new Book();
+		b2.setIsbn("123456-2");
+
+		cassandraDataTemplate.deleteById(false, b2.getIsbn(), Book.class, "book_alt");
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b3 = new Book();
+		b3.setIsbn("123456-3");
+
+		cassandraDataTemplate.deleteById(false, b3.getIsbn(), Book.class, "book", options);
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b4 = new Book();
+		b4.setIsbn("123456-4");
+
+		cassandraDataTemplate.deleteById(false, b4.getIsbn(), Book.class, "book", optionsByName);
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b5 = new Book();
+		b5.setIsbn("123456-5");
+
+		cassandraDataTemplate.deleteById(false, b5.getIsbn(), Book.class, options);
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b6 = new Book();
+		b6.setIsbn("123456-6");
+
+		cassandraDataTemplate.deleteById(false, b6.getIsbn(), Book.class, optionsByName);
+
+	}
+
+	@Test
+	public void deleteByIdAsynchronouslyTest() {
+
+		insertTest();
+
+		QueryOptions options = new QueryOptions();
+		options.setConsistencyLevel(ConsistencyLevel.ONE);
+		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+
+		Map<String, Object> optionsByName = new HashMap<String, Object>();
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b1 = new Book();
+		b1.setIsbn("123456-1");
+
+		cassandraDataTemplate.deleteById(true, b1.getIsbn(), Book.class);
+
+		Book b2 = new Book();
+		b2.setIsbn("123456-2");
+
+		cassandraDataTemplate.deleteById(true, b2.getIsbn(), Book.class, "book_alt");
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b3 = new Book();
+		b3.setIsbn("123456-3");
+
+		cassandraDataTemplate.deleteById(true, b3.getIsbn(), Book.class, "book", options);
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b4 = new Book();
+		b4.setIsbn("123456-4");
+
+		cassandraDataTemplate.deleteById(true, b4.getIsbn(), Book.class, "book", optionsByName);
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b5 = new Book();
+		b5.setIsbn("123456-5");
+
+		cassandraDataTemplate.deleteById(true, b5.getIsbn(), Book.class, options);
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b6 = new Book();
+		b6.setIsbn("123456-6");
+
+		cassandraDataTemplate.deleteById(true, b6.getIsbn(), Book.class, optionsByName);
+	}
+
+	@Test
+	public void deleteByIdBatchTest() {
+
+		QueryOptions options = new QueryOptions();
+		options.setConsistencyLevel(ConsistencyLevel.ONE);
+		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+
+		Map<String, Object> optionsByName = new HashMap<String, Object>();
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
+
+		List<Book> books = null;
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books);
+
+		cassandraDataTemplate.deleteById(false, ids(books), Book.class);
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books, "book_alt");
+
+		cassandraDataTemplate.deleteById(false, ids(books), Book.class, "book_alt");
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books, "book", options);
+
+		cassandraDataTemplate.deleteById(false, ids(books), Book.class, "book", options);
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books, "book", optionsByName);
+
+		cassandraDataTemplate.deleteById(false, ids(books), Book.class, "book", optionsByName);
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books, options);
+
+		cassandraDataTemplate.deleteById(false, ids(books), Book.class, options);
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books, optionsByName);
+
+		cassandraDataTemplate.deleteById(false, ids(books), Book.class, optionsByName);
+
+	}
+
+	private List<String> ids(List<Book> books) {
+		List<String> ids = new ArrayList<String>(books.size());
+		for (Book book : books) {
+			ids.add(book.getIsbn());
+		}
+		return ids;
+	}
+
+	@Test
+	public void deleteByIdBatchAsynchronouslyTest() {
+
+		QueryOptions options = new QueryOptions();
+		options.setConsistencyLevel(ConsistencyLevel.ONE);
+		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+
+		Map<String, Object> optionsByName = new HashMap<String, Object>();
+		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
+		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
+		optionsByName.put(QueryOptionNames.TTL, 30);
+
+		List<Book> books = null;
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books);
+
+		cassandraDataTemplate.deleteById(true, ids(books), Book.class);
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books, "book_alt");
+
+		cassandraDataTemplate.deleteById(true, ids(books), Book.class, "book_alt");
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books, "book", options);
+
+		cassandraDataTemplate.deleteById(true, ids(books), Book.class, "book", options);
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books, "book", optionsByName);
+
+		cassandraDataTemplate.deleteById(true, ids(books), Book.class, "book", optionsByName);
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books, options);
+
+		cassandraDataTemplate.deleteById(true, ids(books), Book.class, options);
+
+		books = getBookList(20);
+
+		cassandraDataTemplate.saveNewList(books, optionsByName);
+
+		cassandraDataTemplate.deleteById(true, ids(books), Book.class, optionsByName);
 
 	}
 

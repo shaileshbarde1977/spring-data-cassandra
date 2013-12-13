@@ -28,7 +28,6 @@ import org.springframework.data.cassandra.repository.query.CassandraEntityInform
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.querybuilder.Clause;
-import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
 
@@ -101,11 +100,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	 */
 	public T findOne(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
-
-		Select select = QueryBuilder.select().all().from(entityInformation.getTableName());
-		select.where(getIdClause(id));
-
-		return cassandraDataTemplate.findOneByQuery(select, entityInformation.getJavaType());
+		return cassandraDataTemplate.findById(id, entityInformation.getJavaType());
 	}
 
 	/*
@@ -152,10 +147,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	public void delete(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
 
-		Delete delete = QueryBuilder.delete().all().from(entityInformation.getTableName());
-		delete.where(getIdClause(id));
-
-		cassandraDataTemplate.execute(delete.getQueryString());
+		cassandraDataTemplate.deleteById(false, id, entityInformation.getJavaType());
 	}
 
 	/*
