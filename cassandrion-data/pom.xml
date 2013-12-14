@@ -4,14 +4,14 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>spring-data-cassandra</artifactId>
+	<artifactId>cassandrion-data</artifactId>
 
-	<name>Spring Data Cassandra - Core</name>
+	<name>Cassandrion Data - Core</name>
 	<description>Cassandra support for Spring Data</description>
 
 	<parent>
-		<groupId>org.springframework.data</groupId>
-		<artifactId>spring-data-cassandra-parent</artifactId>
+		<groupId>net.webby</groupId>
+		<artifactId>cassandrion-parent</artifactId>
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
@@ -24,7 +24,7 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-cassandra</artifactId>
+			<artifactId>cassandrion</artifactId>
 		</dependency>
 
 		<!-- Spring -->
@@ -35,7 +35,7 @@
 
 		<!-- Spring Data -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-commons</artifactId>
 			<version>${springdata.commons}</version>
 		</dependency>

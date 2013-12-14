@@ -4,14 +4,14 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>spring-cassandra</artifactId>
+	<artifactId>cassandrion</artifactId>
 
-	<name>Spring Cassandra - Core</name>
+	<name>Cassandrion - Core</name>
 	<description>Cassandra support for Spring</description>
 
 	<parent>
-		<groupId>org.springframework.data</groupId>
-		<artifactId>spring-data-cassandra-parent</artifactId>
+		<groupId>net.webby</groupId>
+		<artifactId>cassandrion-parent</artifactId>
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>

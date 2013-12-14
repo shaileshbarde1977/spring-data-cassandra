@@ -4,14 +4,14 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.springframework.data</groupId>
-	<artifactId>spring-data-cassandra-parent</artifactId>
+	<groupId>net.webby</groupId>
+	<artifactId>cassandrion-parent</artifactId>
 	<version>1.0.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Spring Data Cassandra</name>
+	<name>Webby Cassandrion</name>
 	<description>Cassandra support for Spring Data</description>
-	<url>http://www.springsource.org/spring-data/cassandra</url>
+	<url>http://www.webby.net</url>
 
 	<parent>
 		<groupId>org.springframework.data.build</groupId>
@@ -21,56 +21,25 @@
 	</parent>
 
 	<modules>
-		<module>spring-cassandra</module>
-		<module>spring-data-cassandra</module>
-		<module>spring-data-cassandra-distribution</module>
+		<module>cassandrion</module>
+		<module>cassandrion-data</module>
+		<module>cassandrion-data-distribution</module>
 	</modules>
 
 	<properties>
 		<project.type>multi</project.type>
-		<dist.id>spring-data-cassandra</dist.id>
+		<dist.id>cassandrion</dist.id>
 		<springdata.commons>1.6.2.RELEASE</springdata.commons>
 		<cassandra-unit.version>1.2.0.1</cassandra-unit.version>
 		<cassandra-driver-core.version>1.0.4-dse</cassandra-driver-core.version>
 		<failsafe.version>2.16</failsafe.version>
 	</properties>
 
-	<developers>
-		<developer>
-			<id>ashvid</id>
-			<name>Alex Shvid</name>
-			<email>a at shvid.com</email>
-			<roles>
-			    <role>Project Lead</role>
-				<role>Developer</role>
-			</roles>
-			<timezone>-8</timezone>
-		</developer>	
-		<developer>
-			<id>dwebb</id>
-			<name>David Webb</name>
-			<email>dwebb at prowaveconsulting.com</email>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>-5</timezone>
-		</developer>
-		<developer>
-			<id>madams</id>
-			<name>Matthew T. Adams</name>
-			<email>matthew dot adams at scispike.com</email>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>-6</timezone>
-		</developer>		
-	</developers>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>spring-cassandra</artifactId>
+				<artifactId>cassandrion</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

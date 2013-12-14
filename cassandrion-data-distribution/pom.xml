@@ -4,16 +4,16 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>spring-data-cassandra-distribution</artifactId>
+	<artifactId>cassandrion-data-distribution</artifactId>
 
 	<packaging>pom</packaging>
 
-	<name>Spring Data Cassandra - Distribution</name>
+	<name>Webby Cassandrion - Distribution</name>
 	<description>Distribution build for Spring Data Cassandra</description>
 
 	<parent>
-		<groupId>org.springframework.data</groupId>
-		<artifactId>spring-data-cassandra-parent</artifactId>
+		<groupId>net.webby</groupId>
+		<artifactId>cassandrion-parent</artifactId>
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
