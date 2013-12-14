@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cassandrion="http://www.webby.net/schema/cassandrion"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.webby.net/schema/cassandrion http://www.webby.net/schema/cassandrion/cassandrion-1.0.xsd
+                         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<context:property-placeholder
+		location="classpath:/net/webby/cassandrion/data/test/integration/config/cassandrion.properties" />
+
+	<cassandrion:cluster id="cassandrion-cluster"
+		contactPoints="${cassandrion.contactPoints}" port="${cassandrion.port}"
+		compression="SNAPPY">
+		<cassandrion:local-pooling-options
+			min-simultaneous-requests="25" max-simultaneous-requests="100"
+			core-connections="2" max-connections="8" />
+		<cassandrion:remote-pooling-options
+			min-simultaneous-requests="25" max-simultaneous-requests="100"
+			core-connections="1" max-connections="2" />
+		<cassandrion:socket-options
+			connect-timeout-mls="5000" keep-alive="true" reuse-address="true"
+			so-linger="60" tcp-no-delay="true" receive-buffer-size="65536"
+			send-buffer-size="65536" />
+	</cassandrion:cluster>
+
+	<bean id="cassandrion-mapping"
+		class="net.webby.cassandrion.data.mapping.CassandrionMappingContext" />
+
+	<bean id="cassandrion-converter"
+		class="net.webby.cassandrion.data.convert.MappingCassandrionConverter">
+		<constructor-arg ref="cassandrion-mapping" />
+	</bean>
+
+	<cassandrion:session id="cassandrion-session" name="${cassandrion.keyspace}"
+		cassandrion-cluster-ref="cassandrion-cluster" cassandrion-converter-ref="cassandrion-converter">
+		<cassandrion:keyspace-attributes auto="update"
+			replication-stategy="SimpleStrategy" replication-factor="1"
+			durable-writes="true">
+			<cassandrion:table entity="net.webby.cassandrion.data.test.integration.table.Comment" />
+			<cassandrion:table entity="net.webby.cassandrion.data.test.integration.table.Notification" />
+			<cassandrion:table entity="net.webby.cassandrion.data.test.integration.table.Post" />
+			<cassandrion:table entity="net.webby.cassandrion.data.test.integration.table.Timeline" />
+			<cassandrion:table entity="net.webby.cassandrion.data.test.integration.table.User" />
+		</cassandrion:keyspace-attributes>
+	</cassandrion:session>
+	
+	<bean id="cassandrionTemplate" class="net.webby.cassandrion.core.CassandrionTemplate">
+		<constructor-arg ref="cassandrion-session" />
+	</bean>
+
+	<bean id="cassandrionDataTemplate" class="net.webby.cassandrion.data.core.CassandrionDataTemplate">
+		<constructor-arg ref="cassandrion-session" />
+		<constructor-arg ref="cassandrion-converter" />
+		<constructor-arg value="${cassandrion.keyspace}" />
+	</bean>
+	
+	<bean class="net.webby.cassandrion.data.repository.support.CassandrionRepositoryFactoryBean">
+		<property name="cassandrionDataTemplate" ref="cassandrionDataTemplate"/>
+		<property name="repositoryInterface" value="net.webby.cassandrion.data.test.integration.repository.UserRepository"/>
+		<property name="namedQueries">
+			<bean class="org.springframework.data.repository.core.support.PropertiesBasedNamedQueries">
+				<constructor-arg>
+					<util:properties location="classpath:/META-INF/cassandrion-named-queries.properties" />
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+	
+</beans>

@@ -83,7 +83,7 @@ javadoc {
       showFromProtected()
       groups = [
         'Spring Cassandra' : ['org.springframework.cassandra*'],
-        'Spring Data Cassandra' : ['org.springframework.data.cassandra*'],
+        'Spring Data Cassandra' : ['net.webby.cassandrion.data*'],
       ]
 
      links = [

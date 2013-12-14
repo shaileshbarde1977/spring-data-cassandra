@@ -1,4 +1,4 @@
 # Tooling related information for the cassandra namespace
-http\://www.springframework.org/schema/data/cassandra@name=Cassandra Namespace
-http\://www.springframework.org/schema/data/cassandra@prefix=cassandra
-http\://www.springframework.org/schema/data/cassandra@icon=org/springframework/data/cassandra/config/spring-cassandra.gif
+http\://www.webby.net/schema/cassandrion@name=Cassandrion Namespace
+http\://www.webby.net/schema/cassandrion@prefix=cassandrion
+http\://www.webby.net/schema/cassandrion@icon=net/webby/cassandrion/config/cassandrion.gif
