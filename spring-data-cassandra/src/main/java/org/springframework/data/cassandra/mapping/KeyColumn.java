@@ -21,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.cassandra.core.KeyPart;
+import org.springframework.cassandra.core.Ordering;
 
 /**
  * Identifies partition key in the Cassandra composite primary key class. Annotated column is the part of the Cassandra
@@ -55,5 +56,12 @@ public @interface KeyColumn {
 	 */
 
 	int ordinal();
+
+	/**
+	 * Ordering of the column in the table.
+	 * 
+	 * @return
+	 */
+	Ordering ordering() default Ordering.ASCENDING;
 
 }

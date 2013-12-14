@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cassandra.core.CassandraOperations;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.cassandra.test.integration.config.TestConfig;
+import org.springframework.data.cassandra.test.integration.config.JavaConfig;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
@@ -44,7 +44,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestConfig.class }, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = { JavaConfig.class }, loader = AnnotationConfigContextLoader.class)
 public class CassandraAdminTest {
 
 	@Autowired

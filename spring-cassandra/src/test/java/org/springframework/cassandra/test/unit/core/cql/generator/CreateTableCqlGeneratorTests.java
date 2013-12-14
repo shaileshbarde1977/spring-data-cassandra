@@ -15,8 +15,7 @@
  */
 package org.springframework.cassandra.test.unit.core.cql.generator;
 
-import static org.junit.Assert.*;
-import static org.springframework.cassandra.core.cql.spec.TableOperations.createTable;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.cassandra.core.cql.generator.CreateTableCqlGenerator;
@@ -72,7 +71,7 @@ public class CreateTableCqlGeneratorTests {
 		public String column1 = "column1";
 
 		public CreateTableSpecification specification() {
-			return createTable().name(name).partitionKeyColumn(partitionKey0, partitionKeyType0)
+			return new CreateTableSpecification().name(name).partitionKeyColumn(partitionKey0, partitionKeyType0)
 					.column(column1, columnType1);
 		}
 
@@ -98,7 +97,7 @@ public class CreateTableCqlGeneratorTests {
 
 		@Override
 		public CreateTableSpecification specification() {
-			return createTable().name(name).partitionKeyColumn(partKey0, partKeyType0)
+			return new CreateTableSpecification().name(name).partitionKeyColumn(partKey0, partKeyType0)
 					.partitionKeyColumn(partKey1, partKeyType1).column(column0, columnType0);
 		}
 

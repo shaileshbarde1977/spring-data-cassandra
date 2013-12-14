@@ -32,6 +32,7 @@
 		<springdata.commons>1.6.2.RELEASE</springdata.commons>
 		<cassandra-unit.version>1.2.0.1</cassandra-unit.version>
 		<cassandra-driver-core.version>1.0.4-dse</cassandra-driver-core.version>
+		<failsafe.version>2.16</failsafe.version>
 	</properties>
 
 	<developers>
@@ -240,7 +241,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${failsafe.version}</version>
 				<configuration>
+				    <forkMode>always</forkMode>
 				    <argLine>-Xmx2048m -XX:MaxPermSize=512m</argLine>
 					<useFile>false</useFile>
 					<includes>

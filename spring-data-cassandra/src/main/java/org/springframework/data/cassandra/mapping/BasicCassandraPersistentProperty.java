@@ -63,7 +63,7 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 			return true;
 		}
 
-		return getField().isAnnotationPresent(Id.class);
+		return isAnnotationPresent(Id.class);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 */
 	@Override
 	public boolean isEmbeddedIdProperty() {
-		return getField().isAnnotationPresent(EmbeddedId.class);
+		return isAnnotationPresent(EmbeddedId.class);
 	}
 
 	/**
@@ -93,12 +93,12 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 */
 	public String getColumnName() {
 
-		Column column = getField().getAnnotation(Column.class);
+		Column column = findAnnotation(Column.class);
 		if (column != null) {
 			return StringUtils.hasText(column.value()) ? column.value() : field.getName();
 		}
 
-		KeyColumn keyColumn = getField().getAnnotation(KeyColumn.class);
+		KeyColumn keyColumn = findAnnotation(KeyColumn.class);
 		if (keyColumn != null) {
 			return StringUtils.hasText(keyColumn.name()) ? keyColumn.name() : field.getName();
 		}
@@ -112,8 +112,8 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public Ordering getOrdering() {
-		Order annotation = getField().getAnnotation(Order.class);
-		return annotation != null ? annotation.value() : null;
+		KeyColumn annotation = findAnnotation(KeyColumn.class);
+		return annotation != null ? annotation.ordering() : null;
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public DataType getDataType() {
-		Qualify annotation = getField().getAnnotation(Qualify.class);
+		Qualify annotation = findAnnotation(Qualify.class);
 		if (annotation != null && annotation.type() != null) {
 			return qualifyAnnotatedType(annotation);
 		}
@@ -179,7 +179,7 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public boolean isIndexed() {
-		return getField().isAnnotationPresent(Indexed.class);
+		return isAnnotationPresent(Indexed.class);
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public String getIndexName() {
-		Indexed indexed = getField().getAnnotation(Indexed.class);
+		Indexed indexed = findAnnotation(Indexed.class);
 		if (indexed != null) {
 			return StringUtils.hasText(indexed.name()) ? indexed.name() : null;
 		}
@@ -201,7 +201,7 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public KeyPart getKeyPart() {
-		KeyColumn keyColumn = getField().getAnnotation(KeyColumn.class);
+		KeyColumn keyColumn = findAnnotation(KeyColumn.class);
 		if (keyColumn != null) {
 			return keyColumn.keyPart();
 		}
@@ -214,7 +214,7 @@ public class BasicCassandraPersistentProperty extends AnnotationBasedPersistentP
 	 * @return
 	 */
 	public Integer getOrdinal() {
-		KeyColumn keyColumn = getField().getAnnotation(KeyColumn.class);
+		KeyColumn keyColumn = findAnnotation(KeyColumn.class);
 		if (keyColumn != null) {
 			return keyColumn.ordinal();
 		}

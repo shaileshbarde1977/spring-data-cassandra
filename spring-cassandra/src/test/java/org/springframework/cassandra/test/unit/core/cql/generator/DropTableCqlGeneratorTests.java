@@ -15,8 +15,7 @@
  */
 package org.springframework.cassandra.test.unit.core.cql.generator;
 
-import static org.junit.Assert.*;
-import static org.springframework.cassandra.core.cql.spec.TableOperations.dropTable;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.cassandra.core.cql.generator.DropTableCqlGenerator;
@@ -52,7 +51,7 @@ public class DropTableCqlGeneratorTests {
 		public String name = "mytable";
 
 		public DropTableSpecification specification() {
-			return dropTable().name(name);
+			return new DropTableSpecification().name(name);
 		}
 
 		public DropTableCqlGenerator generator() {

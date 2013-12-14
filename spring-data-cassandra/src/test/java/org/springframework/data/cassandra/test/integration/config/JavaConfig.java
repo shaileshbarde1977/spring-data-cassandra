@@ -1,34 +1,44 @@
 /*
  * Copyright 2013 the original author or authors.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.data.cassandra.mapping;
+package org.springframework.data.cassandra.test.integration.config;
 
-import org.springframework.cassandra.core.Ordering;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
+
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Cluster.Builder;
 
 /**
- * Annotation to define custom order for clustered column.
+ * Simple JavaConfig
  * 
  * @author Alex Shvid
+ * 
  */
-public @interface Order {
+@Configuration
+public class JavaConfig extends AbstractCassandraConfiguration {
 
-	/**
-	 * Ordering of the column in the table.
-	 * 
-	 * @return
-	 */
-	Ordering value() default Ordering.ASCENDING;
+	@Override
+	protected String keyspace() {
+		return "test";
+	}
 
+	@Override
+	public Cluster cluster() {
+		Builder builder = Cluster.builder();
+		builder.addContactPoint("localhost").withPort(9042);
+		return builder.build();
+	}
 }

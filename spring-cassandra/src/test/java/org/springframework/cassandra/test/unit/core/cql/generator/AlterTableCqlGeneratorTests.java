@@ -16,7 +16,6 @@
 package org.springframework.cassandra.test.unit.core.cql.generator;
 
 import static org.junit.Assert.*;
-import static org.springframework.cassandra.core.cql.spec.TableOperations.alterTable;
 
 import org.junit.Test;
 import org.springframework.cassandra.core.cql.generator.AlterTableCqlGenerator;
@@ -61,7 +60,7 @@ public class AlterTableCqlGeneratorTests {
 		public String dropped = "dropped";
 
 		public AlterTableSpecification specification() {
-			return alterTable().name(name).alter(altered, alteredType).add(added, addedType).drop(dropped);
+			return new AlterTableSpecification().name(name).alter(altered, alteredType).add(added, addedType).drop(dropped);
 		}
 
 		public AlterTableCqlGenerator generator() {

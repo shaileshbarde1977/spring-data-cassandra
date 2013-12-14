@@ -41,7 +41,7 @@ public class KeyspaceAttributes {
 	public static final String AUTO_CREATE = "create";
 	public static final String AUTO_CREATE_DROP = "create-drop";
 
-	private String auto = AUTO_VALIDATE;
+	private String auto = AUTO_UPDATE;
 	private String replicationStrategy = DEFAULT_REPLICATION_STRATEGY;
 	private int replicationFactor = DEFAULT_REPLICATION_FACTOR;
 	private boolean durableWrites = DEFAULT_DURABLE_WRITES;

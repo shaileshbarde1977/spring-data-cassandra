@@ -31,6 +31,9 @@ import org.springframework.data.cassandra.convert.CassandraConverter;
 import org.springframework.data.cassandra.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.CassandraAdminOperations;
 import org.springframework.data.cassandra.core.CassandraAdminTemplate;
+import org.springframework.data.cassandra.core.CassandraDataOperations;
+import org.springframework.data.cassandra.core.CassandraDataTemplate;
+import org.springframework.data.cassandra.core.CassandraSessionFactoryBean;
 import org.springframework.data.cassandra.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.data.cassandra.mapping.CassandraPersistentProperty;
@@ -70,7 +73,12 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 * @throws Exception
 	 */
 	@Bean
-	public abstract Cluster cluster() throws Exception;
+	public abstract Cluster cluster();
+
+	@Bean
+	public KeyspaceAttributes keyspaceAttributes() {
+		return new KeyspaceAttributes();
+	}
 
 	/**
 	 * Creates a {@link Session} to be used by the {@link SpringDataKeyspace}. Will use the {@link Cluster} instance
@@ -79,16 +87,19 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 * @see #cluster()
 	 * @see #Keyspace()
 	 * @return
+	 * @throws ClassNotFoundException
 	 * @throws Exception
 	 */
 	@Bean
-	public Session session() throws Exception {
-		String keyspace = keyspace();
-		if (StringUtils.hasText(keyspace)) {
-			return cluster().connect(keyspace);
-		} else {
-			return cluster().connect();
-		}
+	public Session session() throws ClassNotFoundException {
+		CassandraSessionFactoryBean factory = new CassandraSessionFactoryBean();
+		factory.setKeyspace(keyspace());
+		factory.setCluster(cluster());
+		factory.setConverter(converter());
+		factory.setKeyspaceAttributes(keyspaceAttributes());
+		factory.setBeanClassLoader(beanClassLoader);
+		factory.afterPropertiesSet();
+		return factory.getObject();
 	}
 
 	/**
@@ -108,21 +119,35 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 * Creates a {@link CassandraTemplate}.
 	 * 
 	 * @return
+	 * @throws ClassNotFoundException
 	 * @throws Exception
 	 */
 	@Bean
-	public CassandraOperations cassandraTemplate() throws Exception {
+	public CassandraOperations cassandraTemplate() throws ClassNotFoundException {
 		return new CassandraTemplate(session());
+	}
+
+	/**
+	 * Creates a {@link CassandraDataTemplate}.
+	 * 
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws Exception
+	 */
+	@Bean
+	public CassandraDataOperations cassandraDataTemplate() throws ClassNotFoundException {
+		return new CassandraDataTemplate(session(), converter(), keyspace());
 	}
 
 	/**
 	 * Creates a {@link CassandraAdminTemplate}.
 	 * 
 	 * @return
+	 * @throws ClassNotFoundException
 	 * @throws Exception
 	 */
 	@Bean
-	public CassandraAdminOperations cassandraAdminTemplate() throws Exception {
+	public CassandraAdminOperations cassandraAdminTemplate() throws ClassNotFoundException {
 		return new CassandraAdminTemplate(session(), converter(), keyspace());
 	}
 
@@ -130,21 +155,26 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 * Return the {@link MappingContext} instance to map Entities to properties.
 	 * 
 	 * @return
+	 * @throws ClassNotFoundException
 	 * @throws Exception
 	 */
 	@Bean
-	public MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext() {
-		return new CassandraMappingContext();
+	public MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext()
+			throws ClassNotFoundException {
+		CassandraMappingContext context = new CassandraMappingContext();
+		context.setInitialEntitySet(getInitialEntitySet());
+		return context;
 	}
 
 	/**
 	 * Return the {@link CassandraConverter} instance to convert Rows to Objects, Objects to BuiltStatements
 	 * 
 	 * @return
+	 * @throws ClassNotFoundException
 	 * @throws Exception
 	 */
 	@Bean
-	public CassandraConverter converter() {
+	public CassandraConverter converter() throws ClassNotFoundException {
 		MappingCassandraConverter converter = new MappingCassandraConverter(mappingContext());
 		converter.setBeanClassLoader(beanClassLoader);
 		return converter;
@@ -169,8 +199,7 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 			componentProvider.addIncludeFilter(new AnnotationTypeFilter(Persistent.class));
 
 			for (BeanDefinition candidate : componentProvider.findCandidateComponents(basePackage)) {
-				initialEntitySet.add(ClassUtils.forName(candidate.getBeanClassName(),
-						AbstractCassandraConfiguration.class.getClassLoader()));
+				initialEntitySet.add(ClassUtils.forName(candidate.getBeanClassName(), beanClassLoader));
 			}
 		}
 

@@ -114,7 +114,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 	 * (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() throws ClassNotFoundException {
 
 		if (this.converter == null) {
 			this.converter = getDefaultCassandraConverter();

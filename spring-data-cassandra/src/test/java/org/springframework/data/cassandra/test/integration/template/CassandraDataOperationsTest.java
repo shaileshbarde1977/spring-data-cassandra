@@ -15,14 +15,14 @@
  */
 package org.springframework.data.cassandra.test.integration.template;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import static org.junit.Assert.*;
 
 import org.apache.cassandra.exceptions.ConfigurationException;
 import org.apache.thrift.transport.TTransportException;
@@ -45,7 +45,7 @@ import org.springframework.cassandra.core.query.QueryOptionNames;
 import org.springframework.cassandra.core.query.QueryOptions;
 import org.springframework.cassandra.core.query.RetryPolicy;
 import org.springframework.data.cassandra.core.CassandraDataOperations;
-import org.springframework.data.cassandra.test.integration.config.TestConfig;
+import org.springframework.data.cassandra.test.integration.config.JavaConfig;
 import org.springframework.data.cassandra.test.integration.table.Book;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -61,7 +61,7 @@ import com.datastax.driver.core.querybuilder.Select;
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { TestConfig.class }, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = { JavaConfig.class }, loader = AnnotationConfigContextLoader.class)
 public class CassandraDataOperationsTest {
 
 	@Autowired
