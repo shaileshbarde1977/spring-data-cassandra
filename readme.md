@@ -38,4 +38,4 @@ This is a standard Maven multimodule project.  Just issue the command `mvn clean
 
 Continuous integration
 --------
-https://travis-ci.org/shvid/spring-data-cassandra
+https://travis-ci.org/SpringData/spring-data-cassandra
