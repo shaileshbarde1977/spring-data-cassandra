@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>spring-data-cassandra</artifactId>
+	<artifactId>cassandra-data</artifactId>
 
 	<name>Cassandra Data</name>
 	<description>Cassandra support for Spring Data</description>
@@ -24,7 +24,7 @@
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-cassandra</artifactId>
+			<artifactId>cassandra-base</artifactId>
 		</dependency>
 
 		<!-- Spring -->

@@ -9,7 +9,7 @@ buildscript {
 }
 
 description = 'Spring Data Cassandra'
-group = 'org.springframework.data'
+group = 'org.springdata'
 
 repositories {
   maven { url "http://repo1.maven.org/maven2" }
@@ -82,8 +82,8 @@ javadoc {
       breakIterator = true
       showFromProtected()
       groups = [
-        'Spring Cassandra' : ['org.springframework.cassandra*'],
-        'Spring Data Cassandra' : ['org.springdata.cassandra.data*'],
+        'Cassandra Base' : ['org.springdata.cassandra.base*'],
+        'Cassandra Data' : ['org.springdata.cassandra.data*'],
       ]
 
      links = [
@@ -92,7 +92,7 @@ javadoc {
         "http://jackson.codehaus.org/1.8.2/javadoc"
      ]
 
-     exclude "org/springframework/data/cassandra/config/**"
+     exclude "org/springdata/cassandra/config/**"
   }
 
 		logger.error("BuildDir => ${buildDir}");

@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>spring-cassandra</artifactId>
+	<artifactId>cassandra-base</artifactId>
 
 	<name>Cassandra Base</name>
 	<description>Cassandra support for Spring</description>

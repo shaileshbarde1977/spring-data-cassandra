@@ -9,7 +9,7 @@
 	<version>1.0.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Spring Data Cassandra</name>
+	<name>SpringData Cassandra</name>
 	<description>Cassandra support for Spring Data</description>
 	<url>http://www.springdata.org/cassandra</url>
 
@@ -21,8 +21,8 @@
 	</parent>
 
 	<modules>
-		<module>spring-cassandra</module>
-		<module>spring-data-cassandra</module>
+		<module>cassandra-base</module>
+		<module>cassandra-data</module>
 	</modules>
 
 	<properties>
@@ -51,7 +51,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>spring-cassandra</artifactId>
+				<artifactId>cassandra-base</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
