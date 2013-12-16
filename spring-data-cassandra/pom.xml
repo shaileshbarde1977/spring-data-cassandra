@@ -6,7 +6,7 @@
 
 	<artifactId>spring-data-cassandra</artifactId>
 
-	<name>SpringData Cassandra</name>
+	<name>Cassandra Data</name>
 	<description>Cassandra support for Spring Data</description>
 
 	<parent>

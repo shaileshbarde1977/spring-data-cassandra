@@ -6,7 +6,7 @@
 
 	<artifactId>spring-cassandra</artifactId>
 
-	<name>Spring Cassandra</name>
+	<name>Cassandra Base</name>
 	<description>Cassandra support for Spring</description>
 
 	<parent>
