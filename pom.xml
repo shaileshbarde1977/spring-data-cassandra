@@ -4,14 +4,14 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.springframework.data</groupId>
+	<groupId>org.springdata</groupId>
 	<artifactId>spring-data-cassandra-parent</artifactId>
 	<version>1.0.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Spring Data Cassandra</name>
 	<description>Cassandra support for Spring Data</description>
-	<url>http://www.springsource.org/spring-data/cassandra</url>
+	<url>http://www.springdata.org/cassandra</url>
 
 	<parent>
 		<groupId>org.springframework.data.build</groupId>
@@ -23,7 +23,6 @@
 	<modules>
 		<module>spring-cassandra</module>
 		<module>spring-data-cassandra</module>
-		<module>spring-data-cassandra-distribution</module>
 	</modules>
 
 	<properties>
@@ -39,30 +38,12 @@
 		<developer>
 			<id>ashvid</id>
 			<name>Alex Shvid</name>
-			<email>a at shvid.com</email>
+			<email>springdata at shvid.com</email>
 			<roles>
 			    <role>Project Lead</role>
 				<role>Developer</role>
 			</roles>
 			<timezone>-8</timezone>
-		</developer>	
-		<developer>
-			<id>dwebb</id>
-			<name>David Webb</name>
-			<email>dwebb at prowaveconsulting.com</email>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>-5</timezone>
-		</developer>
-		<developer>
-			<id>madams</id>
-			<name>Matthew T. Adams</name>
-			<email>matthew dot adams at scispike.com</email>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>-6</timezone>
 		</developer>		
 	</developers>
 

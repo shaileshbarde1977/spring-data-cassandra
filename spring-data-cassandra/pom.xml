@@ -6,11 +6,11 @@
 
 	<artifactId>spring-data-cassandra</artifactId>
 
-	<name>Spring Data Cassandra - Core</name>
+	<name>SpringData Cassandra</name>
 	<description>Cassandra support for Spring Data</description>
 
 	<parent>
-		<groupId>org.springframework.data</groupId>
+		<groupId>org.springdata</groupId>
 		<artifactId>spring-data-cassandra-parent</artifactId>
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
@@ -35,7 +35,7 @@
 
 		<!-- Spring Data -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-commons</artifactId>
 			<version>${springdata.commons}</version>
 		</dependency>

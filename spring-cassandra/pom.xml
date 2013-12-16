@@ -6,11 +6,11 @@
 
 	<artifactId>spring-cassandra</artifactId>
 
-	<name>Spring Cassandra - Core</name>
+	<name>Spring Cassandra</name>
 	<description>Cassandra support for Spring</description>
 
 	<parent>
-		<groupId>org.springframework.data</groupId>
+		<groupId>org.springdata</groupId>
 		<artifactId>spring-data-cassandra-parent</artifactId>
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
