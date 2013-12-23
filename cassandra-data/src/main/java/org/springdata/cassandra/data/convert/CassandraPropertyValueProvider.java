@@ -87,7 +87,7 @@ public class CassandraPropertyValueProvider implements PropertyValueProvider<Cas
 			return (T) new Integer(source.getInt(columnName));
 		}
 
-		ByteBuffer bytes = source.getBytes(columnName);
+		ByteBuffer bytes = source.getBytesUnsafe(columnName);
 		return (T) columnType.deserialize(bytes);
 	}
 

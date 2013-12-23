@@ -15,6 +15,7 @@
  */
 package org.springdata.cassandra.data.core;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +60,16 @@ public interface CassandraDataOperations {
 	<T> T findById(Object id, Class<T> entityClass, String tableName, QueryOptions options);
 
 	<T> T findById(Object id, Class<T> entityClass, String tableName, Map<String, Object> optionsByName);
+
+    <T> List<T> findByPartitionKey(Object id, Class<T> entityClass);
+
+    <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName);
+
+    <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, QueryOptions options);
+
+    <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, QueryOptions options);
+
+    <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, Map<String, Object> optionsByName);
 
 	/**
 	 * Execute query and convert ResultSet to the list of entities
