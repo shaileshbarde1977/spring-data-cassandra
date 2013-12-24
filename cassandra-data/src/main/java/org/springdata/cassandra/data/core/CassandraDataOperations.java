@@ -113,7 +113,7 @@ public interface CassandraDataOperations {
 	 * 
 	 * @param entity
 	 */
-	<T> T saveNew(T entity);
+	<T> void saveNew(boolean asychronously, T entity);
 
 	/**
 	 * Insert the given object to the table by id.
@@ -122,7 +122,7 @@ public interface CassandraDataOperations {
 	 * @param tableName
 	 * @return
 	 */
-	<T> T saveNew(T entity, String tableName);
+	<T> void saveNew(boolean asychronously, T entity, String tableName);
 
 	/**
 	 * @param entity
@@ -130,7 +130,7 @@ public interface CassandraDataOperations {
 	 * @param options
 	 * @return
 	 */
-	<T> T saveNew(T entity, String tableName, QueryOptions options);
+	<T> void saveNew(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull);
 
 	/**
 	 * @param entity
@@ -138,7 +138,7 @@ public interface CassandraDataOperations {
 	 * @param options
 	 * @return
 	 */
-	<T> T saveNew(T entity, QueryOptions options);
+	<T> void saveNew(boolean asychronously, T entity, QueryOptions options);
 
 	/**
 	 * @param entity
@@ -146,7 +146,7 @@ public interface CassandraDataOperations {
 	 * @param options
 	 * @return
 	 */
-	<T> T saveNew(T entity, Map<String, Object> optionsByName);
+	<T> void saveNew(boolean asychronously, T entity, Map<String, Object> optionsByName);
 
 	/**
 	 * @param entity
@@ -154,7 +154,7 @@ public interface CassandraDataOperations {
 	 * @param optionsByName
 	 * @return
 	 */
-	<T> T saveNew(T entity, String tableName, Map<String, Object> optionsByName);
+	<T> void saveNew(boolean asychronously, T entity, String tableName, Map<String, Object> optionsByName);
 
 	/**
 	 * Insert the given list of objects to the table by annotation table name.
@@ -162,7 +162,7 @@ public interface CassandraDataOperations {
 	 * @param entities
 	 * @return
 	 */
-	<T> List<T> saveNewList(List<T> entities);
+	<T> void saveNewInBatch(boolean asychronously, List<T> entities);
 
 	/**
 	 * Insert the given list of objects to the table by name.
@@ -171,7 +171,7 @@ public interface CassandraDataOperations {
 	 * @param tableName
 	 * @return
 	 */
-	<T> List<T> saveNewList(List<T> entities, String tableName);
+	<T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName);
 
 	/**
 	 * @param entities
@@ -179,7 +179,7 @@ public interface CassandraDataOperations {
 	 * @param options
 	 * @return
 	 */
-	<T> List<T> saveNewList(List<T> entities, QueryOptions options);
+	<T> void saveNewInBatch(boolean asychronously, List<T> entities, QueryOptions options);
 
 	/**
 	 * @param entities
@@ -187,7 +187,7 @@ public interface CassandraDataOperations {
 	 * @param optionsByName
 	 * @return
 	 */
-	<T> List<T> saveNewList(List<T> entities, Map<String, Object> optionsByName);
+	<T> void saveNewInBatch(boolean asychronously, List<T> entities, Map<String, Object> optionsByName);
 
 	/**
 	 * @param entities
@@ -195,7 +195,7 @@ public interface CassandraDataOperations {
 	 * @param options
 	 * @return
 	 */
-	<T> List<T> saveNewList(List<T> entities, String tableName, QueryOptions options);
+	<T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions options);
 
 	/**
 	 * @param entities
@@ -203,21 +203,21 @@ public interface CassandraDataOperations {
 	 * @param optionsByName
 	 * @return
 	 */
-	<T> List<T> saveNewList(List<T> entities, String tableName, Map<String, Object> optionsByName);
+	<T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName, Map<String, Object> optionsByName);
 
 	/**
 	 * Insert the given object to the table by id.
 	 * 
 	 * @param object
 	 */
-	<T> T saveNewAsynchronously(T entity);
+	<T> void save(boolean asychronously, T entity);
 
 	/**
 	 * Insert the given object to the table by id.
 	 * 
 	 * @param object
 	 */
-	<T> T saveNewAsynchronously(T entity, String tableName);
+	<T> void save(boolean asychronously, T entity, String tableName);
 
 	/**
 	 * @param entity
@@ -225,7 +225,7 @@ public interface CassandraDataOperations {
 	 * @param options
 	 * @return
 	 */
-	<T> T saveNewAsynchronously(T entity, QueryOptions options);
+	<T> void save(boolean asychronously, T entity, QueryOptions options);
 
 	/**
 	 * @param entity
@@ -233,7 +233,7 @@ public interface CassandraDataOperations {
 	 * @param optionsByName
 	 * @return
 	 */
-	<T> T saveNewAsynchronously(T entity, Map<String, Object> optionsByName);
+	<T> void save(boolean asychronously, T entity, Map<String, Object> optionsByName);
 
 	/**
 	 * @param entity
@@ -241,7 +241,7 @@ public interface CassandraDataOperations {
 	 * @param options
 	 * @return
 	 */
-	<T> T saveNewAsynchronously(T entity, String tableName, QueryOptions options);
+	<T> void save(boolean asychronously, T entity, String tableName, QueryOptions options);
 
 	/**
 	 * @param entity
@@ -249,21 +249,21 @@ public interface CassandraDataOperations {
 	 * @param optionsByName
 	 * @return
 	 */
-	<T> T saveNewAsynchronously(T entity, String tableName, Map<String, Object> optionsByName);
+	<T> void save(boolean asychronously, T entity, String tableName, Map<String, Object> optionsByName);
 
 	/**
 	 * Insert the given object to the table by id.
 	 * 
 	 * @param object
 	 */
-	<T> List<T> saveNewAsynchronously(List<T> entities);
+	<T> void saveInBatch(boolean asychronously, List<T> entities);
 
 	/**
 	 * Insert the given object to the table by id.
 	 * 
 	 * @param object
 	 */
-	<T> List<T> saveNewAsynchronously(List<T> entities, String tableName);
+	<T> void saveInBatch(boolean asychronously, List<T> entities, String tableName);
 
 	/**
 	 * @param entities
@@ -271,7 +271,7 @@ public interface CassandraDataOperations {
 	 * @param options
 	 * @return
 	 */
-	<T> List<T> saveNewAsynchronously(List<T> entities, QueryOptions options);
+	<T> void saveInBatch(boolean asychronously, List<T> entities, QueryOptions options);
 
 	/**
 	 * @param entities
@@ -279,7 +279,7 @@ public interface CassandraDataOperations {
 	 * @param optionsByName
 	 * @return
 	 */
-	<T> List<T> saveNewAsynchronously(List<T> entities, Map<String, Object> optionsByName);
+	<T> void saveInBatch(boolean asychronously, List<T> entities, Map<String, Object> optionsByName);
 
 	/**
 	 * @param entities
@@ -287,7 +287,7 @@ public interface CassandraDataOperations {
 	 * @param options
 	 * @return
 	 */
-	<T> List<T> saveNewAsynchronously(List<T> entities, String tableName, QueryOptions options);
+	<T> void saveInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions options);
 
 	/**
 	 * @param entities
@@ -295,191 +295,7 @@ public interface CassandraDataOperations {
 	 * @param optionsByName
 	 * @return
 	 */
-	<T> List<T> saveNewAsynchronously(List<T> entities, String tableName, Map<String, Object> optionsByName);
-
-	/**
-	 * Insert the given object to the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> T save(T entity);
-
-	/**
-	 * Insert the given object to the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> T save(T entity, String tableName);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> T save(T entity, QueryOptions options);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> T save(T entity, Map<String, Object> optionsByName);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> T save(T entity, String tableName, QueryOptions options);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> T save(T entity, String tableName, Map<String, Object> optionsByName);
-
-	/**
-	 * Insert the given object to the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> List<T> saveList(List<T> entities);
-
-	/**
-	 * Insert the given object to the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> List<T> saveList(List<T> entities, String tableName);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> List<T> saveList(List<T> entities, QueryOptions options);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> List<T> saveList(List<T> entities, Map<String, Object> optionsByName);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> List<T> saveList(List<T> entities, String tableName, QueryOptions options);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> List<T> saveList(List<T> entities, String tableName, Map<String, Object> optionsByName);
-
-	/**
-	 * Insert the given object to the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> T saveAsynchronously(T entity);
-
-	/**
-	 * Insert the given object to the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> T saveAsynchronously(T entity, String tableName);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> T saveAsynchronously(T entity, QueryOptions options);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> T saveAsynchronously(T entity, Map<String, Object> optionsByName);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> T saveAsynchronously(T entity, String tableName, QueryOptions options);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> T saveAsynchronously(T entity, String tableName, Map<String, Object> optionsByName);
-
-	/**
-	 * Insert the given object to the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> List<T> saveAsynchronously(List<T> entities);
-
-	/**
-	 * Insert the given object to the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> List<T> saveAsynchronously(List<T> entities, String tableName);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> List<T> saveAsynchronously(List<T> entities, QueryOptions options);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> List<T> saveAsynchronously(List<T> entities, Map<String, Object> optionsByName);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> List<T> saveAsynchronously(List<T> entities, String tableName, QueryOptions options);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> List<T> saveAsynchronously(List<T> entities, String tableName, Map<String, Object> optionsByName);
+	<T> void saveInBatch(boolean asychronously, List<T> entities, String tableName, Map<String, Object> optionsByName);
 
 	/**
 	 * Removes the given object by id from the given table.
@@ -507,7 +323,7 @@ public interface CassandraDataOperations {
 	 * @param entityClass
 	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, QueryOptions optionsOrNull);
+	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, QueryOptions optionsOrNull);
 
 	/**
 	 * Remove list of objects from the table by given ids.
@@ -517,7 +333,7 @@ public interface CassandraDataOperations {
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, String tableName,
+	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, String tableName,
 			QueryOptions optionsOrNull);
 
 	/**
@@ -539,14 +355,14 @@ public interface CassandraDataOperations {
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, List<T> entities, QueryOptions optionsOrNull);
+	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, QueryOptions optionsOrNull);
 
 	/**
 	 * @param entities
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull);
+	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, String tableName, QueryOptions optionsOrNull);
 
 	/**
 	 * Returns the underlying {@link CassandraConverter}.

@@ -67,7 +67,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	public <S extends T> S save(S entity) {
 
 		Assert.notNull(entity, "Entity must not be null!");
-		cassandraDataTemplate.saveNew(entity, entityInformation.getTableName());
+		cassandraDataTemplate.saveNew(false, entity, entityInformation.getTableName());
 		return entity;
 	}
 
