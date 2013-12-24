@@ -150,7 +150,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		values.add(new LinkedList<Object>(CollectionUtils.arrayToList(o2)));
 		values.add(new LinkedList<Object>(CollectionUtils.arrayToList(o3)));
 
-		cassandraTemplate.ingest(cql, values);
+		cassandraTemplate.ingest(cql, values, null);
 
 		// Assert that the rows were inserted into Cassandra
 		Book b1 = getBook((String) o1[0]);
@@ -172,7 +172,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		values[1] = o2;
 		values[2] = o3;
 
-		cassandraTemplate.ingest(cql, values);
+		cassandraTemplate.ingest(cql, values, null);
 
 		// Assert that the rows were inserted into Cassandra
 		Book b1 = getBook("1234");
@@ -228,7 +228,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		v[2] = o3;
 		RowIterator ri = new MyRowIterator(v);
 
-		cassandraTemplate.ingest(cql, ri);
+		cassandraTemplate.ingest(cql, ri, null);
 
 		// Assert that the rows were inserted into Cassandra
 		Book b1 = getBook("1234");

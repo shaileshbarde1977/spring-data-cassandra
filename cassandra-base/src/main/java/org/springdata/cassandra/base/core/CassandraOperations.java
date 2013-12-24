@@ -741,38 +741,9 @@ public interface CassandraOperations {
 	 * 
 	 * @param cql The CQL
 	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
-	 * @param optionsByName The Query Options Map
+	 * @param optionsOrNull The Query Options Object if exists
 	 */
-	void ingest(String cql, RowIterator rowIterator, Map<String, Object> optionsByName);
-
-	/**
-	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
-	 * all row values are bound to the single PreparedStatement and executed against the Session.
-	 * 
-	 * <p>
-	 * This is used internally by the other ingest() methods, but can be used if you want to write your own RowIterator.
-	 * The Object[] length returned by the next() implementation must match the number of bind variables in the CQL.
-	 * </p>
-	 * 
-	 * @param cql The CQL
-	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
-	 * @param options The Query Options Object
-	 */
-	void ingest(String cql, RowIterator rowIterator, QueryOptions options);
-
-	/**
-	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
-	 * all row values are bound to the single PreparedStatement and executed against the Session.
-	 * 
-	 * <p>
-	 * This is used internally by the other ingest() methods, but can be used if you want to write your own RowIterator.
-	 * The Object[] length returned by the next() implementation must match the number of bind variables in the CQL.
-	 * </p>
-	 * 
-	 * @param cql The CQL
-	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
-	 */
-	void ingest(String cql, RowIterator rowIterator);
+	void ingest(String cql, RowIterator rowIterator, QueryOptions optionsOrNull);
 
 	/**
 	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
@@ -784,36 +755,9 @@ public interface CassandraOperations {
 	 * 
 	 * @param cql The CQL
 	 * @param rows List of List<?> with data to bind to the CQL.
-	 * @param optionsByName The Query Options Map
+	 * @param optionsOrNull The Query Options Object is exists
 	 */
-	void ingest(String cql, List<List<?>> rows, Map<String, Object> optionsByName);
-
-	/**
-	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
-	 * all row values are bound to the single PreparedStatement and executed against the Session.
-	 * 
-	 * <p>
-	 * The List<?> length must match the number of bind variables in the CQL.
-	 * </p>
-	 * 
-	 * @param cql The CQL
-	 * @param rows List of List<?> with data to bind to the CQL.
-	 * @param options The Query Options Object
-	 */
-	void ingest(String cql, List<List<?>> rows, QueryOptions options);
-
-	/**
-	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
-	 * all row values are bound to the single PreparedStatement and executed against the Session.
-	 * 
-	 * <p>
-	 * The List<?> length must match the number of bind variables in the CQL.
-	 * </p>
-	 * 
-	 * @param cql The CQL
-	 * @param rows List of List<?> with data to bind to the CQL.
-	 */
-	void ingest(String cql, List<List<?>> rows);
+	void ingest(String cql, List<List<?>> rows, QueryOptions optionsOrNull);
 
 	/**
 	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
@@ -825,36 +769,9 @@ public interface CassandraOperations {
 	 * 
 	 * @param cql The CQL
 	 * @param rows Object array of Object array of values to bind to the CQL.
-	 * @param optionsByName The Query Options Map
+	 * @param optionsOrNull The Query Options Object is exists
 	 */
-	void ingest(String cql, Object[][] rows, Map<String, Object> optionsByName);
-
-	/**
-	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
-	 * all row values are bound to the single PreparedStatement and executed against the Session.
-	 * 
-	 * <p>
-	 * The Object[] length of the nested array must match the number of bind variables in the CQL.
-	 * </p>
-	 * 
-	 * @param cql The CQL
-	 * @param rows Object array of Object array of values to bind to the CQL.
-	 * @param options The Query Options Object
-	 */
-	void ingest(String cql, Object[][] rows, QueryOptions options);
-
-	/**
-	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
-	 * all row values are bound to the single PreparedStatement and executed against the Session.
-	 * 
-	 * <p>
-	 * The Object[] length of the nested array must match the number of bind variables in the CQL.
-	 * </p>
-	 * 
-	 * @param cql The CQL
-	 * @param rows Object array of Object array of values to bind to the CQL.
-	 */
-	void ingest(String cql, Object[][] rows);
+	void ingest(String cql, Object[][] rows, QueryOptions optionsOrNull);
 
 	/**
 	 * Delete all rows in the table
