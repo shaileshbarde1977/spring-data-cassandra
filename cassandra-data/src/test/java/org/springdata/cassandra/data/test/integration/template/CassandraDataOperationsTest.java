@@ -736,25 +736,25 @@ public class CassandraDataOperationsTest {
 
 		cassandraDataTemplate.saveNewList(books);
 
-		cassandraDataTemplate.delete(false, books, null);
+		cassandraDataTemplate.deleteInBatch(false, books, null);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book_alt");
 
-		cassandraDataTemplate.delete(false, books, "book_alt", null);
+		cassandraDataTemplate.deleteInBatch(false, books, "book_alt", null);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book", options);
 
-		cassandraDataTemplate.delete(false, books, "book", options);
+		cassandraDataTemplate.deleteInBatch(false, books, "book", options);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, options);
 
-		cassandraDataTemplate.delete(false, books, options);
+		cassandraDataTemplate.deleteInBatch(false, books, options);
 
 	}
 
@@ -771,25 +771,25 @@ public class CassandraDataOperationsTest {
 
 		cassandraDataTemplate.saveNewList(books);
 
-		cassandraDataTemplate.delete(true, books, null);
+		cassandraDataTemplate.deleteInBatch(true, books, null);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book_alt");
 
-		cassandraDataTemplate.delete(true, books, "book_alt", null);
+		cassandraDataTemplate.deleteInBatch(true, books, "book_alt", null);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book", options);
 
-		cassandraDataTemplate.delete(true, books, "book", options);
+		cassandraDataTemplate.deleteInBatch(true, books, "book", options);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, options);
 
-		cassandraDataTemplate.delete(true, books, options);
+		cassandraDataTemplate.deleteInBatch(true, books, options);
 
 	}
 
@@ -886,25 +886,25 @@ public class CassandraDataOperationsTest {
 
 		cassandraDataTemplate.saveNewList(books);
 
-		cassandraDataTemplate.deleteById(false, ids(books), Book.class, null);
+		cassandraDataTemplate.deleteInBatchById(false, ids(books), Book.class, null);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book_alt");
 
-		cassandraDataTemplate.deleteById(false, ids(books), Book.class, "book_alt", null);
+		cassandraDataTemplate.deleteInBatchById(false, ids(books), Book.class, "book_alt", null);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book", options);
 
-		cassandraDataTemplate.deleteById(false, ids(books), Book.class, "book", options);
+		cassandraDataTemplate.deleteInBatchById(false, ids(books), Book.class, "book", options);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, options);
 
-		cassandraDataTemplate.deleteById(false, ids(books), Book.class, options);
+		cassandraDataTemplate.deleteInBatchById(false, ids(books), Book.class, options);
 
 	}
 
@@ -934,25 +934,25 @@ public class CassandraDataOperationsTest {
 
 		cassandraDataTemplate.saveNewList(books);
 
-		cassandraDataTemplate.deleteById(true, ids(books), Book.class, null);
+		cassandraDataTemplate.deleteInBatchById(true, ids(books), Book.class, null);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book_alt");
 
-		cassandraDataTemplate.deleteById(true, ids(books), Book.class, "book_alt", null);
+		cassandraDataTemplate.deleteInBatchById(true, ids(books), Book.class, "book_alt", null);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, "book", options);
 
-		cassandraDataTemplate.deleteById(true, ids(books), Book.class, "book", options);
+		cassandraDataTemplate.deleteInBatchById(true, ids(books), Book.class, "book", options);
 
 		books = getBookList(20);
 
 		cassandraDataTemplate.saveNewList(books, options);
 
-		cassandraDataTemplate.deleteById(true, ids(books), Book.class, options);
+		cassandraDataTemplate.deleteInBatchById(true, ids(books), Book.class, options);
 
 	}
 

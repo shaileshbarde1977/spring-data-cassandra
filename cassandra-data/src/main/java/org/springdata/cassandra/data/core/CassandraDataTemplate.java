@@ -130,17 +130,17 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, QueryOptions optionsOrNull) {
+	public <T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass,
+			QueryOptions optionsOrNull) {
 		String tableName = getTableName(entityClass);
 		Assert.notNull(tableName);
-		deleteById(asychronously, ids, entityClass, tableName, optionsOrNull);
+		deleteInBatchById(asychronously, ids, entityClass, tableName, optionsOrNull);
 	}
 
 	@Override
-	public <T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, String tableName,
+	public <T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, String tableName,
 			QueryOptions optionsOrNull) {
 		Assert.notNull(ids);
-		Assert.notEmpty(ids);
 		Assert.notNull(entityClass);
 		Assert.notNull(tableName);
 		doBatchDeleteById(asychronously, tableName, ids, entityClass, optionsOrNull);
@@ -163,18 +163,15 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void delete(boolean asychronously, List<T> entities, QueryOptions optionsOrNull) {
+	public <T> void deleteInBatch(boolean asychronously, Iterable<T> entities, QueryOptions optionsOrNull) {
 		Assert.notNull(entities);
-		Assert.notEmpty(entities);
-		String tableName = getTableName(entities.get(0).getClass());
-		Assert.notNull(tableName);
-		delete(asychronously, entities, tableName, optionsOrNull);
+		doBatchDelete(asychronously, null, entities, optionsOrNull);
 	}
 
 	@Override
-	public <T> void delete(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull) {
+	public <T> void deleteInBatch(boolean asychronously, Iterable<T> entities, String tableName,
+			QueryOptions optionsOrNull) {
 		Assert.notNull(entities);
-		Assert.notEmpty(entities);
 		Assert.notNull(tableName);
 		doBatchDelete(asychronously, tableName, entities, optionsOrNull);
 	}
@@ -1037,20 +1034,26 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param tableName
 	 * @param objectToRemove
 	 */
-	protected <T> void doBatchDeleteById(final boolean asychronously, final String tableName, final List<T> ids,
+	protected <T> void doBatchDeleteById(final boolean asychronously, String tableName, final Iterable<T> ids,
 			Class<?> entityClass, QueryOptions optionsOrNull) {
-
-		Assert.notEmpty(ids);
 
 		/*
 		 * Return variable is a Batch statement
 		 */
 		final Batch batch = QueryBuilder.batch();
 
+		boolean emptyBatch = true;
 		for (final T id : ids) {
 
-			batch.add((Statement) toDeleteQueryById(tableName, id, entityClass, optionsOrNull));
+			Assert.notNull(id);
 
+			batch.add((Statement) toDeleteQueryById(tableName, id, entityClass, optionsOrNull));
+			emptyBatch = false;
+
+		}
+
+		if (emptyBatch) {
+			throw new IllegalArgumentException("ids are empty");
 		}
 
 		addQueryOptions(batch, optionsOrNull);
@@ -1110,20 +1113,31 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param tableName
 	 * @param objectToRemove
 	 */
-	protected <T> void doBatchDelete(final boolean asychronously, final String tableName, final List<T> entities,
+	protected <T> void doBatchDelete(final boolean asychronously, String tableNameOrNull, final Iterable<T> entities,
 			QueryOptions optionsOrNull) {
-
-		Assert.notEmpty(entities);
 
 		/*
 		 * Return variable is a Batch statement
 		 */
 		final Batch batch = QueryBuilder.batch();
 
+		boolean emptyBatch = true;
 		for (final T objectToSave : entities) {
 
-			batch.add((Statement) toDeleteQuery(tableName, objectToSave, optionsOrNull));
+			Assert.notNull(objectToSave);
 
+			if (tableNameOrNull == null) {
+				tableNameOrNull = getTableName(objectToSave.getClass());
+				Assert.notNull(tableNameOrNull);
+			}
+
+			batch.add((Statement) toDeleteQuery(tableNameOrNull, objectToSave, optionsOrNull));
+			emptyBatch = false;
+
+		}
+
+		if (emptyBatch) {
+			throw new IllegalArgumentException("entities are empty");
 		}
 
 		addQueryOptions(batch, optionsOrNull);

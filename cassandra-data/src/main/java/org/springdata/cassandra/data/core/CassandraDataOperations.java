@@ -507,7 +507,7 @@ public interface CassandraDataOperations {
 	 * @param entityClass
 	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, QueryOptions optionsOrNull);
+	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, QueryOptions optionsOrNull);
 
 	/**
 	 * Remove list of objects from the table by given ids.
@@ -517,7 +517,7 @@ public interface CassandraDataOperations {
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, String tableName,
+	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, String tableName,
 			QueryOptions optionsOrNull);
 
 	/**
@@ -539,14 +539,14 @@ public interface CassandraDataOperations {
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, List<T> entities, QueryOptions optionsOrNull);
+	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, QueryOptions optionsOrNull);
 
 	/**
 	 * @param entities
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull);
+	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, String tableName, QueryOptions optionsOrNull);
 
 	/**
 	 * Returns the underlying {@link CassandraConverter}.
