@@ -253,121 +253,35 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		deleteById(asychronously, id, entityClass, tableName, options.toMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.util.List)
-	 */
 	@Override
-	public <T> void delete(boolean asychronously, List<T> entities) {
+	public <T> void delete(boolean asychronously, List<T> entities, QueryOptions optionsOrNull) {
+		Assert.notNull(entities);
+		Assert.notEmpty(entities);
 		String tableName = getTableName(entities.get(0).getClass());
 		Assert.notNull(tableName);
-		delete(asychronously, entities, tableName);
+		delete(asychronously, entities, tableName, optionsOrNull);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.util.List, java.util.Map)
-	 */
 	@Override
-	public <T> void delete(boolean asychronously, List<T> entities, Map<String, Object> optionsByName) {
-		String tableName = getTableName(entities.get(0).getClass());
-		Assert.notNull(tableName);
-		delete(asychronously, entities, tableName, optionsByName);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.util.List, org.springframework.data.cassandra.core.QueryOptions)
-	 */
-	@Override
-	public <T> void delete(boolean asychronously, List<T> entities, QueryOptions options) {
-		String tableName = getTableName(entities.get(0).getClass());
-		Assert.notNull(tableName);
-		delete(asychronously, entities, tableName, options);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.util.List, java.lang.String)
-	 */
-	@Override
-	public <T> void delete(boolean asychronously, List<T> entities, String tableName) {
-		Map<String, Object> defaultOptions = Collections.emptyMap();
-		delete(asychronously, entities, tableName, defaultOptions);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.util.List, java.lang.String, java.util.Map)
-	 */
-	@Override
-	public <T> void delete(boolean asychronously, List<T> entities, String tableName, Map<String, Object> optionsByName) {
+	public <T> void delete(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull) {
 		Assert.notNull(entities);
 		Assert.notEmpty(entities);
 		Assert.notNull(tableName);
-		Assert.notNull(optionsByName);
-		doBatchDelete(asychronously, tableName, entities, optionsByName);
+		doBatchDelete(asychronously, tableName, entities, optionsOrNull);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.util.List, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
-	public <T> void delete(boolean asychronously, List<T> entities, String tableName, QueryOptions options) {
-		delete(asychronously, entities, tableName, options.toMap());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.lang.Object)
-	 */
-	@Override
-	public <T> void delete(boolean asychronously, T entity) {
+	public <T> void delete(boolean asychronously, T entity, QueryOptions optionsOrNull) {
 		String tableName = getTableName(entity.getClass());
 		Assert.notNull(tableName);
-		delete(asychronously, entity, tableName);
+		delete(asychronously, entity, tableName, optionsOrNull);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.lang.Object, java.util.Map)
-	 */
 	@Override
-	public <T> void delete(boolean asychronously, T entity, Map<String, Object> optionsByName) {
-		String tableName = getTableName(entity.getClass());
-		Assert.notNull(tableName);
-		delete(asychronously, entity, tableName, optionsByName);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.lang.Object, org.springframework.data.cassandra.core.QueryOptions)
-	 */
-	@Override
-	public <T> void delete(boolean asychronously, T entity, QueryOptions options) {
-		String tableName = getTableName(entity.getClass());
-		Assert.notNull(tableName);
-		delete(asychronously, entity, tableName, options);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.lang.Object, java.lang.String)
-	 */
-	@Override
-	public <T> void delete(boolean asychronously, T entity, String tableName) {
-		Map<String, Object> defaultOptions = Collections.emptyMap();
-		delete(asychronously, entity, tableName, defaultOptions);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.lang.Object, java.lang.String, java.util.Map)
-	 */
-	@Override
-	public <T> void delete(boolean asychronously, T entity, String tableName, Map<String, Object> optionsByName) {
+	public <T> void delete(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull) {
 		Assert.notNull(entity);
 		Assert.notNull(tableName);
-		Assert.notNull(optionsByName);
-		doDelete(asychronously, tableName, entity, optionsByName);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#delete(java.lang.Boolean, java.lang.Object, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
-	@Override
-	public <T> void delete(boolean asychronously, T entity, String tableName, QueryOptions options) {
-		delete(asychronously, entity, tableName, options.toMap());
+		doDelete(asychronously, tableName, entity, optionsOrNull);
 	}
 
 	/**
@@ -1143,9 +1057,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param objectToRemove
 	 */
 	protected <T> void doDelete(final boolean asychronously, final String tableName, final T objectToRemove,
-			Map<String, Object> optionsByName) {
+			QueryOptions optionsOrNull) {
 
-		final Query query = toDeleteQuery(tableName, objectToRemove, optionsByName);
+		final Query query = toDeleteQuery(tableName, objectToRemove, optionsOrNull);
 
 		logger.info(query.toString());
 
@@ -1425,7 +1339,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param optionsByName
 	 * @return
 	 */
-	public Query toDeleteQuery(String tableName, final Object objectToRemove, Map<String, Object> optionsByName) {
+	public Query toDeleteQuery(String tableName, final Object objectToRemove, QueryOptions optionsOrNull) {
 
 		final Delete.Selection ds = QueryBuilder.delete();
 		final Delete query = ds.from(keyspace, tableName);
@@ -1436,9 +1350,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		 */
 		cassandraConverter.write(objectToRemove, w);
 
-		addQueryOptions(query, optionsByName);
+		addQueryOptions(query, optionsOrNull);
 
-		addDeleteOptions(query, optionsByName);
+		addDeleteOptions(query, optionsOrNull);
 
 		return query;
 
@@ -1451,7 +1365,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param objectToRemove
 	 */
 	protected <T> void doBatchDelete(final boolean asychronously, final String tableName, final List<T> entities,
-			Map<String, Object> optionsByName) {
+			QueryOptions optionsOrNull) {
 
 		Assert.notEmpty(entities);
 
@@ -1462,11 +1376,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 		for (final T objectToSave : entities) {
 
-			batch.add((Statement) toDeleteQuery(tableName, objectToSave, optionsByName));
+			batch.add((Statement) toDeleteQuery(tableName, objectToSave, optionsOrNull));
 
 		}
 
-		addQueryOptions(batch, optionsByName);
+		addQueryOptions(batch, optionsOrNull);
 
 		logger.info(batch.toString());
 

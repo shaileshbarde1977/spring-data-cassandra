@@ -771,14 +771,14 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 		});
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.CassandraOperations#execute(java.lang.String, org.springframework.cassandra.core.RowProvider, int)
-	 */
 	@Override
-	public void ingest(String cql, RowIterator rowIterator, Map<String, Object> optionsByName) {
+	public void ingest(String cql, RowIterator rowIterator, QueryOptions optionsOrNull) {
+
+		Assert.notNull(cql);
+		Assert.notNull(rowIterator);
 
 		PreparedStatement preparedStatement = getSession().prepare(cql);
-		addPreparedStatementOptions(preparedStatement, optionsByName);
+		addPreparedStatementOptions(preparedStatement, optionsOrNull);
 
 		while (rowIterator.hasNext()) {
 			getSession().execute(preparedStatement.bind(rowIterator.next()));
@@ -786,30 +786,10 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.CassandraOperations#ingest(java.lang.String, org.springframework.cassandra.core.RowIterator, org.springframework.cassandra.core.QueryOptions)
-	 */
 	@Override
-	public void ingest(String cql, RowIterator rowIterator, QueryOptions options) {
-		Assert.notNull(options);
-		ingest(cql, rowIterator, options.toMap());
-	}
+	public void ingest(String cql, List<List<?>> rows, QueryOptions optionsOrNull) {
 
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.CassandraOperations#ingest(java.lang.String, org.springframework.cassandra.core.RowIterator)
-	 */
-	@Override
-	public void ingest(String cql, RowIterator rowIterator) {
-		ingest(cql, rowIterator, Collections.<String, Object> emptyMap());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.CassandraOperations#execute(java.lang.String, java.util.List)
-	 */
-	@Override
-	public void ingest(String cql, List<List<?>> rows, Map<String, Object> optionsByName) {
-
-		Assert.notNull(optionsByName);
+		Assert.notNull(cql);
 		Assert.notNull(rows);
 		Assert.notEmpty(rows);
 
@@ -819,34 +799,16 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 			values[i++] = row.toArray();
 		}
 
-		ingest(cql, values, optionsByName);
+		ingest(cql, values, optionsOrNull);
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.CassandraOperations#ingest(java.lang.String, java.util.List, org.springframework.cassandra.core.QueryOptions)
-	 */
 	@Override
-	public void ingest(String cql, List<List<?>> rows, QueryOptions options) {
-		Assert.notNull(options);
-		ingest(cql, rows, options.toMap());
-	}
+	public void ingest(String cql, final Object[][] rows, final QueryOptions optionsOrNull) {
 
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.CassandraOperations#ingest(java.lang.String, java.util.List)
-	 */
-	@Override
-	public void ingest(String cql, List<List<?>> rows) {
-		ingest(cql, rows, Collections.<String, Object> emptyMap());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.CassandraOperations#execute(java.lang.String, java.lang.Object[][])
-	 */
-	@Override
-	public void ingest(String cql, final Object[][] rows, final Map<String, Object> optionsByName) {
-
-		Assert.notNull(optionsByName);
+		Assert.notNull(cql);
+		Assert.notNull(rows);
+		Assert.notEmpty(rows);
 
 		ingest(cql, new RowIterator() {
 
@@ -862,29 +824,9 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 				return index < rows.length;
 			}
 
-		}, optionsByName);
+		}, optionsOrNull);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.CassandraOperations#ingest(java.lang.String, java.lang.Object[][], org.springframework.cassandra.core.QueryOptions)
-	 */
-	@Override
-	public void ingest(String cql, final Object[][] rows, QueryOptions options) {
-		Assert.notNull(options);
-		ingest(cql, rows, options.toMap());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.CassandraOperations#ingest(java.lang.String, java.lang.Object[][])
-	 */
-	@Override
-	public void ingest(String cql, final Object[][] rows) {
-		ingest(cql, rows, Collections.<String, Object> emptyMap());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.CassandraOperations#truncate(java.lang.String)
-	 */
 	@Override
 	public void truncate(String tableName) throws DataAccessException {
 		Truncate truncate = QueryBuilder.truncate(tableName);
@@ -895,7 +837,7 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 	 * Add common Query options for all types of queries.
 	 * 
 	 * @param q
-	 * @param optionsByName
+	 * @param optionsOrNull
 	 */
 	public static void addQueryOptions(Query q, Map<String, Object> optionsByName) {
 
@@ -912,6 +854,24 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 		}
 		if (optionsByName.get(QueryOptionNames.RETRY_POLICY) != null) {
 			q.setRetryPolicy(RetryPolicyResolver.resolve((RetryPolicy) optionsByName.get(QueryOptionNames.RETRY_POLICY)));
+		}
+
+	}
+
+	public static void addQueryOptions(Query q, QueryOptions optionsOrNull) {
+
+		if (optionsOrNull == null) {
+			return;
+		}
+
+		/*
+		 * Add Query Options
+		 */
+		if (optionsOrNull.getConsistencyLevel() != null) {
+			q.setConsistencyLevel(ConsistencyLevelResolver.resolve(optionsOrNull.getConsistencyLevel()));
+		}
+		if (optionsOrNull.getRetryPolicy() != null) {
+			q.setRetryPolicy(RetryPolicyResolver.resolve(optionsOrNull.getRetryPolicy()));
 		}
 
 	}
@@ -940,6 +900,24 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 
 	}
 
+	public static void addInsertOptions(Insert query, QueryOptions optionsOrNull) {
+
+		if (optionsOrNull == null) {
+			return;
+		}
+
+		/*
+		 * Add TTL to Insert object
+		 */
+		if (optionsOrNull.getTtl() != null) {
+			query.using(QueryBuilder.ttl(optionsOrNull.getTtl()));
+		}
+		if (optionsOrNull.getTimestamp() != null) {
+			query.using(QueryBuilder.timestamp(optionsOrNull.getTimestamp()));
+		}
+
+	}
+
 	/**
 	 * Add common update options for all types of queries.
 	 * 
@@ -960,6 +938,24 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 		}
 		if (optionsByName.get(QueryOptionNames.TIMESTAMP) != null) {
 			query.using(QueryBuilder.timestamp((Long) optionsByName.get(QueryOptionNames.TIMESTAMP)));
+		}
+
+	}
+
+	public static void addUpdateOptions(Update query, QueryOptions optionsOrNull) {
+
+		if (optionsOrNull == null) {
+			return;
+		}
+
+		/*
+		 * Add TTL to Insert object
+		 */
+		if (optionsOrNull.getTtl() != null) {
+			query.using(QueryBuilder.ttl(optionsOrNull.getTtl()));
+		}
+		if (optionsOrNull.getTimestamp() != null) {
+			query.using(QueryBuilder.timestamp(optionsOrNull.getTimestamp()));
 		}
 
 	}
@@ -985,27 +981,42 @@ public class CassandraTemplate extends CassandraAccessor implements CassandraOpe
 
 	}
 
+	public static void addDeleteOptions(Delete query, QueryOptions optionsOrNull) {
+
+		if (optionsOrNull == null) {
+			return;
+		}
+
+		/*
+		 * Add TTL to Insert object
+		 */
+		if (optionsOrNull.getTimestamp() != null) {
+			query.using(QueryBuilder.timestamp(optionsOrNull.getTimestamp()));
+		}
+
+	}
+
 	/**
 	 * Add common Query options for all types of queries.
 	 * 
 	 * @param q
 	 * @param optionsByName
 	 */
-	public static void addPreparedStatementOptions(PreparedStatement s, Map<String, Object> optionsByName) {
+	public static void addPreparedStatementOptions(PreparedStatement s, QueryOptions optionsOrNull) {
 
-		if (optionsByName == null) {
+		if (optionsOrNull == null) {
 			return;
 		}
 
 		/*
-		 * Add Query Options
+		 * Add Query Options if exists
 		 */
-		if (optionsByName.get(QueryOptionNames.CONSISTENCY_LEVEL) != null) {
-			s.setConsistencyLevel(ConsistencyLevelResolver.resolve((ConsistencyLevel) optionsByName
-					.get(QueryOptionNames.CONSISTENCY_LEVEL)));
+
+		if (optionsOrNull.getConsistencyLevel() != null) {
+			s.setConsistencyLevel(ConsistencyLevelResolver.resolve(optionsOrNull.getConsistencyLevel()));
 		}
-		if (optionsByName.get(QueryOptionNames.RETRY_POLICY) != null) {
-			s.setRetryPolicy(RetryPolicyResolver.resolve((RetryPolicy) optionsByName.get(QueryOptionNames.RETRY_POLICY)));
+		if (optionsOrNull.getRetryPolicy() != null) {
+			s.setRetryPolicy(RetryPolicyResolver.resolve(optionsOrNull.getRetryPolicy()));
 		}
 
 	}
