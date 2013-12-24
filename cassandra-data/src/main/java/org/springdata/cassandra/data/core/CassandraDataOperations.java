@@ -493,178 +493,71 @@ public interface CassandraDataOperations {
 	<T> List<T> saveAsynchronously(List<T> entities, String tableName, Map<String, Object> optionsByName);
 
 	/**
-	 * Remove the given object from the table by id.
+	 * Removes the given object by id from the given table.
 	 * 
 	 * @param id
+	 * @param entityClass
+	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass);
+	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, QueryOptions optionsOrNull);
 
 	/**
-	 * Removes the given object from the given table.
+	 * Removes the given object by id from the given table.
 	 * 
 	 * @param id
-	 * @param table must not be {@literal null} or empty.
-	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName);
-
-	/**
-	 * @param id
+	 * @param entityClass
 	 * @param tableName
-	 * @param options
+	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, QueryOptions options);
+	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName, QueryOptions optionsOrNull);
 
 	/**
-	 * @param id
-	 * @param tableName
-	 * @param optionsByName
-	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, Map<String, Object> optionsByName);
-
-	/**
-	 * @param id
-	 * @param tableName
-	 * @param options
-	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName, QueryOptions options);
-
-	/**
-	 * @param id
-	 * @param tableName
-	 * @param optionsByName
-	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName,
-			Map<String, Object> optionsByName);
-
-	/**
-	 * Remove the given object from the table by id.
+	 * Remove list of objects from the table by given ids.
 	 * 
-	 * @param object
+	 * @param ids
+	 * @param entityClass
+	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass);
+	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, QueryOptions optionsOrNull);
 
 	/**
-	 * Removes the given object from the given table.
+	 * Remove list of objects from the table by given ids.
 	 * 
-	 * @param object
-	 * @param table must not be {@literal null} or empty.
-	 */
-	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, String tableName);
-
-	/**
 	 * @param ids
+	 * @param entityClass
 	 * @param tableName
-	 * @param options
-	 */
-	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, QueryOptions options);
-
-	/**
-	 * @param ids
-	 * @param tableName
-	 * @param optionsByName
-	 */
-	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, Map<String, Object> optionsByName);
-
-	/**
-	 * @param ids
-	 * @param tableName
-	 * @param options
-	 */
-	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, String tableName, QueryOptions options);
-
-	/**
-	 * @param ids
-	 * @param tableName
-	 * @param optionsByName
+	 * @param optionsOrNull
 	 */
 	<T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, String tableName,
-			Map<String, Object> optionsByName);
-
-	/**
-	 * Remove the given object from the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> void delete(boolean asychronously, T entity);
-
-	/**
-	 * Removes the given object from the given table.
-	 * 
-	 * @param object
-	 * @param table must not be {@literal null} or empty.
-	 */
-	<T> void delete(boolean asychronously, T entity, String tableName);
+			QueryOptions optionsOrNull);
 
 	/**
 	 * @param entity
 	 * @param tableName
-	 * @param options
+	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, T entity, QueryOptions options);
+	<T> void delete(boolean asychronously, T entity, QueryOptions optionsOrNull);
 
 	/**
 	 * @param entity
 	 * @param tableName
-	 * @param optionsByName
+	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, T entity, Map<String, Object> optionsByName);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param options
-	 */
-	<T> void delete(boolean asychronously, T entity, String tableName, QueryOptions options);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param optionsByName
-	 */
-	<T> void delete(boolean asychronously, T entity, String tableName, Map<String, Object> optionsByName);
-
-	/**
-	 * Remove the given object from the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> void delete(boolean asychronously, List<T> entities);
-
-	/**
-	 * Removes the given object from the given table.
-	 * 
-	 * @param object
-	 * @param table must not be {@literal null} or empty.
-	 */
-	<T> void delete(boolean asychronously, List<T> entities, String tableName);
+	<T> void delete(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull);
 
 	/**
 	 * @param entities
 	 * @param tableName
-	 * @param options
+	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, List<T> entities, QueryOptions options);
+	<T> void delete(boolean asychronously, List<T> entities, QueryOptions optionsOrNull);
 
 	/**
 	 * @param entities
 	 * @param tableName
-	 * @param optionsByName
+	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, List<T> entities, Map<String, Object> optionsByName);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param options
-	 */
-	<T> void delete(boolean asychronously, List<T> entities, String tableName, QueryOptions options);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param optionsByName
-	 */
-	<T> void delete(boolean asychronously, List<T> entities, String tableName, Map<String, Object> optionsByName);
+	<T> void delete(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull);
 
 	/**
 	 * Returns the underlying {@link CassandraConverter}.

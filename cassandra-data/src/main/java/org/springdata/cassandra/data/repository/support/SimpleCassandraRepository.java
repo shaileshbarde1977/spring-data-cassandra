@@ -144,7 +144,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	public void delete(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
 
-		cassandraDataTemplate.deleteById(false, id, entityInformation.getJavaType());
+		cassandraDataTemplate.deleteById(false, id, entityInformation.getJavaType(), null);
 	}
 
 	/*
