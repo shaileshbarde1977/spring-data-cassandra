@@ -118,139 +118,48 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return doFindById(id, entityClass, tableName, optionsByName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#count(com.datastax.driver.core.querybuilder.Select)
-	 */
 	@Override
 	public Long countByQuery(Select selectQuery) {
 		return doSelectCount(selectQuery);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#count(java.lang.String)
-	 */
 	@Override
 	public Long count(String tableName) {
 		Select select = QueryBuilder.select().countAll().from(tableName);
 		return doSelectCount(select);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.util.List)
-	 */
 	@Override
-	public <T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass) {
+	public <T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, QueryOptions optionsOrNull) {
 		String tableName = getTableName(entityClass);
 		Assert.notNull(tableName);
-		deleteById(asychronously, ids, entityClass, tableName);
+		deleteById(asychronously, ids, entityClass, tableName, optionsOrNull);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.util.List, java.util.Map)
-	 */
-	@Override
-	public <T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, Map<String, Object> optionsByName) {
-		String tableName = getTableName(entityClass);
-		Assert.notNull(tableName);
-		deleteById(asychronously, ids, entityClass, tableName, optionsByName);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.util.List, org.springframework.data.cassandra.core.QueryOptions)
-	 */
-	@Override
-	public <T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, QueryOptions options) {
-		String tableName = getTableName(entityClass);
-		Assert.notNull(tableName);
-		deleteById(asychronously, ids, entityClass, tableName, options);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.util.List, java.lang.String)
-	 */
-	@Override
-	public <T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, String tableName) {
-		deleteById(asychronously, ids, entityClass, tableName, Collections.<String, Object> emptyMap());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.util.List, java.lang.String, java.util.Map)
-	 */
 	@Override
 	public <T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, String tableName,
-			Map<String, Object> optionsByName) {
+			QueryOptions optionsOrNull) {
 		Assert.notNull(ids);
 		Assert.notEmpty(ids);
+		Assert.notNull(entityClass);
 		Assert.notNull(tableName);
-		Assert.notNull(optionsByName);
-		doBatchDeleteById(asychronously, tableName, ids, entityClass, optionsByName);
+		doBatchDeleteById(asychronously, tableName, ids, entityClass, optionsOrNull);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.util.List, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
-	public <T> void deleteById(boolean asychronously, List<T> ids, Class<?> entityClass, String tableName,
-			QueryOptions options) {
-		deleteById(asychronously, ids, entityClass, tableName, options.toMap());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.lang.Object)
-	 */
-	@Override
-	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass) {
+	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, QueryOptions optionsOrNull) {
 		String tableName = getTableName(entityClass);
 		Assert.notNull(tableName);
-		deleteById(asychronously, id, entityClass, tableName);
+		deleteById(asychronously, id, entityClass, tableName, optionsOrNull);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, Map<String, Object> optionsByName) {
-		String tableName = getTableName(entityClass);
-		Assert.notNull(tableName);
-		deleteById(asychronously, id, entityClass, tableName, optionsByName);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.lang.Object, org.springframework.data.cassandra.core.QueryOptions)
-	 */
-	@Override
-	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, QueryOptions options) {
-		String tableName = getTableName(entityClass);
-		Assert.notNull(tableName);
-		deleteById(asychronously, id, entityClass, tableName, options);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.lang.Object, java.lang.String)
-	 */
-	@Override
-	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName) {
-		deleteById(asychronously, id, entityClass, tableName, Collections.<String, Object> emptyMap());
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.lang.Object, java.lang.String, java.util.Map)
-	 */
 	@Override
 	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName,
-			Map<String, Object> optionsByName) {
+			QueryOptions optionsOrNull) {
 		Assert.notNull(id);
+		Assert.notNull(entityClass);
 		Assert.notNull(tableName);
-		Assert.notNull(optionsByName);
-		doDeleteById(asychronously, tableName, id, entityClass, optionsByName);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#deleteById(java.lang.Boolean, java.lang.Object, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
-	@Override
-	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName, QueryOptions options) {
-		deleteById(asychronously, id, entityClass, tableName, options.toMap());
+		doDeleteById(asychronously, tableName, id, entityClass, optionsOrNull);
 	}
 
 	@Override
@@ -303,25 +212,16 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return entity.getTable();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#getConverter()
-	 */
 	@Override
 	public CassandraConverter getConverter() {
 		return cassandraConverter;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#getTableName(java.lang.Class)
-	 */
 	@Override
 	public String getTableName(Class<?> entityClass) {
 		return determineTableName(entityClass);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.util.List)
-	 */
 	@Override
 	public <T> List<T> saveNewList(List<T> entities) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -329,9 +229,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNewList(entities, tableName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.util.List, java.util.Map)
-	 */
 	@Override
 	public <T> List<T> saveNewList(List<T> entities, Map<String, Object> optionsByName) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -339,9 +236,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNewList(entities, tableName, optionsByName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.util.List, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> List<T> saveNewList(List<T> entities, QueryOptions options) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -349,17 +243,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNewList(entities, tableName, options);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.util.List, java.lang.String)
-	 */
 	@Override
 	public <T> List<T> saveNewList(List<T> entities, String tableName) {
 		return saveNewList(entities, tableName, Collections.<String, Object> emptyMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.util.List, java.lang.String, java.util.Map)
-	 */
 	@Override
 	public <T> List<T> saveNewList(List<T> entities, String tableName, Map<String, Object> optionsByName) {
 		Assert.notNull(entities);
@@ -369,17 +257,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return doBatchInsert(tableName, entities, optionsByName, false);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.util.List, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> List<T> saveNewList(List<T> entities, String tableName, QueryOptions options) {
 		return saveNewList(entities, tableName, options.toMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.lang.Object)
-	 */
 	@Override
 	public <T> T saveNew(T entity) {
 		String tableName = determineTableName(entity);
@@ -387,9 +269,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNew(entity, tableName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.lang.Object, java.util.Map)
-	 */
 	@Override
 	public <T> T saveNew(T entity, Map<String, Object> optionsByName) {
 		String tableName = determineTableName(entity);
@@ -397,9 +276,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNew(entity, tableName, optionsByName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.lang.Object, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> T saveNew(T entity, QueryOptions options) {
 		String tableName = determineTableName(entity);
@@ -407,17 +283,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNew(entity, tableName, options);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.lang.Object, java.lang.String)
-	 */
 	@Override
 	public <T> T saveNew(T entity, String tableName) {
 		return saveNew(entity, tableName, Collections.<String, Object> emptyMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.lang.Object, java.lang.String, java.util.Map)
-	 */
 	@Override
 	public <T> T saveNew(T entity, String tableName, Map<String, Object> optionsByName) {
 		Assert.notNull(entity);
@@ -426,17 +296,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return doInsert(tableName, entity, optionsByName, false);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insert(java.lang.Object, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> T saveNew(T entity, String tableName, QueryOptions options) {
 		return saveNew(entity, tableName, options.toMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.util.List)
-	 */
 	@Override
 	public <T> List<T> saveNewAsynchronously(List<T> entities) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -444,9 +308,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNewAsynchronously(entities, tableName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.util.List, java.util.Map)
-	 */
 	@Override
 	public <T> List<T> saveNewAsynchronously(List<T> entities, Map<String, Object> optionsByName) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -454,9 +315,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNewAsynchronously(entities, tableName, optionsByName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.util.List, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> List<T> saveNewAsynchronously(List<T> entities, QueryOptions options) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -464,17 +322,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNewAsynchronously(entities, tableName, options);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.util.List, java.lang.String)
-	 */
 	@Override
 	public <T> List<T> saveNewAsynchronously(List<T> entities, String tableName) {
 		return saveNewAsynchronously(entities, tableName, Collections.<String, Object> emptyMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.util.List, java.lang.String, java.util.Map)
-	 */
 	@Override
 	public <T> List<T> saveNewAsynchronously(List<T> entities, String tableName, Map<String, Object> optionsByName) {
 		Assert.notNull(entities);
@@ -484,17 +336,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return doBatchInsert(tableName, entities, optionsByName, true);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.util.List, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> List<T> saveNewAsynchronously(List<T> entities, String tableName, QueryOptions options) {
 		return saveNewAsynchronously(entities, tableName, options.toMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.lang.Object)
-	 */
 	@Override
 	public <T> T saveNewAsynchronously(T entity) {
 		String tableName = determineTableName(entity);
@@ -502,9 +348,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNewAsynchronously(entity, tableName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.lang.Object, java.util.Map)
-	 */
 	@Override
 	public <T> T saveNewAsynchronously(T entity, Map<String, Object> optionsByName) {
 		String tableName = determineTableName(entity);
@@ -512,9 +355,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNewAsynchronously(entity, tableName, optionsByName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.lang.Object, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> T saveNewAsynchronously(T entity, QueryOptions options) {
 		String tableName = determineTableName(entity);
@@ -522,17 +362,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveNewAsynchronously(entity, tableName, options);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.lang.Object, java.lang.String)
-	 */
 	@Override
 	public <T> T saveNewAsynchronously(T entity, String tableName) {
 		return saveNewAsynchronously(entity, tableName, Collections.<String, Object> emptyMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.lang.Object, java.lang.String, java.util.Map)
-	 */
 	@Override
 	public <T> T saveNewAsynchronously(T entity, String tableName, Map<String, Object> optionsByName) {
 		Assert.notNull(entity);
@@ -544,49 +378,31 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return doInsert(tableName, entity, optionsByName, true);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#insertAsynchronously(java.lang.Object, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> T saveNewAsynchronously(T entity, String tableName, QueryOptions options) {
 		return saveNewAsynchronously(entity, tableName, options.toMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#select(com.datastax.driver.core.querybuilder.Select, java.lang.Class)
-	 */
 	@Override
 	public <T> List<T> findByQuery(Select cql, Class<T> selectClass) {
 		return findByQuery(cql.getQueryString(), selectClass);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#select(java.lang.String, java.lang.Class)
-	 */
 	@Override
 	public <T> List<T> findByQuery(String cql, Class<T> selectClass) {
 		return doSelect(cql, new ReadRowCallback<T>(cassandraConverter, selectClass));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#selectOne(com.datastax.driver.core.querybuilder.Select, java.lang.Class)
-	 */
 	@Override
 	public <T> T findOneByQuery(Select selectQuery, Class<T> selectClass) {
 		return findOneByQuery(selectQuery.getQueryString(), selectClass);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#selectOne(java.lang.String, java.lang.Class)
-	 */
 	@Override
 	public <T> T findOneByQuery(String cql, Class<T> selectClass) {
 		return doSelectOne(cql, new ReadRowCallback<T>(cassandraConverter, selectClass));
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.util.List)
-	 */
 	@Override
 	public <T> List<T> saveList(List<T> entities) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -594,9 +410,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveList(entities, tableName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.util.List, java.util.Map)
-	 */
 	@Override
 	public <T> List<T> saveList(List<T> entities, Map<String, Object> optionsByName) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -604,9 +417,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveList(entities, tableName, optionsByName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.util.List, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> List<T> saveList(List<T> entities, QueryOptions options) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -614,17 +424,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveList(entities, tableName, options);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.util.List, java.lang.String)
-	 */
 	@Override
 	public <T> List<T> saveList(List<T> entities, String tableName) {
 		return saveList(entities, tableName, Collections.<String, Object> emptyMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.util.List, java.lang.String, java.util.Map)
-	 */
 	@Override
 	public <T> List<T> saveList(List<T> entities, String tableName, Map<String, Object> optionsByName) {
 		Assert.notNull(entities);
@@ -634,17 +438,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return doBatchUpdate(tableName, entities, optionsByName, false);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.util.List, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> List<T> saveList(List<T> entities, String tableName, QueryOptions options) {
 		return saveList(entities, tableName, options.toMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.lang.Object)
-	 */
 	@Override
 	public <T> T save(T entity) {
 		String tableName = getTableName(entity.getClass());
@@ -652,9 +450,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return save(entity, tableName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.lang.Object, java.util.Map)
-	 */
 	@Override
 	public <T> T save(T entity, Map<String, Object> optionsByName) {
 		String tableName = getTableName(entity.getClass());
@@ -662,9 +457,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return save(entity, tableName, optionsByName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.lang.Object, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> T save(T entity, QueryOptions options) {
 		String tableName = getTableName(entity.getClass());
@@ -672,18 +464,12 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return save(entity, tableName, options);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.lang.Object, java.lang.String)
-	 */
 	@Override
 	public <T> T save(T entity, String tableName) {
 
 		return save(entity, tableName, Collections.<String, Object> emptyMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.lang.Object, java.lang.String, java.util.Map)
-	 */
 	@Override
 	public <T> T save(T entity, String tableName, Map<String, Object> optionsByName) {
 		Assert.notNull(entity);
@@ -692,17 +478,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return doUpdate(tableName, entity, optionsByName, false);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#update(java.lang.Object, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> T save(T entity, String tableName, QueryOptions options) {
 		return save(entity, tableName, options.toMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.util.List)
-	 */
 	@Override
 	public <T> List<T> saveAsynchronously(List<T> entities) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -710,9 +490,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveAsynchronously(entities, tableName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.util.List, java.util.Map)
-	 */
 	@Override
 	public <T> List<T> saveAsynchronously(List<T> entities, Map<String, Object> optionsByName) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -720,9 +497,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveAsynchronously(entities, tableName, optionsByName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.util.List, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> List<T> saveAsynchronously(List<T> entities, QueryOptions options) {
 		String tableName = getTableName(entities.get(0).getClass());
@@ -730,18 +504,12 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveAsynchronously(entities, tableName, options);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.util.List, java.lang.String)
-	 */
 	@Override
 	public <T> List<T> saveAsynchronously(List<T> entities, String tableName) {
 
 		return saveAsynchronously(entities, tableName, Collections.<String, Object> emptyMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.util.List, java.lang.String, java.util.Map)
-	 */
 	@Override
 	public <T> List<T> saveAsynchronously(List<T> entities, String tableName, Map<String, Object> optionsByName) {
 		Assert.notNull(entities);
@@ -751,17 +519,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return doBatchUpdate(tableName, entities, optionsByName, true);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.util.List, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> List<T> saveAsynchronously(List<T> entities, String tableName, QueryOptions options) {
 		return saveAsynchronously(entities, tableName, options.toMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.lang.Object)
-	 */
 	@Override
 	public <T> T saveAsynchronously(T entity) {
 		String tableName = getTableName(entity.getClass());
@@ -769,9 +531,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveAsynchronously(entity, tableName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.lang.Object, java.util.Map)
-	 */
 	@Override
 	public <T> T saveAsynchronously(T entity, Map<String, Object> optionsByName) {
 		String tableName = getTableName(entity.getClass());
@@ -779,9 +538,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveAsynchronously(entity, tableName, optionsByName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.lang.Object, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> T saveAsynchronously(T entity, QueryOptions options) {
 		String tableName = getTableName(entity.getClass());
@@ -789,18 +545,12 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return saveAsynchronously(entity, tableName, options);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.lang.Object, java.lang.String)
-	 */
 	@Override
 	public <T> T saveAsynchronously(T entity, String tableName) {
 
 		return saveAsynchronously(entity, tableName, Collections.<String, Object> emptyMap());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.lang.Object, java.lang.String, java.util.Map)
-	 */
 	@Override
 	public <T> T saveAsynchronously(T entity, String tableName, Map<String, Object> optionsByName) {
 		Assert.notNull(entity);
@@ -809,9 +559,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return doUpdate(tableName, entity, optionsByName, true);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.cassandra.core.CassandraDataOperations#updateAsynchronously(java.lang.Object, java.lang.String, org.springframework.data.cassandra.core.QueryOptions)
-	 */
 	@Override
 	public <T> T saveAsynchronously(T entity, String tableName, QueryOptions options) {
 		return saveAsynchronously(entity, tableName, options.toMap());
@@ -1026,9 +773,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param objectToRemove
 	 */
 	protected <T> void doDeleteById(final boolean asychronously, final String tableName, final T id,
-			Class<?> entityClass, Map<String, Object> optionsByName) {
+			Class<?> entityClass, QueryOptions optionsOrNull) {
 
-		final Query query = toDeleteQueryById(tableName, id, entityClass, optionsByName);
+		final Query query = toDeleteQueryById(tableName, id, entityClass, optionsOrNull);
 
 		logger.info(query.toString());
 
@@ -1262,8 +1009,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param optionsByName
 	 * @return
 	 */
-	public Query toDeleteQueryById(String tableName, final Object id, Class<?> entityClass,
-			Map<String, Object> optionsByName) {
+	public Query toDeleteQueryById(String tableName, final Object id, Class<?> entityClass, QueryOptions optionsOrNull) {
 
 		CassandraPersistentEntity<?> entity = getEntity(entityClass);
 
@@ -1277,9 +1023,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 			w.and(c);
 		}
 
-		addQueryOptions(query, optionsByName);
+		addQueryOptions(query, optionsOrNull);
 
-		addDeleteOptions(query, optionsByName);
+		addDeleteOptions(query, optionsOrNull);
 
 		return query;
 
@@ -1292,7 +1038,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param objectToRemove
 	 */
 	protected <T> void doBatchDeleteById(final boolean asychronously, final String tableName, final List<T> ids,
-			Class<?> entityClass, Map<String, Object> optionsByName) {
+			Class<?> entityClass, QueryOptions optionsOrNull) {
 
 		Assert.notEmpty(ids);
 
@@ -1303,11 +1049,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 		for (final T id : ids) {
 
-			batch.add((Statement) toDeleteQueryById(tableName, id, entityClass, optionsByName));
+			batch.add((Statement) toDeleteQueryById(tableName, id, entityClass, optionsOrNull));
 
 		}
 
-		addQueryOptions(batch, optionsByName);
+		addQueryOptions(batch, optionsOrNull);
 
 		logger.info(batch.toString());
 
