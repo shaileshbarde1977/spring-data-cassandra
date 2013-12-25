@@ -133,7 +133,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveNewInBatch(boolean asychronously, List<T> entities, QueryOptions optionsOrNull);
+	<T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, QueryOptions optionsOrNull);
 
 	/**
 	 * Insert the given list of objects to the table.
@@ -143,7 +143,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull);
+	<T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, String tableName, QueryOptions optionsOrNull);
 
 	/**
 	 * Updates the given object in the table.
@@ -173,7 +173,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveInBatch(boolean asychronously, List<T> entities, QueryOptions optionsOrNull);
+	<T> void saveInBatch(boolean asychronously, Iterable<T> entities, QueryOptions optionsOrNull);
 
 	/**
 	 * Updates list of objects in the table.
@@ -183,7 +183,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull);
+	<T> void saveInBatch(boolean asychronously, Iterable<T> entities, String tableName, QueryOptions optionsOrNull);
 
 	/**
 	 * Removes the given object by id from the given table.
