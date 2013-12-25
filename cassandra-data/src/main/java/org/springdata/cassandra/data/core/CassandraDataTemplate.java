@@ -157,6 +157,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName,
 			QueryOptions optionsOrNull) {
 		Assert.notNull(id);
+		assertNotIterable(id);
 		Assert.notNull(entityClass);
 		Assert.notNull(tableName);
 		doDeleteById(asychronously, tableName, id, entityClass, optionsOrNull);
@@ -186,6 +187,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	@Override
 	public <T> void delete(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull) {
 		Assert.notNull(entity);
+		assertNotIterable(entity);
 		Assert.notNull(tableName);
 		doDelete(asychronously, tableName, entity, optionsOrNull);
 	}
@@ -220,83 +222,34 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void saveNewInBatch(boolean asychronously, List<T> entities) {
+	public <T> void saveNewInBatch(boolean asychronously, List<T> entities, QueryOptions optionsOrNull) {
 		String tableName = getTableName(entities.get(0).getClass());
 		Assert.notNull(tableName);
-		saveNewInBatch(asychronously, entities, tableName);
+		saveNewInBatch(asychronously, entities, tableName, optionsOrNull);
 	}
 
 	@Override
-	public <T> void saveNewInBatch(boolean asychronously, List<T> entities, Map<String, Object> optionsByName) {
-		String tableName = getTableName(entities.get(0).getClass());
-		Assert.notNull(tableName);
-		saveNewInBatch(asychronously, entities, tableName, optionsByName);
-	}
-
-	@Override
-	public <T> void saveNewInBatch(boolean asychronously, List<T> entities, QueryOptions options) {
-		String tableName = getTableName(entities.get(0).getClass());
-		Assert.notNull(tableName);
-		saveNewInBatch(asychronously, entities, tableName, options);
-	}
-
-	@Override
-	public <T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName) {
-		saveNewInBatch(asychronously, entities, tableName, Collections.<String, Object> emptyMap());
-	}
-
-	@Override
-	public <T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName,
-			Map<String, Object> optionsByName) {
+	public <T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull) {
 		Assert.notNull(entities);
 		Assert.notEmpty(entities);
 		Assert.notNull(tableName);
-		Assert.notNull(optionsByName);
-		doBatchInsert(tableName, entities, optionsByName, asychronously);
+		doBatchInsert(tableName, entities, optionsOrNull, asychronously);
 	}
 
 	@Override
-	public <T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions options) {
-		saveNewInBatch(asychronously, entities, tableName, options.toMap());
-	}
-
-	@Override
-	public <T> void saveNew(boolean asychronously, T entity) {
+	public <T> void saveNew(boolean asychronously, T entity, QueryOptions optionsOrNull) {
 		String tableName = determineTableName(entity);
 		Assert.notNull(tableName);
-		saveNew(asychronously, entity, tableName);
+		saveNew(asychronously, entity, tableName, optionsOrNull);
 	}
 
 	@Override
-	public <T> void saveNew(boolean asychronously, T entity, Map<String, Object> optionsByName) {
-		String tableName = determineTableName(entity);
-		Assert.notNull(tableName);
-		saveNew(asychronously, entity, tableName, optionsByName);
-	}
-
-	@Override
-	public <T> void saveNew(boolean asychronously, T entity, QueryOptions options) {
-		String tableName = determineTableName(entity);
-		Assert.notNull(tableName);
-		saveNew(asychronously, entity, tableName, options);
-	}
-
-	@Override
-	public <T> void saveNew(boolean asychronously, T entity, String tableName) {
-		saveNew(asychronously, entity, tableName, Collections.<String, Object> emptyMap());
-	}
-
-	@Override
-	public <T> void saveNew(boolean asychronously, T entity, String tableName, Map<String, Object> optionsByName) {
+	public <T> void saveNew(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull) {
 		Assert.notNull(entity);
+		assertNotIterable(entity);
 		Assert.notNull(tableName);
-		ensureNotIterable(entity);
-		doInsert(tableName, entity, optionsByName, asychronously);
-	}
-
-	@Override
-	public <T> void saveNew(boolean asychronously, T entity, String tableName, QueryOptions options) {
-		saveNew(asychronously, entity, tableName, options.toMap());
+		assertNotIterable(entity);
+		doInsert(tableName, entity, optionsOrNull, asychronously);
 	}
 
 	@Override
@@ -320,20 +273,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void saveInBatch(boolean asychronously, List<T> entities) {
-		String tableName = getTableName(entities.get(0).getClass());
-		Assert.notNull(tableName);
-		saveInBatch(asychronously, entities, tableName);
-	}
-
-	@Override
-	public <T> void saveInBatch(boolean asychronously, List<T> entities, Map<String, Object> optionsByName) {
-		String tableName = getTableName(entities.get(0).getClass());
-		Assert.notNull(tableName);
-		saveInBatch(asychronously, entities, tableName, optionsByName);
-	}
-
-	@Override
 	public <T> void saveInBatch(boolean asychronously, List<T> entities, QueryOptions options) {
 		String tableName = getTableName(entities.get(0).getClass());
 		Assert.notNull(tableName);
@@ -341,37 +280,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void saveInBatch(boolean asychronously, List<T> entities, String tableName) {
-		saveInBatch(asychronously, entities, tableName, Collections.<String, Object> emptyMap());
-	}
-
-	@Override
-	public <T> void saveInBatch(boolean asychronously, List<T> entities, String tableName,
-			Map<String, Object> optionsByName) {
+	public <T> void saveInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull) {
 		Assert.notNull(entities);
 		Assert.notEmpty(entities);
 		Assert.notNull(tableName);
-		Assert.notNull(optionsByName);
-		doBatchUpdate(tableName, entities, optionsByName, asychronously);
-	}
-
-	@Override
-	public <T> void saveInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions options) {
-		saveInBatch(asychronously, entities, tableName, options.toMap());
-	}
-
-	@Override
-	public <T> void save(boolean asychronously, T entity) {
-		String tableName = getTableName(entity.getClass());
-		Assert.notNull(tableName);
-		save(asychronously, entity, tableName);
-	}
-
-	@Override
-	public <T> void save(boolean asychronously, T entity, Map<String, Object> optionsByName) {
-		String tableName = getTableName(entity.getClass());
-		Assert.notNull(tableName);
-		save(asychronously, entity, tableName, optionsByName);
+		doBatchUpdate(tableName, entities, optionsOrNull, asychronously);
 	}
 
 	@Override
@@ -382,21 +295,11 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void save(boolean asychronously, T entity, String tableName) {
-		save(asychronously, entity, tableName, Collections.<String, Object> emptyMap());
-	}
-
-	@Override
-	public <T> void save(boolean asychronously, T entity, String tableName, Map<String, Object> optionsByName) {
+	public <T> void save(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull) {
 		Assert.notNull(entity);
+		assertNotIterable(entity);
 		Assert.notNull(tableName);
-		Assert.notNull(optionsByName);
-		doUpdate(tableName, entity, optionsByName, asychronously);
-	}
-
-	@Override
-	public <T> void save(boolean asychronously, T entity, String tableName, QueryOptions options) {
-		save(asychronously, entity, tableName, options.toMap());
+		doUpdate(tableName, entity, optionsOrNull, asychronously);
 	}
 
 	/**
@@ -516,7 +419,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param insertAsychronously
 	 * @return
 	 */
-	protected <T> void doBatchInsert(final String tableName, final List<T> entities, Map<String, Object> optionsByName,
+	protected <T> void doBatchInsert(final String tableName, final List<T> entities, QueryOptions optionsOrNull,
 			final boolean insertAsychronously) {
 
 		Assert.notEmpty(entities);
@@ -528,11 +431,14 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 		for (final T objectToSave : entities) {
 
-			batch.add((Statement) toInsertQuery(tableName, objectToSave, optionsByName));
+			Assert.notNull(objectToSave);
+			assertNotIterable(objectToSave);
+
+			batch.add((Statement) toInsertQuery(tableName, objectToSave, optionsOrNull));
 
 		}
 
-		addQueryOptions(batch, optionsByName);
+		addQueryOptions(batch, optionsOrNull);
 
 		logger.info(batch.getQueryString());
 
@@ -563,7 +469,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param updateAsychronously
 	 * @return
 	 */
-	protected <T> void doBatchUpdate(final String tableName, final List<T> entities, Map<String, Object> optionsByName,
+	protected <T> void doBatchUpdate(final String tableName, final List<T> entities, QueryOptions optionsOrNull,
 			final boolean updateAsychronously) {
 
 		Assert.notEmpty(entities);
@@ -575,11 +481,14 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 		for (final T objectToSave : entities) {
 
-			batch.add((Statement) toUpdateQuery(tableName, objectToSave, optionsByName));
+			Assert.notNull(objectToSave);
+			assertNotIterable(objectToSave);
+
+			batch.add((Statement) toUpdateQuery(tableName, objectToSave, optionsOrNull));
 
 		}
 
-		addQueryOptions(batch, optionsByName);
+		addQueryOptions(batch, optionsOrNull);
 
 		logger.info(batch.toString());
 
@@ -688,10 +597,10 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param tableName
 	 * @param entity
 	 */
-	protected <T> void doInsert(final String tableName, final T entity, final Map<String, Object> optionsByName,
+	protected <T> void doInsert(final String tableName, final T entity, QueryOptions optionsOrNull,
 			final boolean insertAsychronously) {
 
-		final Query query = toInsertQuery(tableName, entity, optionsByName);
+		final Query query = toInsertQuery(tableName, entity, optionsOrNull);
 
 		logger.info(query.toString());
 		if (query.getConsistencyLevel() != null) {
@@ -728,10 +637,10 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param updateAsychronously
 	 * @return
 	 */
-	protected <T> void doUpdate(final String tableName, final T entity, final Map<String, Object> optionsByName,
+	protected <T> void doUpdate(final String tableName, final T entity, QueryOptions optionsOrNull,
 			final boolean updateAsychronously) {
 
-		final Query q = toUpdateQuery(tableName, entity, optionsByName);
+		final Query q = toUpdateQuery(tableName, entity, optionsOrNull);
 
 		logger.info(q.toString());
 
@@ -758,7 +667,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * 
 	 * @param o
 	 */
-	protected void ensureNotIterable(Object o) {
+	protected void assertNotIterable(Object o) {
 		if (null != o) {
 			if (o.getClass().isArray() || ITERABLE_CLASSES.contains(o.getClass().getName())) {
 				throw new IllegalArgumentException("Cannot use a collection here.");
@@ -777,7 +686,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * 
 	 * @return The Query object to run with session.execute();
 	 */
-	public Query toInsertQuery(String tableName, final Object objectToSave, Map<String, Object> optionsByName) {
+	public Query toInsertQuery(String tableName, final Object objectToSave, QueryOptions optionsOrNull) {
 
 		final Insert query = QueryBuilder.insertInto(keyspace, tableName);
 
@@ -789,12 +698,12 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		/*
 		 * Add Query Options
 		 */
-		addQueryOptions(query, optionsByName);
+		addQueryOptions(query, optionsOrNull);
 
 		/*
 		 * Add TTL to Insert object
 		 */
-		addInsertOptions(query, optionsByName);
+		addInsertOptions(query, optionsOrNull);
 
 		return query;
 
@@ -811,7 +720,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * 
 	 * @return The Query object to run with session.execute();
 	 */
-	public Query toUpdateQuery(String tableName, final Object objectToSave, Map<String, Object> optionsByName) {
+	public Query toUpdateQuery(String tableName, final Object objectToSave, QueryOptions optionsOrNull) {
 
 		final Update query = QueryBuilder.update(keyspace, tableName);
 
@@ -823,12 +732,12 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		/*
 		 * Add Query Options
 		 */
-		addQueryOptions(query, optionsByName);
+		addQueryOptions(query, optionsOrNull);
 
 		/*
 		 * Add TTL to Insert object
 		 */
-		addUpdateOptions(query, optionsByName);
+		addUpdateOptions(query, optionsOrNull);
 
 		return query;
 
@@ -884,6 +793,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		for (final T id : ids) {
 
 			Assert.notNull(id);
+			assertNotIterable(id);
 
 			batch.add((Statement) toDeleteQueryById(tableName, id, entityClass, optionsOrNull));
 			emptyBatch = false;
@@ -963,6 +873,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		for (final T objectToSave : entities) {
 
 			Assert.notNull(objectToSave);
+			assertNotIterable(objectToSave);
 
 			if (tableNameOrNull == null) {
 				tableNameOrNull = getTableName(objectToSave.getClass());

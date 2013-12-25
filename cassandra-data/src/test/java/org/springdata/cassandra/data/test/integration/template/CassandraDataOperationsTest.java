@@ -105,7 +105,7 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.saveNew(false, b1);
+		cassandraDataTemplate.saveNew(false, b1, null);
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
@@ -113,7 +113,7 @@ public class CassandraDataOperationsTest {
 		b2.setAuthor("Cassandra Guru");
 		b2.setPages(521);
 
-		cassandraDataTemplate.saveNew(false, b2, "book_alt");
+		cassandraDataTemplate.saveNew(false, b2, "book_alt", null);
 
 		/*
 		 * Test Single Insert with entity
@@ -133,22 +133,6 @@ public class CassandraDataOperationsTest {
 		/*
 		 * Test Single Insert with entity
 		 */
-		Book b4 = new Book();
-		b4.setIsbn("123456-4");
-		b4.setTitle("Spring Data Cassandra Guide");
-		b4.setAuthor("Cassandra Guru");
-		b4.setPages(465);
-
-		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptionNames.TTL, 30);
-
-		cassandraDataTemplate.saveNew(false, b4, "book", optionsByName);
-
-		/*
-		 * Test Single Insert with entity
-		 */
 		Book b5 = new Book();
 		b5.setIsbn("123456-5");
 		b5.setTitle("Spring Data Cassandra Guide");
@@ -156,17 +140,6 @@ public class CassandraDataOperationsTest {
 		b5.setPages(265);
 
 		cassandraDataTemplate.saveNew(false, b5, options);
-
-		/*
-		 * Test Single Insert with entity
-		 */
-		Book b6 = new Book();
-		b6.setIsbn("123456-6");
-		b6.setTitle("Spring Data Cassandra Guide");
-		b6.setAuthor("Cassandra Guru");
-		b6.setPages(465);
-
-		cassandraDataTemplate.saveNew(false, b6, optionsByName);
 
 	}
 
@@ -182,7 +155,7 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.saveNew(true, b1);
+		cassandraDataTemplate.saveNew(true, b1, null);
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
@@ -190,7 +163,7 @@ public class CassandraDataOperationsTest {
 		b2.setAuthor("Cassandra Guru");
 		b2.setPages(521);
 
-		cassandraDataTemplate.saveNew(true, b2, "book_alt");
+		cassandraDataTemplate.saveNew(true, b2, "book_alt", null);
 
 		/*
 		 * Test Single Insert with entity
@@ -210,22 +183,6 @@ public class CassandraDataOperationsTest {
 		/*
 		 * Test Single Insert with entity
 		 */
-		Book b4 = new Book();
-		b4.setIsbn("123456-4");
-		b4.setTitle("Spring Data Cassandra Guide");
-		b4.setAuthor("Cassandra Guru");
-		b4.setPages(465);
-
-		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptionNames.TTL, 30);
-
-		cassandraDataTemplate.saveNew(true, b4, "book", optionsByName);
-
-		/*
-		 * Test Single Insert with entity
-		 */
 		Book b5 = new Book();
 		b5.setIsbn("123456-5");
 		b5.setTitle("Spring Data Cassandra Guide");
@@ -233,17 +190,6 @@ public class CassandraDataOperationsTest {
 		b5.setPages(265);
 
 		cassandraDataTemplate.saveNew(true, b5, options);
-
-		/*
-		 * Test Single Insert with entity
-		 */
-		Book b6 = new Book();
-		b6.setIsbn("123456-6");
-		b6.setTitle("Spring Data Cassandra Guide");
-		b6.setAuthor("Cassandra Guru");
-		b6.setPages(465);
-
-		cassandraDataTemplate.saveNew(true, b6, optionsByName);
 
 	}
 
@@ -254,20 +200,15 @@ public class CassandraDataOperationsTest {
 		options.setConsistencyLevel(ConsistencyLevel.ONE);
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
-		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptionNames.TTL, 30);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books);
+		cassandraDataTemplate.saveNewInBatch(false, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt");
+		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
 
 		books = getBookList(20);
 
@@ -275,15 +216,7 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book", optionsByName);
-
-		books = getBookList(20);
-
 		cassandraDataTemplate.saveNewInBatch(false, books, options);
-
-		books = getBookList(20);
-
-		cassandraDataTemplate.saveNewInBatch(false, books, optionsByName);
 
 	}
 
@@ -294,20 +227,15 @@ public class CassandraDataOperationsTest {
 		options.setConsistencyLevel(ConsistencyLevel.ONE);
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
-		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptionNames.TTL, 30);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(true, books);
+		cassandraDataTemplate.saveNewInBatch(true, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(true, books, "book_alt");
+		cassandraDataTemplate.saveNewInBatch(true, books, "book_alt", null);
 
 		books = getBookList(20);
 
@@ -315,15 +243,7 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(true, books, "book", optionsByName);
-
-		books = getBookList(20);
-
 		cassandraDataTemplate.saveNewInBatch(true, books, options);
-
-		books = getBookList(20);
-
-		cassandraDataTemplate.saveNewInBatch(true, books, optionsByName);
 
 	}
 
@@ -356,11 +276,6 @@ public class CassandraDataOperationsTest {
 		options.setConsistencyLevel(ConsistencyLevel.ONE);
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
-		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptionNames.TTL, 30);
-
 		/*
 		 * Test Single Insert with entity
 		 */
@@ -370,7 +285,7 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.save(false, b1);
+		cassandraDataTemplate.save(false, b1, null);
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
@@ -378,7 +293,7 @@ public class CassandraDataOperationsTest {
 		b2.setAuthor("Cassandra Guru");
 		b2.setPages(521);
 
-		cassandraDataTemplate.save(false, b2, "book_alt");
+		cassandraDataTemplate.save(false, b2, "book_alt", null);
 
 		/*
 		 * Test Single Insert with entity
@@ -394,17 +309,6 @@ public class CassandraDataOperationsTest {
 		/*
 		 * Test Single Insert with entity
 		 */
-		Book b4 = new Book();
-		b4.setIsbn("123456-4");
-		b4.setTitle("Spring Data Cassandra Book");
-		b4.setAuthor("Cassandra Guru");
-		b4.setPages(465);
-
-		cassandraDataTemplate.save(false, b4, "book", optionsByName);
-
-		/*
-		 * Test Single Insert with entity
-		 */
 		Book b5 = new Book();
 		b5.setIsbn("123456-5");
 		b5.setTitle("Spring Data Cassandra Book");
@@ -412,17 +316,6 @@ public class CassandraDataOperationsTest {
 		b5.setPages(265);
 
 		cassandraDataTemplate.save(false, b5, options);
-
-		/*
-		 * Test Single Insert with entity
-		 */
-		Book b6 = new Book();
-		b6.setIsbn("123456-6");
-		b6.setTitle("Spring Data Cassandra Book");
-		b6.setAuthor("Cassandra Guru");
-		b6.setPages(465);
-
-		cassandraDataTemplate.save(false, b6, optionsByName);
 
 	}
 
@@ -435,11 +328,6 @@ public class CassandraDataOperationsTest {
 		options.setConsistencyLevel(ConsistencyLevel.ONE);
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
-		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptionNames.TTL, 30);
-
 		/*
 		 * Test Single Insert with entity
 		 */
@@ -449,7 +337,7 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.save(true, b1);
+		cassandraDataTemplate.save(true, b1, null);
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
@@ -457,7 +345,7 @@ public class CassandraDataOperationsTest {
 		b2.setAuthor("Cassandra Guru");
 		b2.setPages(521);
 
-		cassandraDataTemplate.save(true, b2, "book_alt");
+		cassandraDataTemplate.save(true, b2, "book_alt", null);
 
 		/*
 		 * Test Single Insert with entity
@@ -473,17 +361,6 @@ public class CassandraDataOperationsTest {
 		/*
 		 * Test Single Insert with entity
 		 */
-		Book b4 = new Book();
-		b4.setIsbn("123456-4");
-		b4.setTitle("Spring Data Cassandra Book");
-		b4.setAuthor("Cassandra Guru");
-		b4.setPages(465);
-
-		cassandraDataTemplate.save(true, b4, "book", optionsByName);
-
-		/*
-		 * Test Single Insert with entity
-		 */
 		Book b5 = new Book();
 		b5.setIsbn("123456-5");
 		b5.setTitle("Spring Data Cassandra Book");
@@ -491,17 +368,6 @@ public class CassandraDataOperationsTest {
 		b5.setPages(265);
 
 		cassandraDataTemplate.save(true, b5, options);
-
-		/*
-		 * Test Single Insert with entity
-		 */
-		Book b6 = new Book();
-		b6.setIsbn("123456-6");
-		b6.setTitle("Spring Data Cassandra Book");
-		b6.setAuthor("Cassandra Guru");
-		b6.setPages(465);
-
-		cassandraDataTemplate.save(true, b6, optionsByName);
 
 	}
 
@@ -512,28 +378,23 @@ public class CassandraDataOperationsTest {
 		options.setConsistencyLevel(ConsistencyLevel.ONE);
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
-		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptionNames.TTL, 30);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books);
+		cassandraDataTemplate.saveNewInBatch(false, books, null);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(false, books);
+		cassandraDataTemplate.saveInBatch(false, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt");
+		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(false, books, "book_alt");
+		cassandraDataTemplate.saveInBatch(false, books, "book_alt", null);
 
 		books = getBookList(20);
 
@@ -545,27 +406,11 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book", optionsByName);
-
-		alterBooks(books);
-
-		cassandraDataTemplate.saveInBatch(false, books, "book", optionsByName);
-
-		books = getBookList(20);
-
 		cassandraDataTemplate.saveNewInBatch(false, books, options);
 
 		alterBooks(books);
 
 		cassandraDataTemplate.saveInBatch(false, books, options);
-
-		books = getBookList(20);
-
-		cassandraDataTemplate.saveNewInBatch(false, books, optionsByName);
-
-		alterBooks(books);
-
-		cassandraDataTemplate.saveInBatch(false, books, optionsByName);
 
 	}
 
@@ -576,28 +421,23 @@ public class CassandraDataOperationsTest {
 		options.setConsistencyLevel(ConsistencyLevel.ONE);
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
-		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptionNames.TTL, 30);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books);
+		cassandraDataTemplate.saveNewInBatch(false, books, null);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(true, books);
+		cassandraDataTemplate.saveInBatch(true, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt");
+		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(true, books, "book_alt");
+		cassandraDataTemplate.saveInBatch(true, books, "book_alt", null);
 
 		books = getBookList(20);
 
@@ -609,27 +449,11 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book", optionsByName);
-
-		alterBooks(books);
-
-		cassandraDataTemplate.saveInBatch(true, books, "book", optionsByName);
-
-		books = getBookList(20);
-
 		cassandraDataTemplate.saveNewInBatch(false, books, options);
 
 		alterBooks(books);
 
 		cassandraDataTemplate.saveInBatch(true, books, options);
-
-		books = getBookList(20);
-
-		cassandraDataTemplate.saveNewInBatch(false, books, optionsByName);
-
-		alterBooks(books);
-
-		cassandraDataTemplate.saveInBatch(true, books, optionsByName);
 
 	}
 
@@ -735,13 +559,13 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books);
+		cassandraDataTemplate.saveNewInBatch(false, books, null);
 
 		cassandraDataTemplate.deleteInBatch(false, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt");
+		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
 
 		cassandraDataTemplate.deleteInBatch(false, books, "book_alt", null);
 
@@ -770,13 +594,13 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books);
+		cassandraDataTemplate.saveNewInBatch(false, books, null);
 
 		cassandraDataTemplate.deleteInBatch(true, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt");
+		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
 
 		cassandraDataTemplate.deleteInBatch(true, books, "book_alt", null);
 
@@ -885,13 +709,13 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books);
+		cassandraDataTemplate.saveNewInBatch(false, books, null);
 
 		cassandraDataTemplate.deleteInBatchById(false, ids(books), Book.class, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt");
+		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
 
 		cassandraDataTemplate.deleteInBatchById(false, ids(books), Book.class, "book_alt", null);
 
@@ -924,22 +748,17 @@ public class CassandraDataOperationsTest {
 		options.setConsistencyLevel(ConsistencyLevel.ONE);
 		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
-		Map<String, Object> optionsByName = new HashMap<String, Object>();
-		optionsByName.put(QueryOptionNames.CONSISTENCY_LEVEL, ConsistencyLevel.ALL);
-		optionsByName.put(QueryOptionNames.RETRY_POLICY, RetryPolicy.FALLTHROUGH);
-		optionsByName.put(QueryOptionNames.TTL, 30);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books);
+		cassandraDataTemplate.saveNewInBatch(false, books, null);
 
 		cassandraDataTemplate.deleteInBatchById(true, ids(books), Book.class, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt");
+		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
 
 		cassandraDataTemplate.deleteInBatchById(true, ids(books), Book.class, "book_alt", null);
 
@@ -969,7 +788,7 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.saveNew(false, b1);
+		cassandraDataTemplate.saveNew(false, b1, null);
 
 		Select select = QueryBuilder.select().all().from("book");
 		select.where(QueryBuilder.eq("isbn", "123456-1"));
@@ -989,7 +808,7 @@ public class CassandraDataOperationsTest {
 
 		List<Book> books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books);
+		cassandraDataTemplate.saveNewInBatch(false, books, null);
 
 		Select select = QueryBuilder.select().all().from("book");
 
@@ -1006,7 +825,7 @@ public class CassandraDataOperationsTest {
 
 		List<Book> books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books);
+		cassandraDataTemplate.saveNewInBatch(false, books, null);
 
 		Select select = QueryBuilder.select().countAll().from("book");
 

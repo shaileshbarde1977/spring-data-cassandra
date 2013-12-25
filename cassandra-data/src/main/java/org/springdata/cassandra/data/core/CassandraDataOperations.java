@@ -109,193 +109,81 @@ public interface CassandraDataOperations {
 	Long count(String tableName);
 
 	/**
-	 * Insert the given object to the table by id.
+	 * Insert the given object to the table.
 	 * 
 	 * @param entity
+	 * @param optionsOrNull
 	 */
-	<T> void saveNew(boolean asychronously, T entity);
+	<T> void saveNew(boolean asychronously, T entity, QueryOptions optionsOrNull);
 
 	/**
-	 * Insert the given object to the table by id.
+	 * Insert the given object to the table.
 	 * 
 	 * @param entity
 	 * @param tableName
-	 * @return
-	 */
-	<T> void saveNew(boolean asychronously, T entity, String tableName);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param options
+	 * @param optionsOrNull
 	 * @return
 	 */
 	<T> void saveNew(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull);
 
 	/**
-	 * @param entity
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> void saveNew(boolean asychronously, T entity, QueryOptions options);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> void saveNew(boolean asychronously, T entity, Map<String, Object> optionsByName);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> void saveNew(boolean asychronously, T entity, String tableName, Map<String, Object> optionsByName);
-
-	/**
-	 * Insert the given list of objects to the table by annotation table name.
+	 * Insert the given list of objects to the table.
 	 * 
 	 * @param entities
+	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveNewInBatch(boolean asychronously, List<T> entities);
+	<T> void saveNewInBatch(boolean asychronously, List<T> entities, QueryOptions optionsOrNull);
 
 	/**
-	 * Insert the given list of objects to the table by name.
+	 * Insert the given list of objects to the table.
 	 * 
 	 * @param entities
 	 * @param tableName
+	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName);
+	<T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull);
 
 	/**
-	 * @param entities
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> void saveNewInBatch(boolean asychronously, List<T> entities, QueryOptions options);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> void saveNewInBatch(boolean asychronously, List<T> entities, Map<String, Object> optionsByName);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions options);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> void saveNewInBatch(boolean asychronously, List<T> entities, String tableName, Map<String, Object> optionsByName);
-
-	/**
-	 * Insert the given object to the table by id.
+	 * Updates the given object in the table.
 	 * 
-	 * @param object
-	 */
-	<T> void save(boolean asychronously, T entity);
-
-	/**
-	 * Insert the given object to the table by id.
-	 * 
-	 * @param object
-	 */
-	<T> void save(boolean asychronously, T entity, String tableName);
-
-	/**
 	 * @param entity
 	 * @param tableName
 	 * @param options
 	 * @return
 	 */
-	<T> void save(boolean asychronously, T entity, QueryOptions options);
+	<T> void save(boolean asychronously, T entity, QueryOptions optionsOrNull);
 
 	/**
-	 * @param entity
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> void save(boolean asychronously, T entity, Map<String, Object> optionsByName);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> void save(boolean asychronously, T entity, String tableName, QueryOptions options);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> void save(boolean asychronously, T entity, String tableName, Map<String, Object> optionsByName);
-
-	/**
-	 * Insert the given object to the table by id.
+	 * Updates the given object in the table.
 	 * 
-	 * @param object
+	 * @param entity
+	 * @param tableName
+	 * @param optionsOrNull
+	 * @return
 	 */
-	<T> void saveInBatch(boolean asychronously, List<T> entities);
+	<T> void save(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull);
 
 	/**
-	 * Insert the given object to the table by id.
+	 * Updates list of objects in the table.
 	 * 
-	 * @param object
-	 */
-	<T> void saveInBatch(boolean asychronously, List<T> entities, String tableName);
-
-	/**
 	 * @param entities
 	 * @param tableName
-	 * @param options
+	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveInBatch(boolean asychronously, List<T> entities, QueryOptions options);
+	<T> void saveInBatch(boolean asychronously, List<T> entities, QueryOptions optionsOrNull);
 
 	/**
+	 * Updates list of objects in the table.
+	 * 
 	 * @param entities
 	 * @param tableName
-	 * @param optionsByName
+	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveInBatch(boolean asychronously, List<T> entities, Map<String, Object> optionsByName);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param options
-	 * @return
-	 */
-	<T> void saveInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions options);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param optionsByName
-	 * @return
-	 */
-	<T> void saveInBatch(boolean asychronously, List<T> entities, String tableName, Map<String, Object> optionsByName);
+	<T> void saveInBatch(boolean asychronously, List<T> entities, String tableName, QueryOptions optionsOrNull);
 
 	/**
 	 * Removes the given object by id from the given table.

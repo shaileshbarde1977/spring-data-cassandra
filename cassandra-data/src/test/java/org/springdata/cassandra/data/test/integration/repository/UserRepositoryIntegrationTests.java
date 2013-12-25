@@ -103,7 +103,7 @@ public class UserRepositoryIntegrationTests {
 
 		all = Arrays.asList(tom, bob, alice, scott);
 
-		dataOperations.saveNewInBatch(false, all);
+		dataOperations.saveNewInBatch(false, all, null);
 	}
 
 	@Test
