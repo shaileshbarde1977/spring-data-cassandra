@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springdata.cassandra.base.core.CassandraTemplate;
@@ -94,28 +93,19 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> T findById(Object id, Class<T> entityClass) {
-		return findById(id, entityClass, getTableName(entityClass), Collections.<String, Object> emptyMap());
+	public <T> T findById(Object id, Class<T> entityClass, QueryOptions optionsOrNull) {
+		String tableName = getTableName(entityClass);
+		Assert.notNull(tableName);
+		return findById(id, entityClass, tableName, optionsOrNull);
 	}
 
 	@Override
-	public <T> T findById(Object id, Class<T> entityClass, String tableName) {
-		return findById(id, entityClass, tableName, Collections.<String, Object> emptyMap());
-	}
-
-	@Override
-	public <T> T findById(Object id, Class<T> entityClass, QueryOptions options) {
-		return findById(id, entityClass, getTableName(entityClass), options);
-	}
-
-	@Override
-	public <T> T findById(Object id, Class<T> entityClass, String tableName, QueryOptions options) {
-		return doFindById(id, entityClass, tableName, options.toMap());
-	}
-
-	@Override
-	public <T> T findById(Object id, Class<T> entityClass, String tableName, Map<String, Object> optionsByName) {
-		return doFindById(id, entityClass, tableName, optionsByName);
+	public <T> T findById(Object id, Class<T> entityClass, String tableName, QueryOptions optionsOrNull) {
+		Assert.notNull(id);
+		assertNotIterable(id);
+		Assert.notNull(entityClass);
+		Assert.notNull(tableName);
+		return doFindById(id, entityClass, tableName, optionsOrNull);
 	}
 
 	@Override
@@ -924,7 +914,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 	}
 
-	protected <T> T doFindById(Object id, Class<T> entityClass, String tableName, Map<String, Object> optionsByName) {
+	protected <T> T doFindById(Object id, Class<T> entityClass, String tableName, QueryOptions optionsOrNull) {
 		Select select = QueryBuilder.select().all().from(tableName);
 		Select.Where w = select.where();
 
@@ -936,7 +926,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 			w.and(c);
 		}
 
-		addQueryOptions(select, optionsByName);
+		addQueryOptions(select, optionsOrNull);
 
 		return doSelectOne(select.getQueryString(), new ReadRowCallback<T>(cassandraConverter, entityClass));
 

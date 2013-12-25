@@ -100,7 +100,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	 */
 	public T findOne(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
-		return cassandraDataTemplate.findById(id, entityInformation.getJavaType());
+		return cassandraDataTemplate.findById(id, entityInformation.getJavaType(), null);
 	}
 
 	/*

@@ -16,7 +16,6 @@
 package org.springdata.cassandra.data.core;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springdata.cassandra.base.core.query.QueryOptions;
 import org.springdata.cassandra.data.convert.CassandraConverter;
@@ -43,22 +42,25 @@ public interface CassandraDataOperations {
 	String getTableName(Class<?> entityClass);
 
 	/**
-	 * Find by id
 	 * 
 	 * @param id
 	 * @param entityClass
+	 * @param optionsOrNull
 	 * @return
 	 */
 
-	<T> T findById(Object id, Class<T> entityClass);
+	<T> T findById(Object id, Class<T> entityClass, QueryOptions optionsOrNull);
 
-	<T> T findById(Object id, Class<T> entityClass, String tableName);
+	/**
+	 * 
+	 * @param id
+	 * @param entityClass
+	 * @param tableName
+	 * @param optionsOrNull
+	 * @return
+	 */
 
-	<T> T findById(Object id, Class<T> entityClass, QueryOptions options);
-
-	<T> T findById(Object id, Class<T> entityClass, String tableName, QueryOptions options);
-
-	<T> T findById(Object id, Class<T> entityClass, String tableName, Map<String, Object> optionsByName);
+	<T> T findById(Object id, Class<T> entityClass, String tableName, QueryOptions optionsOrNull);
 
 	/**
 	 * Execute query and convert ResultSet to the list of entities
@@ -67,6 +69,7 @@ public interface CassandraDataOperations {
 	 * @param selectClass must not be {@literal null}, mapped entity type.
 	 * @return
 	 */
+	@Deprecated
 	<T> List<T> findByQuery(String cql, Class<T> selectClass);
 
 	/**
@@ -76,7 +79,7 @@ public interface CassandraDataOperations {
 	 * @param selectClass must not be {@literal null}, mapped entity type.
 	 * @return
 	 */
-
+	@Deprecated
 	<T> List<T> findByQuery(Select selectQuery, Class<T> selectClass);
 
 	/**
@@ -86,8 +89,10 @@ public interface CassandraDataOperations {
 	 * @param selectClass must not be {@literal null}, mapped entity type.
 	 * @return
 	 */
+	@Deprecated
 	<T> T findOneByQuery(String cql, Class<T> selectClass);
 
+	@Deprecated
 	<T> T findOneByQuery(Select selectQuery, Class<T> selectClass);
 
 	/**
@@ -96,7 +101,7 @@ public interface CassandraDataOperations {
 	 * @param selectQuery
 	 * @return
 	 */
-
+	@Deprecated
 	Long countByQuery(Select selectQuery);
 
 	/**
