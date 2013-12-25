@@ -31,8 +31,6 @@ import org.springdata.cassandra.data.config.TableAttributes;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springdata.cassandra.data.convert.MappingCassandraConverter;
 import org.springdata.cassandra.data.mapping.CassandraMappingContext;
-import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
-import org.springdata.cassandra.data.mapping.CassandraPersistentProperty;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
@@ -40,7 +38,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
-import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -72,7 +69,6 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 	private String keyspace;
 
 	private CassandraConverter converter;
-	private MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
 
 	private KeyspaceAttributes keyspaceAttributes;
 
@@ -119,7 +115,6 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 		if (this.converter == null) {
 			this.converter = getDefaultCassandraConverter();
 		}
-		this.mappingContext = this.converter.getMappingContext();
 
 		if (cluster == null) {
 			throw new IllegalArgumentException("at least one cluster is required");
