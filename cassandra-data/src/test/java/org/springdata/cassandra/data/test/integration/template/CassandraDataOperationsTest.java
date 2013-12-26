@@ -122,8 +122,8 @@ public class CassandraDataOperationsTest {
 		b3.setPages(265);
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		cassandraDataTemplate.saveNew(false, b3, "book", options);
 
@@ -172,8 +172,8 @@ public class CassandraDataOperationsTest {
 		b3.setPages(265);
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		cassandraDataTemplate.saveNew(true, b3, "book", options);
 
@@ -194,8 +194,8 @@ public class CassandraDataOperationsTest {
 	public void insertBatchTest() {
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		List<Book> books = null;
 
@@ -221,8 +221,8 @@ public class CassandraDataOperationsTest {
 	public void insertBatchAsynchronouslyTest() {
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		List<Book> books = null;
 
@@ -270,8 +270,8 @@ public class CassandraDataOperationsTest {
 		insertTest();
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		/*
 		 * Test Single Insert with entity
@@ -322,8 +322,8 @@ public class CassandraDataOperationsTest {
 		insertTest();
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		/*
 		 * Test Single Insert with entity
@@ -372,8 +372,8 @@ public class CassandraDataOperationsTest {
 	public void updateBatchTest() {
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		List<Book> books = null;
 
@@ -415,8 +415,8 @@ public class CassandraDataOperationsTest {
 	public void updateBatchAsynchronouslyTest() {
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		List<Book> books = null;
 
@@ -472,8 +472,8 @@ public class CassandraDataOperationsTest {
 		insertTest();
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		/*
 		 * Test Single Insert with entity
@@ -512,8 +512,8 @@ public class CassandraDataOperationsTest {
 		insertTest();
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		/*
 		 * Test Single Insert with entity
@@ -549,8 +549,8 @@ public class CassandraDataOperationsTest {
 	public void deleteBatchTest() {
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		List<Book> books = null;
 
@@ -584,8 +584,8 @@ public class CassandraDataOperationsTest {
 	public void deleteBatchAsynchronouslyTest() {
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		List<Book> books = null;
 
@@ -621,8 +621,8 @@ public class CassandraDataOperationsTest {
 		insertTest();
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		/*
 		 * Test Single Insert with entity
@@ -661,8 +661,8 @@ public class CassandraDataOperationsTest {
 		insertTest();
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		/*
 		 * Test Single Insert with entity
@@ -699,8 +699,8 @@ public class CassandraDataOperationsTest {
 	public void deleteByIdBatchTest() {
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		List<Book> books = null;
 
@@ -742,8 +742,8 @@ public class CassandraDataOperationsTest {
 	public void deleteByIdBatchAsynchronouslyTest() {
 
 		QueryOptions options = new QueryOptions();
-		options.setConsistencyLevel(ConsistencyLevel.ONE);
-		options.setRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
+		options.withConsistencyLevel(ConsistencyLevel.ONE);
+		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		List<Book> books = null;
 

@@ -30,6 +30,16 @@ public class QueryOptions {
 	private Long timestamp;
 
 	/**
+	 * Static Default Constructor
+	 * 
+	 * @return QueryOptions new instance
+	 */
+
+	public static QueryOptions builder() {
+		return new QueryOptions();
+	}
+
+	/**
 	 * @return Returns the consistencyLevel.
 	 */
 	public ConsistencyLevel getConsistencyLevel() {
@@ -39,8 +49,9 @@ public class QueryOptions {
 	/**
 	 * @param consistencyLevel The consistencyLevel to set.
 	 */
-	public void setConsistencyLevel(ConsistencyLevel consistencyLevel) {
+	public QueryOptions withConsistencyLevel(ConsistencyLevel consistencyLevel) {
 		this.consistencyLevel = consistencyLevel;
+		return this;
 	}
 
 	/**
@@ -53,8 +64,9 @@ public class QueryOptions {
 	/**
 	 * @param retryPolicy The retryPolicy to set.
 	 */
-	public void setRetryPolicy(RetryPolicy retryPolicy) {
+	public QueryOptions withRetryPolicy(RetryPolicy retryPolicy) {
 		this.retryPolicy = retryPolicy;
+		return this;
 	}
 
 	/**
@@ -67,8 +79,9 @@ public class QueryOptions {
 	/**
 	 * @param ttl The ttl of the entry to set.
 	 */
-	public void setTtl(Integer ttl) {
+	public QueryOptions withTtl(Integer ttl) {
 		this.ttl = ttl;
+		return this;
 	}
 
 	/**
@@ -81,7 +94,8 @@ public class QueryOptions {
 	/**
 	 * @param timestamp The timestamp of the entry to set.
 	 */
-	public void setTimestamp(Long timestamp) {
+	public QueryOptions withTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
+		return this;
 	}
 }
