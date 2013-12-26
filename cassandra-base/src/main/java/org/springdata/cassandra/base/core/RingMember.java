@@ -15,23 +15,22 @@
  */
 package org.springdata.cassandra.base.core;
 
-import java.io.Serializable;
-
 import com.datastax.driver.core.Host;
 
 /**
  * @author David Webb
+ * @author Alex Shvid
  * 
  */
-public final class RingMember implements Serializable {
+public final class RingMember {
 
 	/*
 	 * Ring attributes
 	 */
-	public String hostName;
-	public String address;
-	public String DC;
-	public String rack;
+	public final String hostName;
+	public final String address;
+	public final String DC;
+	public final String rack;
 
 	public RingMember(Host h) {
 		this.hostName = h.getAddress().getHostName();

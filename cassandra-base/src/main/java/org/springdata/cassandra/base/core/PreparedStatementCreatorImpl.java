@@ -20,10 +20,10 @@ import java.util.List;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.exceptions.DriverException;
 
 /**
  * @author David Webb
+ * @author Alex Shvid
  * 
  */
 public class PreparedStatementCreatorImpl implements PreparedStatementCreator, PreparedStatementBinder {
@@ -40,11 +40,8 @@ public class PreparedStatementCreatorImpl implements PreparedStatementCreator, P
 		this.values = values;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.PreparedStatementSetter#setValues(com.datastax.driver.core.PreparedStatement)
-	 */
 	@Override
-	public BoundStatement bindValues(PreparedStatement ps) throws DriverException {
+	public BoundStatement bindValues(PreparedStatement ps) {
 		// Nothing to set if there are no values
 		if (values == null) {
 			return new BoundStatement(ps);
@@ -58,11 +55,8 @@ public class PreparedStatementCreatorImpl implements PreparedStatementCreator, P
 		return this.cql;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.PreparedStatementCreator#createPreparedStatement(com.datastax.driver.core.Session)
-	 */
 	@Override
-	public PreparedStatement createPreparedStatement(Session session) throws DriverException {
+	public PreparedStatement createPreparedStatement(Session session) {
 		return session.prepare(this.cql);
 	}
 

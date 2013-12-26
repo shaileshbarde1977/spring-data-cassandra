@@ -47,7 +47,7 @@ import org.springdata.cassandra.base.core.RowIterator;
 import org.springdata.cassandra.base.core.RowMapper;
 import org.springdata.cassandra.base.core.SessionCallback;
 import org.springdata.cassandra.base.test.integration.AbstractEmbeddedCassandraIntegrationTest;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.CollectionUtils;
 
 import com.datastax.driver.core.BoundStatement;
@@ -57,12 +57,12 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.exceptions.DriverException;
 
 /**
  * Unit Tests for CassandraTemplate
  * 
  * @author David Webb
+ * @author Alex Shvid
  * 
  */
 public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegrationTest {
@@ -96,7 +96,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	@Test
 	public void ringTest() {
 
-		List<RingMember> ring = cassandraTemplate.describeRing();
+		Collection<RingMember> ring = cassandraTemplate.describeRing();
 
 		/*
 		 * There must be 1 node in the cluster if the embedded server is
@@ -115,7 +115,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		List<MyHost> ring = (List<MyHost>) cassandraTemplate.describeRing(new HostMapper<MyHost>() {
 
 			@Override
-			public Collection<MyHost> mapHosts(Set<Host> host) throws DriverException {
+			public Collection<MyHost> mapHosts(Set<Host> host) {
 
 				List<MyHost> list = new LinkedList<CassandraOperationsTest.MyHost>();
 
@@ -252,7 +252,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		cassandraTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
-			public Object doInSession(Session s) throws DataAccessException {
+			public Object doInSession(Session s) {
 
 				String cql = "insert into book (isbn, title, author, pages) values (?, ?, ?, ?)";
 
@@ -280,8 +280,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		final String author = "David Webb";
 		final Integer pages = 1;
 
-		cassandraTemplate.execute("insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title
-				+ "', '" + author + "', " + pages + ")");
+		cassandraTemplate.execute(false, "insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title
+				+ "', '" + author + "', " + pages + ")", null);
 
 		Book b = getBook(isbn);
 
@@ -297,8 +297,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		final String author = "David Webb";
 		final Integer pages = 1;
 
-		cassandraTemplate.executeAsynchronously("insert into book (isbn, title, author, pages) values ('" + isbn + "', '"
-				+ title + "', '" + author + "', " + pages + ")");
+		cassandraTemplate.execute(true, "insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title
+				+ "', '" + author + "', " + pages + ")", null);
 
 		try {
 			Thread.sleep(2000);
@@ -320,7 +320,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		Book b1 = cassandraTemplate.query("select * from book where isbn='" + isbn + "'", new ResultSetExtractor<Book>() {
 
 			@Override
-			public Book extractData(ResultSet rs) throws DriverException, DataAccessException {
+			public Book extractData(ResultSet rs) {
 				Row r = rs.one();
 				assertNotNull(r);
 
@@ -328,7 +328,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 				return b;
 			}
-		});
+		}, null);
 
 		Book b2 = getBook(isbn);
 
@@ -345,7 +345,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				new ResultSetFutureExtractor<Book>() {
 
 					@Override
-					public Book extractData(ResultSetFuture rs) throws DriverException, DataAccessException {
+					public Book extractData(ResultSetFuture rs) {
 
 						ResultSet frs = rs.getUninterruptibly();
 						Row r = frs.one();
@@ -355,7 +355,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 						return b;
 					}
-				});
+				}, null);
 
 		Book b2 = getBook(isbn);
 
@@ -373,7 +373,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		cassandraTemplate.query("select * from book where isbn='" + isbn + "'", new RowCallbackHandler() {
 
 			@Override
-			public void processRow(Row row) throws DriverException {
+			public void processRow(Row row) {
 
 				assertNotNull(row);
 
@@ -382,7 +382,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				assertBook(b1, b);
 
 			}
-		});
+		}, null);
 
 	}
 
@@ -397,19 +397,19 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				new ResultSetFutureExtractor<ResultSet>() {
 
 					@Override
-					public ResultSet extractData(ResultSetFuture rs) throws DriverException, DataAccessException {
+					public ResultSet extractData(ResultSetFuture rs) {
 
 						ResultSet frs = rs.getUninterruptibly();
 						return frs;
 					}
-				});
+				}, null);
 
 		assertNotNull(rs);
 
 		cassandraTemplate.process(rs, new RowCallbackHandler() {
 
 			@Override
-			public void processRow(Row row) throws DriverException {
+			public void processRow(Row row) {
 
 				assertNotNull(row);
 
@@ -433,11 +433,11 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				new RowMapper<Book>() {
 
 					@Override
-					public Book mapRow(Row row, int rowNum) throws DriverException {
+					public Book mapRow(Row row, int rowNum) {
 						Book b = rowToBook(row);
 						return b;
 					}
-				});
+				}, null);
 
 		log.debug("Size of Book List -> " + books.size());
 		assertEquals(books.size(), 3);
@@ -456,19 +456,19 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				new ResultSetFutureExtractor<ResultSet>() {
 
 					@Override
-					public ResultSet extractData(ResultSetFuture rs) throws DriverException, DataAccessException {
+					public ResultSet extractData(ResultSetFuture rs) {
 
 						ResultSet frs = rs.getUninterruptibly();
 						return frs;
 					}
-				});
+				}, null);
 
 		assertNotNull(rs);
 
 		List<Book> books = cassandraTemplate.process(rs, new RowMapper<Book>() {
 
 			@Override
-			public Book mapRow(Row row, int rowNum) throws DriverException {
+			public Book mapRow(Row row, int rowNum) {
 				Book b = rowToBook(row);
 				return b;
 			}
@@ -488,11 +488,11 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		Book book = cassandraTemplate.queryForObject("select * from book where isbn in ('" + ISBN_NINES + "')",
 				new RowMapper<Book>() {
 					@Override
-					public Book mapRow(Row row, int rowNum) throws DriverException {
+					public Book mapRow(Row row, int rowNum) {
 						Book b = rowToBook(row);
 						return b;
 					}
-				});
+				}, null);
 
 		assertNotNull(book);
 		assertBook(book, getBook(ISBN_NINES));
@@ -501,7 +501,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	/**
 	 * Test that CQL for QueryForObject must only return 1 row or an IllegalArgumentException is thrown.
 	 */
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = DataIntegrityViolationException.class)
 	public void queryForObjectTestCqlStringRowMapperNotOneRowReturned() {
 
 		// Insert our 3 test books.
@@ -510,11 +510,11 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		Book book = cassandraTemplate.queryForObject("select * from book where isbn in ('1234','2345','3456')",
 				new RowMapper<Book>() {
 					@Override
-					public Book mapRow(Row row, int rowNum) throws DriverException {
+					public Book mapRow(Row row, int rowNum) {
 						Book b = rowToBook(row);
 						return b;
 					}
-				});
+				}, null);
 	}
 
 	@Test
@@ -527,18 +527,18 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				new ResultSetFutureExtractor<ResultSet>() {
 
 					@Override
-					public ResultSet extractData(ResultSetFuture rs) throws DriverException, DataAccessException {
+					public ResultSet extractData(ResultSetFuture rs) {
 
 						ResultSet frs = rs.getUninterruptibly();
 						return frs;
 					}
-				});
+				}, null);
 
 		assertNotNull(rs);
 
 		Book book = cassandraTemplate.processOne(rs, new RowMapper<Book>() {
 			@Override
-			public Book mapRow(Row row, int rowNum) throws DriverException {
+			public Book mapRow(Row row, int rowNum) {
 				Book b = rowToBook(row);
 				return b;
 			}
@@ -552,7 +552,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	public void quertForObjectTestCqlStringRequiredType() {
 
 		String title = cassandraTemplate.queryForObject("select title from book where isbn in ('" + ISBN_NINES + "')",
-				String.class);
+				String.class, null);
 
 		assertEquals(title, TITLE_NINES);
 
@@ -562,7 +562,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	public void queryForObjectTestCqlStringRequiredTypeInvalid() {
 
 		Float title = cassandraTemplate.queryForObject("select title from book where isbn in ('" + ISBN_NINES + "')",
-				Float.class);
+				Float.class, null);
 
 	}
 
@@ -573,12 +573,12 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				new ResultSetFutureExtractor<ResultSet>() {
 
 					@Override
-					public ResultSet extractData(ResultSetFuture rs) throws DriverException, DataAccessException {
+					public ResultSet extractData(ResultSetFuture rs) {
 
 						ResultSet frs = rs.getUninterruptibly();
 						return frs;
 					}
-				});
+				}, null);
 
 		assertNotNull(rs);
 
@@ -591,8 +591,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	@Test
 	public void queryForMapTestCqlString() {
 
-		Map<String, Object> rsMap = cassandraTemplate
-				.queryForMap("select * from book where isbn in ('" + ISBN_NINES + "')");
+		Map<String, Object> rsMap = cassandraTemplate.queryForMap(
+				"select * from book where isbn in ('" + ISBN_NINES + "')", null);
 
 		log.debug(rsMap.toString());
 
@@ -611,12 +611,12 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				new ResultSetFutureExtractor<ResultSet>() {
 
 					@Override
-					public ResultSet extractData(ResultSetFuture rs) throws DriverException, DataAccessException {
+					public ResultSet extractData(ResultSetFuture rs) {
 
 						ResultSet frs = rs.getUninterruptibly();
 						return frs;
 					}
-				});
+				}, null);
 
 		assertNotNull(rs);
 
@@ -639,7 +639,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		ingestionTestObjectArray();
 
 		List<String> titles = cassandraTemplate.queryForList("select title from book where isbn in ('1234','2345','3456')",
-				String.class);
+				String.class, null);
 
 		log.debug(titles.toString());
 
@@ -658,12 +658,12 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				new ResultSetFutureExtractor<ResultSet>() {
 
 					@Override
-					public ResultSet extractData(ResultSetFuture rs) throws DriverException, DataAccessException {
+					public ResultSet extractData(ResultSetFuture rs) {
 
 						ResultSet frs = rs.getUninterruptibly();
 						return frs;
 					}
-				});
+				}, null);
 
 		assertNotNull(rs);
 
@@ -681,8 +681,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		List<Map<String, Object>> results = cassandraTemplate
-				.queryForListOfMap("select * from book where isbn in ('1234','2345','3456')");
+		List<Map<String, Object>> results = cassandraTemplate.queryForListOfMap(
+				"select * from book where isbn in ('1234','2345','3456')", null);
 
 		log.debug(results.toString());
 
@@ -700,12 +700,12 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				new ResultSetFutureExtractor<ResultSet>() {
 
 					@Override
-					public ResultSet extractData(ResultSetFuture rs) throws DriverException, DataAccessException {
+					public ResultSet extractData(ResultSetFuture rs) {
 
 						ResultSet frs = rs.getUninterruptibly();
 						return frs;
 					}
-				});
+				}, null);
 
 		assertNotNull(rs);
 
@@ -725,11 +725,11 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		BoundStatement statement = cassandraTemplate.execute(cql, new PreparedStatementCallback<BoundStatement>() {
 
 			@Override
-			public BoundStatement doInPreparedStatement(PreparedStatement ps) throws DriverException, DataAccessException {
+			public BoundStatement doInPreparedStatement(PreparedStatement ps) {
 				BoundStatement bs = ps.bind();
 				return bs;
 			}
-		});
+		}, null);
 
 		assertNotNull(statement);
 
@@ -743,17 +743,17 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		BoundStatement statement = cassandraTemplate.execute(new PreparedStatementCreator() {
 
 			@Override
-			public PreparedStatement createPreparedStatement(Session session) throws DriverException {
+			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
 		}, new PreparedStatementCallback<BoundStatement>() {
 
 			@Override
-			public BoundStatement doInPreparedStatement(PreparedStatement ps) throws DriverException, DataAccessException {
+			public BoundStatement doInPreparedStatement(PreparedStatement ps) {
 				BoundStatement bs = ps.bind();
 				return bs;
 			}
-		});
+		}, null);
 
 		assertNotNull(statement);
 
@@ -768,13 +768,13 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		Book b1 = cassandraTemplate.query(cql, new PreparedStatementBinder() {
 
 			@Override
-			public BoundStatement bindValues(PreparedStatement ps) throws DriverException {
+			public BoundStatement bindValues(PreparedStatement ps) {
 				return ps.bind(isbn);
 			}
 		}, new ResultSetExtractor<Book>() {
 
 			@Override
-			public Book extractData(ResultSet rs) throws DriverException, DataAccessException {
+			public Book extractData(ResultSet rs) {
 				Row r = rs.one();
 				assertNotNull(r);
 
@@ -782,7 +782,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 				return b;
 			}
-		});
+		}, null);
 
 		Book b2 = getBook(isbn);
 
@@ -798,13 +798,13 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		cassandraTemplate.query(cql, new PreparedStatementBinder() {
 
 			@Override
-			public BoundStatement bindValues(PreparedStatement ps) throws DriverException {
+			public BoundStatement bindValues(PreparedStatement ps) {
 				return ps.bind(isbn);
 			}
 		}, new RowCallbackHandler() {
 
 			@Override
-			public void processRow(Row row) throws DriverException {
+			public void processRow(Row row) {
 
 				Book b = rowToBook(row);
 
@@ -813,7 +813,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				assertBook(b, b2);
 
 			}
-		});
+		}, null);
 
 	}
 
@@ -826,16 +826,16 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		List<Book> books = cassandraTemplate.query(cql, new PreparedStatementBinder() {
 
 			@Override
-			public BoundStatement bindValues(PreparedStatement ps) throws DriverException {
+			public BoundStatement bindValues(PreparedStatement ps) {
 				return ps.bind(isbn);
 			}
 		}, new RowMapper<Book>() {
 
 			@Override
-			public Book mapRow(Row row, int rowNum) throws DriverException {
+			public Book mapRow(Row row, int rowNum) {
 				return rowToBook(row);
 			}
-		});
+		}, null);
 
 		Book b2 = getBook(isbn);
 
@@ -853,13 +853,13 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		List<Book> books = cassandraTemplate.query(new PreparedStatementCreator() {
 
 			@Override
-			public PreparedStatement createPreparedStatement(Session session) throws DriverException {
+			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
 		}, new ResultSetExtractor<List<Book>>() {
 
 			@Override
-			public List<Book> extractData(ResultSet rs) throws DriverException, DataAccessException {
+			public List<Book> extractData(ResultSet rs) {
 
 				List<Book> books = new LinkedList<Book>();
 
@@ -869,7 +869,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 				return books;
 			}
-		});
+		}, null);
 
 		log.debug("Size of all Books -> " + books.size());
 
@@ -886,20 +886,20 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		cassandraTemplate.query(new PreparedStatementCreator() {
 
 			@Override
-			public PreparedStatement createPreparedStatement(Session session) throws DriverException {
+			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
 		}, new RowCallbackHandler() {
 
 			@Override
-			public void processRow(Row row) throws DriverException {
+			public void processRow(Row row) {
 
 				Book b = rowToBook(row);
 
 				log.debug("Title -> " + b.getTitle());
 
 			}
-		});
+		}, null);
 
 	}
 
@@ -913,16 +913,16 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		List<Book> books = cassandraTemplate.query(new PreparedStatementCreator() {
 
 			@Override
-			public PreparedStatement createPreparedStatement(Session session) throws DriverException {
+			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
 		}, new RowMapper<Book>() {
 
 			@Override
-			public Book mapRow(Row row, int rowNum) throws DriverException {
+			public Book mapRow(Row row, int rowNum) {
 				return rowToBook(row);
 			}
-		});
+		}, null);
 
 		log.debug("Size of all Books -> " + books.size());
 
@@ -938,19 +938,19 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		List<Book> books = cassandraTemplate.query(new PreparedStatementCreator() {
 
 			@Override
-			public PreparedStatement createPreparedStatement(Session session) throws DriverException {
+			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
 		}, new PreparedStatementBinder() {
 
 			@Override
-			public BoundStatement bindValues(PreparedStatement ps) throws DriverException {
+			public BoundStatement bindValues(PreparedStatement ps) {
 				return ps.bind(isbn);
 			}
 		}, new ResultSetExtractor<List<Book>>() {
 
 			@Override
-			public List<Book> extractData(ResultSet rs) throws DriverException, DataAccessException {
+			public List<Book> extractData(ResultSet rs) {
 				List<Book> books = new LinkedList<Book>();
 
 				for (Row row : rs.all()) {
@@ -959,7 +959,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 				return books;
 			}
-		});
+		}, null);
 
 		Book b2 = getBook(isbn);
 
@@ -978,24 +978,24 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		cassandraTemplate.query(new PreparedStatementCreator() {
 
 			@Override
-			public PreparedStatement createPreparedStatement(Session session) throws DriverException {
+			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
 		}, new PreparedStatementBinder() {
 
 			@Override
-			public BoundStatement bindValues(PreparedStatement ps) throws DriverException {
+			public BoundStatement bindValues(PreparedStatement ps) {
 				return ps.bind(isbn);
 			}
 		}, new RowCallbackHandler() {
 
 			@Override
-			public void processRow(Row row) throws DriverException {
+			public void processRow(Row row) {
 				Book b = rowToBook(row);
 				Book b2 = getBook(isbn);
 				assertBook(b, b2);
 			}
-		});
+		}, null);
 
 	}
 
@@ -1008,22 +1008,22 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		List<Book> books = cassandraTemplate.query(new PreparedStatementCreator() {
 
 			@Override
-			public PreparedStatement createPreparedStatement(Session session) throws DriverException {
+			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
 		}, new PreparedStatementBinder() {
 
 			@Override
-			public BoundStatement bindValues(PreparedStatement ps) throws DriverException {
+			public BoundStatement bindValues(PreparedStatement ps) {
 				return ps.bind(isbn);
 			}
 		}, new RowMapper<Book>() {
 
 			@Override
-			public Book mapRow(Row row, int rowNum) throws DriverException {
+			public Book mapRow(Row row, int rowNum) {
 				return rowToBook(row);
 			}
-		});
+		}, null);
 
 		Book b2 = getBook(isbn);
 
@@ -1112,13 +1112,13 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		Book b = this.cassandraTemplate.query("select * from book where isbn = ?", new PreparedStatementBinder() {
 
 			@Override
-			public BoundStatement bindValues(PreparedStatement ps) throws DriverException {
+			public BoundStatement bindValues(PreparedStatement ps) {
 				return ps.bind(isbn);
 			}
 		}, new ResultSetExtractor<Book>() {
 
 			@Override
-			public Book extractData(ResultSet rs) throws DriverException, DataAccessException {
+			public Book extractData(ResultSet rs) {
 				Book b = new Book();
 				Row r = rs.one();
 				b.setIsbn(r.getString("isbn"));
@@ -1127,7 +1127,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				b.setPages(r.getInt("pages"));
 				return b;
 			}
-		});
+		}, null);
 
 		return b;
 

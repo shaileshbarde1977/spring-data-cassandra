@@ -1,12 +1,12 @@
 /*
  * Copyright 2013 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,36 +15,24 @@
  */
 package org.springdata.cassandra.base.core;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.util.Assert;
-
-import com.datastax.driver.core.Host;
+import com.datastax.driver.core.ResultSet;
 
 /**
- * Host to ring member translator
+ * ResultSet Callback interface
  * 
- * @author David Webb
  * @author Alex Shvid
- * @param <T>
  * 
+ * @param <T>
  */
-public class RingMemberHostMapper implements HostMapper<RingMember> {
 
-	@Override
-	public List<RingMember> mapHosts(Set<Host> hosts) {
+public interface ResultSetCallback<T> {
 
-		Assert.notNull(hosts);
+	/**
+	 * Perform the operation in the given ResultSet
+	 * 
+	 * @param resultSet ResultSet
+	 * @return
+	 */
+	T doWithResultSet(ResultSet resultSet);
 
-		List<RingMember> members = new ArrayList<RingMember>(hosts.size());
-
-		for (Host host : hosts) {
-			members.add(new RingMember(host));
-		}
-
-		return members;
-
-	}
 }

@@ -16,7 +16,7 @@
 package org.springdata.cassandra.base.core;
 
 /**
- * Enum for Cassandra primary key column ordering.
+ * Enum for Cassandra primary key column ordering for clustering parts.
  * 
  * @author Matthew T. Adams
  */

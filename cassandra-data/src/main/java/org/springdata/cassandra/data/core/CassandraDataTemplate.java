@@ -311,7 +311,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		ResultSet resultSet = doExecute(new SessionCallback<ResultSet>() {
 
 			@Override
-			public ResultSet doInSession(Session s) throws DataAccessException {
+			public ResultSet doInSession(Session s) {
 				return s.execute(query);
 			}
 		});
@@ -341,7 +341,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		ResultSet resultSet = doExecute(new SessionCallback<ResultSet>() {
 
 			@Override
-			public ResultSet doInSession(Session s) throws DataAccessException {
+			public ResultSet doInSession(Session s) {
 				return s.execute(query);
 			}
 		});
@@ -375,7 +375,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		ResultSet resultSet = doExecute(new SessionCallback<ResultSet>() {
 
 			@Override
-			public ResultSet doInSession(Session s) throws DataAccessException {
+			public ResultSet doInSession(Session s) {
 				return s.execute(query);
 			}
 		});
@@ -440,7 +440,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		doExecute(new SessionCallback<Object>() {
 
 			@Override
-			public List<T> doInSession(Session s) throws DataAccessException {
+			public List<T> doInSession(Session s) {
 
 				if (insertAsychronously) {
 					s.executeAsync(batch);
@@ -498,7 +498,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		doExecute(new SessionCallback<Object>() {
 
 			@Override
-			public List<T> doInSession(Session s) throws DataAccessException {
+			public List<T> doInSession(Session s) {
 
 				if (updateAsychronously) {
 					s.executeAsync(batch);
@@ -529,7 +529,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		doExecute(new SessionCallback<Object>() {
 
 			@Override
-			public Object doInSession(Session s) throws DataAccessException {
+			public Object doInSession(Session s) {
 
 				if (asychronously) {
 					s.executeAsync(query);
@@ -560,7 +560,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		doExecute(new SessionCallback<Object>() {
 
 			@Override
-			public Object doInSession(Session s) throws DataAccessException {
+			public Object doInSession(Session s) {
 
 				if (asychronously) {
 					s.executeAsync(query);
@@ -589,7 +589,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 			return callback.doInSession(getSession());
 
-		} catch (DataAccessException e) {
+		} catch (RuntimeException e) {
 			throw translateIfPossible(e);
 		}
 	}
@@ -616,7 +616,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		doExecute(new SessionCallback<Object>() {
 
 			@Override
-			public T doInSession(Session s) throws DataAccessException {
+			public T doInSession(Session s) {
 
 				if (insertAsychronously) {
 					s.executeAsync(query);
@@ -650,7 +650,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		doExecute(new SessionCallback<Object>() {
 
 			@Override
-			public T doInSession(Session s) throws DataAccessException {
+			public T doInSession(Session s) {
 
 				if (updateAsychronously) {
 					s.executeAsync(q);
@@ -814,7 +814,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		doExecute(new SessionCallback<Object>() {
 
 			@Override
-			public Object doInSession(Session s) throws DataAccessException {
+			public Object doInSession(Session s) {
 
 				if (asychronously) {
 					s.executeAsync(batch);
@@ -899,7 +899,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		doExecute(new SessionCallback<Object>() {
 
 			@Override
-			public Object doInSession(Session s) throws DataAccessException {
+			public Object doInSession(Session s) {
 
 				if (asychronously) {
 					s.executeAsync(batch);
