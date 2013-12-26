@@ -955,46 +955,32 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return entity;
 	}
 
-    @Override
-    public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass) {
-        return doFindByPartitionKey(id, entityClass, getTableName(entityClass), Collections.<String, Object>emptyMap());
-    }
+	@Override
+	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, QueryOptions options) {
+		return doFindByPartitionKey(id, entityClass, getTableName(entityClass), options);
+	}
 
-    @Override
-    public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName) {
-        return doFindByPartitionKey(id, entityClass, tableName, Collections.<String, Object>emptyMap());
-    }
+	@Override
+	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, QueryOptions optionsOrNull) {
+		return doFindByPartitionKey(id, entityClass, tableName, optionsOrNull);
+	}
 
-    @Override
-    public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, QueryOptions options) {
-        return doFindByPartitionKey(id, entityClass, getTableName(entityClass), options.toMap());
-    }
+	protected <T> List<T> doFindByPartitionKey(Object id, Class<T> entityClass, String tableName,
+			QueryOptions optionsOrNull) {
 
-    @Override
-    public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, QueryOptions options) {
-        return doFindByPartitionKey(id, entityClass, tableName, options.toMap());
-    }
+		Select select = QueryBuilder.select().all().from(tableName);
+		Select.Where w = select.where();
 
-    @Override
-    public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, Map<String, Object> optionsByName) {
-        return doFindByPartitionKey(id, entityClass, tableName, optionsByName);
-    }
+		CassandraPersistentEntity<?> entity = getEntity(entityClass);
 
-    protected <T> List<T> doFindByPartitionKey(Object id, Class<T> entityClass, String tableName, Map<String, Object> optionsByName) {
+		List<Clause> list = cassandraConverter.getPartitionKey(entity, id);
 
-        Select select = QueryBuilder.select().all().from(tableName);
-        Select.Where w = select.where();
+		for (Clause c : list) {
+			w.and(c);
+		}
 
-        CassandraPersistentEntity<?> entity = getEntity(entityClass);
+		addQueryOptions(select, optionsOrNull);
 
-        List<Clause> list = cassandraConverter.getPartitionKey(entity, id);
-
-        for (Clause c : list) {
-            w.and(c);
-        }
-
-        addQueryOptions(select, optionsByName);
-
-        return doSelect(select.getQueryString(), new ReadRowCallback<T>(cassandraConverter, entityClass));
-    }
+		return doSelect(select.getQueryString(), new ReadRowCallback<T>(cassandraConverter, entityClass));
+	}
 }
