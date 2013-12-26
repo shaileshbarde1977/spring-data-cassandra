@@ -15,9 +15,6 @@
  */
 package org.springdata.cassandra.base.core.query;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Contains Query Options for Cassandra queries. This controls the Consistency Tuning and Retry Policy for a Query.
  * 
@@ -31,26 +28,6 @@ public class QueryOptions {
 	private RetryPolicy retryPolicy;
 	private Integer ttl;
 	private Long timestamp;
-
-	/**
-	 * Create a Map of all these options.
-	 */
-	public Map<String, Object> toMap() {
-
-		Map<String, Object> m = new HashMap<String, Object>();
-
-		if (getConsistencyLevel() != null) {
-			m.put(QueryOptionNames.CONSISTENCY_LEVEL, getConsistencyLevel());
-		}
-		if (getRetryPolicy() != null) {
-			m.put(QueryOptionNames.RETRY_POLICY, getRetryPolicy());
-		}
-		if (getTtl() != null) {
-			m.put(QueryOptionNames.TTL, getTtl());
-		}
-
-		return m;
-	}
 
 	/**
 	 * @return Returns the consistencyLevel.
