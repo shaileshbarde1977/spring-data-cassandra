@@ -15,14 +15,13 @@
  */
 package org.springdata.cassandra.base.core;
 
-import org.springframework.dao.DataAccessException;
-
 import com.datastax.driver.core.Session;
 
 /**
  * Interface for operations on a Cassandra Session.
  * 
  * @author David Webb
+ * @author Alex Shvid
  * 
  * @param <T>
  */
@@ -31,10 +30,9 @@ public interface SessionCallback<T> {
 	/**
 	 * Perform the operation in the given Session
 	 * 
-	 * @param s
+	 * @param session Session
 	 * @return
-	 * @throws DataAccessException
 	 */
-	T doInSession(Session s) throws DataAccessException;
+	T doInSession(Session session);
 
 }

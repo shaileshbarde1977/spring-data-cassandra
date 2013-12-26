@@ -16,7 +16,7 @@
 package org.springdata.cassandra.base.core;
 
 /**
- * Values representing primary key column types.
+ * Values representing primary key parts.
  * 
  * @author Matthew T. Adams
  * @author Alex Shvid

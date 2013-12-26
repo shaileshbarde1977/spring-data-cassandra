@@ -19,7 +19,6 @@ import org.springframework.util.Assert;
 
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.exceptions.DriverException;
 
 /**
  * @author David Webb
@@ -43,11 +42,8 @@ public class SimplePreparedStatementCreator implements PreparedStatementCreator 
 		return this.cql;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.cassandra.core.PreparedStatementCreator#createPreparedStatement(com.datastax.driver.core.Session)
-	 */
 	@Override
-	public PreparedStatement createPreparedStatement(Session session) throws DriverException {
+	public PreparedStatement createPreparedStatement(Session session) {
 		return session.prepare(this.cql);
 	}
 

@@ -16,10 +16,16 @@
 package org.springdata.cassandra.base.core;
 
 import com.datastax.driver.core.Row;
-import com.datastax.driver.core.exceptions.DriverException;
+
+/**
+ * Row Callback Handler interface
+ * 
+ * @author Alex Shvid
+ * 
+ */
 
 public interface RowCallbackHandler {
 
-	void processRow(Row row) throws DriverException;
+	void processRow(Row row);
 
 }

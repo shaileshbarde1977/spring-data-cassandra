@@ -16,10 +16,17 @@
 package org.springdata.cassandra.base.core;
 
 import com.datastax.driver.core.Row;
-import com.datastax.driver.core.exceptions.DriverException;
+
+/**
+ * RowMapper interface
+ * 
+ * @author Alex Shvid
+ * 
+ * @param <T>
+ */
 
 public interface RowMapper<T> {
 
-	T mapRow(Row row, int rowNum) throws DriverException;
+	T mapRow(Row row, int rowNum);
 
 }

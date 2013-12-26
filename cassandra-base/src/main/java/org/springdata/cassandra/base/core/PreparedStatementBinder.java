@@ -17,14 +17,16 @@ package org.springdata.cassandra.base.core;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.exceptions.DriverException;
 
 /**
+ * Prepared Statement Binder interface
+ * 
  * @author David Webb
+ * @author Alex Shvid
  * 
  */
 public interface PreparedStatementBinder {
 
-	BoundStatement bindValues(PreparedStatement ps) throws DriverException;
+	BoundStatement bindValues(PreparedStatement ps);
 
 }

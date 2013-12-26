@@ -15,17 +15,16 @@
  */
 package org.springdata.cassandra.base.core;
 
-import org.springframework.dao.DataAccessException;
-
 import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.exceptions.DriverException;
 
 /**
- * @author David Webb
+ * Prepared Statement Callback interface
  * 
+ * @author David Webb
+ * @author Alex Shvid
  */
 public interface PreparedStatementCallback<T> {
 
-	T doInPreparedStatement(PreparedStatement ps) throws DriverException, DataAccessException;
+	T doInPreparedStatement(PreparedStatement ps);
 
 }

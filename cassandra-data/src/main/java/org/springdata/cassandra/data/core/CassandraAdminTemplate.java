@@ -47,7 +47,6 @@ import org.springdata.cassandra.base.support.exception.CassandraTableExistsExcep
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.data.mapping.CassandraPersistentProperty;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.mapping.context.MappingContext;
@@ -192,7 +191,7 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 		} catch (CassandraTableExistsException ctex) {
 			return !ifNotExists;
 		} catch (RuntimeException x) {
-			throw tryToConvert(x);
+			throw translateIfPossible(x);
 		}
 	}
 
@@ -391,9 +390,9 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	@Override
 	public KeyspaceMetadata getKeyspaceMetadata() {
 
-		return execute(new SessionCallback<KeyspaceMetadata>() {
+		return doExecute(new SessionCallback<KeyspaceMetadata>() {
 
-			public KeyspaceMetadata doInSession(Session s) throws DataAccessException {
+			public KeyspaceMetadata doInSession(Session s) {
 
 				return s.getCluster().getMetadata().getKeyspace(keyspace.toLowerCase());
 			}
@@ -409,9 +408,9 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 
 		Assert.notNull(tableName);
 
-		return execute(new SessionCallback<TableMetadata>() {
+		return doExecute(new SessionCallback<TableMetadata>() {
 
-			public TableMetadata doInSession(Session s) throws DataAccessException {
+			public TableMetadata doInSession(Session s) {
 
 				log.info("getTableMetadata keyspace => " + keyspace + ", table => " + tableName);
 
@@ -438,8 +437,8 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	 */
 	protected void doExecute(final String cql) {
 
-		execute(new SessionCallback<Object>() {
-			public Object doInSession(Session s) throws DataAccessException {
+		doExecute(new SessionCallback<Object>() {
+			public Object doInSession(Session s) {
 
 				log.info("EXECUTE CQL -> " + cql);
 				s.execute(cql);
@@ -455,18 +454,20 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 	 * @param callback
 	 * @return
 	 */
-	protected <T> T execute(SessionCallback<T> callback) {
+	protected <T> T doExecute(SessionCallback<T> callback) {
 
 		Assert.notNull(callback);
 
 		try {
+
 			return callback.doInSession(session);
+
 		} catch (RuntimeException x) {
-			throw tryToConvert(x);
+			throw translateIfPossible(x);
 		}
 	}
 
-	protected RuntimeException tryToConvert(RuntimeException x) {
+	protected RuntimeException translateIfPossible(RuntimeException x) {
 		RuntimeException resolved = exceptionTranslator.translateExceptionIfPossible(x);
 		return resolved == null ? x : resolved;
 	}

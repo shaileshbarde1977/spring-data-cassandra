@@ -23,6 +23,7 @@ import com.datastax.driver.core.exceptions.DriverException;
  * Creates a PreparedStatement for the usage with the DataStax Java Driver
  * 
  * @author David Webb
+ * @author Alex Shvid
  * 
  */
 public interface PreparedStatementCreator {
@@ -36,6 +37,6 @@ public interface PreparedStatementCreator {
 	 * @throws DriverException there is no need to catch DriverException that may be thrown in the implementation of this
 	 *           method. The CassandraTemlate class will handle them.
 	 */
-	PreparedStatement createPreparedStatement(Session session) throws DriverException;
+	PreparedStatement createPreparedStatement(Session session);
 
 }

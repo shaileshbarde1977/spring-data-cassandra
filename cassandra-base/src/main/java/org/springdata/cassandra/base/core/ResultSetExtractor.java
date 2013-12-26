@@ -15,12 +15,18 @@
  */
 package org.springdata.cassandra.base.core;
 
-import org.springframework.dao.DataAccessException;
-
 import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.exceptions.DriverException;
+
+/**
+ * ResultSet Extractor interface
+ * 
+ * @author Alex Shvid
+ * 
+ * @param <T>
+ */
 
 public interface ResultSetExtractor<T> {
 
-	T extractData(ResultSet rs) throws DriverException, DataAccessException;
+	T extractData(ResultSet rs);
+
 }
