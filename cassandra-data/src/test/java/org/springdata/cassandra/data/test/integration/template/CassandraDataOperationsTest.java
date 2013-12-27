@@ -790,7 +790,7 @@ public class CassandraDataOperationsTest {
 		Select select = QueryBuilder.select().all().from("book");
 		select.where(QueryBuilder.eq("isbn", "123456-1"));
 
-		Book b = cassandraDataTemplate.findOneByQuery(select, Book.class);
+		Book b = cassandraDataTemplate.findOne(select.getQueryString(), Book.class, null);
 
 		log.info("SingleSelect Book Title -> " + b.getTitle());
 		log.info("SingleSelect Book Author -> " + b.getAuthor());
@@ -832,7 +832,7 @@ public class CassandraDataOperationsTest {
 
 		Select select = QueryBuilder.select().all().from("book");
 
-		List<Book> b = cassandraDataTemplate.findByQuery(select, Book.class);
+		List<Book> b = cassandraDataTemplate.find(select.getQueryString(), Book.class, null);
 
 		log.info("Book Count -> " + b.size());
 
@@ -849,7 +849,7 @@ public class CassandraDataOperationsTest {
 
 		Select select = QueryBuilder.select().countAll().from("book");
 
-		Long count = cassandraDataTemplate.countByQuery(select);
+		Long count = cassandraDataTemplate.count(select.getQueryString(), null);
 
 		log.info("Book Count -> " + count);
 

@@ -153,6 +153,34 @@ public class UserRepositoryIntegrationTests {
 		assertThat(result, not(hasItem(tom)));
 	}
 
+	@Test
+	public void saveNew() throws Exception {
+
+		User alex = new User();
+		alex.setUsername("alex");
+		alex.setFirstName("alex");
+		alex.setLastName("alex");
+		alex.setPassword("123");
+		alex.setPlace("SF");
+
+		repository.save(alex);
+
+	}
+
+	@Test
+	public void saveNewWithConsistencyLevel() throws Exception {
+
+		User alex = new User();
+		alex.setUsername("alex");
+		alex.setFirstName("alex");
+		alex.setLastName("alex");
+		alex.setPassword("123");
+		alex.setPlace("SF");
+
+		repository.save(alex);
+
+	}
+
 	@AfterClass
 	public static void stopCassandra() {
 		EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();

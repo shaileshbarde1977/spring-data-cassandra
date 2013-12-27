@@ -22,7 +22,7 @@ package org.springdata.cassandra.base.core.query;
  * @author Alex Shvid
  * 
  */
-public class QueryOptions {
+public class QueryOptions implements QueryOptionsAccessor {
 
 	private ConsistencyLevel consistencyLevel;
 	private RetryPolicy retryPolicy;

@@ -21,8 +21,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springdata.cassandra.base.core.query.ConsistencyLevel;
+import org.springdata.cassandra.base.core.query.RetryPolicy;
+
 /**
- * Annotation to declare finder queries directly on repository methods.
+ * Annotation to declare query options for methods.
  * 
  * @author Alex Shvid
  */
@@ -30,18 +33,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-public @interface Query {
+public @interface QueryOptions {
 
-	/**
-	 * Takes a Cassandra CQL3 string to define the actual query to be executed.
-	 * 
-	 */
-	String value() default "";
+	ConsistencyLevel consistencyLevel() default ConsistencyLevel.QUOROM;
 
-	/**
-	 * Returns whether the query defined should be executed as count projection.
-	 * 
-	 */
-	boolean count() default false;
+	RetryPolicy retryPolicy() default RetryPolicy.DEFAULT;
+
+	int ttl() default -1;
+
+	long timestamp() default -1L;
 
 }

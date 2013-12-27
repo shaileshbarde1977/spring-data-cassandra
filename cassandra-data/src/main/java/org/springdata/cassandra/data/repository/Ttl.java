@@ -22,26 +22,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to declare finder queries directly on repository methods.
+ * Annotation to be used for define QueryOptions Ttl parameter.
  * 
  * @author Alex Shvid
  */
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
 @Documented
-public @interface Query {
-
-	/**
-	 * Takes a Cassandra CQL3 string to define the actual query to be executed.
-	 * 
-	 */
-	String value() default "";
-
-	/**
-	 * Returns whether the query defined should be executed as count projection.
-	 * 
-	 */
-	boolean count() default false;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface Ttl {
 
 }

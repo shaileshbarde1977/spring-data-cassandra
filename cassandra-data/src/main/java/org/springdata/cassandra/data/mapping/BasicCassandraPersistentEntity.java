@@ -84,7 +84,7 @@ public class BasicCassandraPersistentEntity<T> extends BasicPersistentEntity<T, 
 	 * 
 	 * @return
 	 */
-	public String getTable() {
+	public String getTableName() {
 		Expression expression = parser.parseExpression(table, ParserContext.TEMPLATE_EXPRESSION);
 		return expression.getValue(context, String.class);
 	}

@@ -19,17 +19,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdata.cassandra.base.core.query.ConsistencyLevel;
 import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
-import org.springdata.cassandra.base.core.query.QueryOptionNames;
 import org.springdata.cassandra.base.core.query.QueryOptions;
-import org.springdata.cassandra.base.core.query.RetryPolicy;
 import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
 import org.springdata.cassandra.base.support.CassandraExceptionTranslator;
 import org.springframework.dao.DataAccessException;
@@ -717,7 +715,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void ingest(String cql, RowIterator rowIterator, QueryOptions optionsOrNull) {
+	public void ingest(String cql, Iterable<Object[]> rowIterator, QueryOptions optionsOrNull) {
 
 		Assert.notNull(cql);
 		Assert.notNull(rowIterator);
@@ -725,26 +723,9 @@ public class CassandraTemplate implements CassandraOperations {
 		PreparedStatement preparedStatement = getSession().prepare(cql);
 		addPreparedStatementOptions(preparedStatement, optionsOrNull);
 
-		while (rowIterator.hasNext()) {
-			getSession().execute(preparedStatement.bind(rowIterator.next()));
+		for (Object[] values : rowIterator) {
+			getSession().execute(preparedStatement.bind(values));
 		}
-
-	}
-
-	@Override
-	public void ingest(String cql, List<List<?>> rows, QueryOptions optionsOrNull) {
-
-		Assert.notNull(cql);
-		Assert.notNull(rows);
-		Assert.notEmpty(rows);
-
-		Object[][] values = new Object[rows.size()][];
-		int i = 0;
-		for (List<?> row : rows) {
-			values[i++] = row.toArray();
-		}
-
-		ingest(cql, values, optionsOrNull);
 
 	}
 
@@ -755,21 +736,35 @@ public class CassandraTemplate implements CassandraOperations {
 		Assert.notNull(rows);
 		Assert.notEmpty(rows);
 
-		ingest(cql, new RowIterator() {
+		ingest(cql, new Iterable<Object[]>() {
 
-			int index = 0;
-
-			@Override
-			public Object[] next() {
-				return rows[index++];
+			public Iterator<Object[]> iterator() {
+				return new RowIterator(rows);
 			}
-
-			@Override
-			public boolean hasNext() {
-				return index < rows.length;
-			}
-
 		}, optionsOrNull);
+	}
+
+	private static class RowIterator implements Iterator<Object[]> {
+
+		private Object[][] rows;
+		private int pos = 0;
+
+		public RowIterator(Object[][] rows) {
+			this.rows = rows;
+		}
+
+		public boolean hasNext() {
+			return rows.length > pos;
+		}
+
+		public Object[] next() {
+			return rows[pos++];
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException("Cannot remove an element of an array.");
+		}
+
 	}
 
 	@Override
@@ -784,24 +779,6 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param q
 	 * @param optionsOrNull
 	 */
-	public static void addQueryOptions(Query q, Map<String, Object> optionsByName) {
-
-		if (optionsByName == null) {
-			return;
-		}
-
-		/*
-		 * Add Query Options
-		 */
-		if (optionsByName.get(QueryOptionNames.CONSISTENCY_LEVEL) != null) {
-			q.setConsistencyLevel(ConsistencyLevelResolver.resolve((ConsistencyLevel) optionsByName
-					.get(QueryOptionNames.CONSISTENCY_LEVEL)));
-		}
-		if (optionsByName.get(QueryOptionNames.RETRY_POLICY) != null) {
-			q.setRetryPolicy(RetryPolicyResolver.resolve((RetryPolicy) optionsByName.get(QueryOptionNames.RETRY_POLICY)));
-		}
-
-	}
 
 	public static void addQueryOptions(Query q, QueryOptions optionsOrNull) {
 
@@ -827,23 +804,6 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param q
 	 * @param optionsByName
 	 */
-	public static void addInsertOptions(Insert query, Map<String, Object> optionsByName) {
-
-		if (optionsByName == null) {
-			return;
-		}
-
-		/*
-		 * Add TTL to Insert object
-		 */
-		if (optionsByName.get(QueryOptionNames.TTL) != null) {
-			query.using(QueryBuilder.ttl((Integer) optionsByName.get(QueryOptionNames.TTL)));
-		}
-		if (optionsByName.get(QueryOptionNames.TIMESTAMP) != null) {
-			query.using(QueryBuilder.timestamp((Long) optionsByName.get(QueryOptionNames.TIMESTAMP)));
-		}
-
-	}
 
 	public static void addInsertOptions(Insert query, QueryOptions optionsOrNull) {
 
@@ -869,23 +829,6 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param q
 	 * @param optionsByName
 	 */
-	public static void addUpdateOptions(Update query, Map<String, Object> optionsByName) {
-
-		if (optionsByName == null) {
-			return;
-		}
-
-		/*
-		 * Add TTL to Insert object
-		 */
-		if (optionsByName.get(QueryOptionNames.TTL) != null) {
-			query.using(QueryBuilder.ttl((Integer) optionsByName.get(QueryOptionNames.TTL)));
-		}
-		if (optionsByName.get(QueryOptionNames.TIMESTAMP) != null) {
-			query.using(QueryBuilder.timestamp((Long) optionsByName.get(QueryOptionNames.TIMESTAMP)));
-		}
-
-	}
 
 	public static void addUpdateOptions(Update query, QueryOptions optionsOrNull) {
 
@@ -911,20 +854,6 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param q
 	 * @param optionsByName
 	 */
-	public static void addDeleteOptions(Delete query, Map<String, Object> optionsByName) {
-
-		if (optionsByName == null) {
-			return;
-		}
-
-		/*
-		 * Add TTL to Insert object
-		 */
-		if (optionsByName.get(QueryOptionNames.TIMESTAMP) != null) {
-			query.using(QueryBuilder.timestamp((Long) optionsByName.get(QueryOptionNames.TIMESTAMP)));
-		}
-
-	}
 
 	public static void addDeleteOptions(Delete query, QueryOptions optionsOrNull) {
 

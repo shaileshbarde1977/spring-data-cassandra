@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,12 +44,10 @@ import org.springdata.cassandra.base.core.ResultSetExtractor;
 import org.springdata.cassandra.base.core.ResultSetFutureExtractor;
 import org.springdata.cassandra.base.core.RingMember;
 import org.springdata.cassandra.base.core.RowCallbackHandler;
-import org.springdata.cassandra.base.core.RowIterator;
 import org.springdata.cassandra.base.core.RowMapper;
 import org.springdata.cassandra.base.core.SessionCallback;
 import org.springdata.cassandra.base.test.integration.AbstractEmbeddedCassandraIntegrationTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.util.CollectionUtils;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Host;
@@ -140,29 +139,6 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	}
 
 	@Test
-	public void ingestionTestListOfList() {
-
-		String cql = "insert into book (isbn, title, author, pages) values (?, ?, ?, ?)";
-
-		List<List<?>> values = new LinkedList<List<?>>();
-
-		values.add(new LinkedList<Object>(CollectionUtils.arrayToList(o1)));
-		values.add(new LinkedList<Object>(CollectionUtils.arrayToList(o2)));
-		values.add(new LinkedList<Object>(CollectionUtils.arrayToList(o3)));
-
-		cassandraTemplate.ingest(cql, values, null);
-
-		// Assert that the rows were inserted into Cassandra
-		Book b1 = getBook((String) o1[0]);
-		Book b2 = getBook((String) o2[0]);
-		Book b3 = getBook((String) o3[0]);
-
-		assertBook(b1, objectToBook(o1));
-		assertBook(b2, objectToBook(o2));
-		assertBook(b3, objectToBook(o3));
-	}
-
-	@Test
 	public void ingestionTestObjectArray() {
 
 		String cql = "insert into book (isbn, title, author, pages) values (?, ?, ?, ?)";
@@ -184,39 +160,6 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		assertBook(b3, objectToBook(o3));
 	}
 
-	/**
-	 * This is an implementation of RowIterator for the purposes of testing passing your own Impl to CassandraTemplate
-	 * 
-	 * @author David Webb
-	 */
-	final class MyRowIterator implements RowIterator {
-
-		private Object[][] values;
-
-		public MyRowIterator(Object[][] values) {
-			this.values = values;
-		}
-
-		int index = 0;
-
-		/* (non-Javadoc)
-		 * @see org.springframework.cassandra.core.RowIterator#next()
-		 */
-		@Override
-		public Object[] next() {
-			return values[index++];
-		}
-
-		/* (non-Javadoc)
-		 * @see org.springframework.cassandra.core.RowIterator#hasNext()
-		 */
-		@Override
-		public boolean hasNext() {
-			return index < values.length;
-		}
-
-	}
-
 	@Test
 	public void ingestionTestRowIterator() {
 
@@ -226,9 +169,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		v[0] = o1;
 		v[1] = o2;
 		v[2] = o3;
-		RowIterator ri = new MyRowIterator(v);
 
-		cassandraTemplate.ingest(cql, ri, null);
+		cassandraTemplate.ingest(cql, Arrays.asList(v), null);
 
 		// Assert that the rows were inserted into Cassandra
 		Book b1 = getBook("1234");

@@ -77,7 +77,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	 */
 	public <S extends T> List<S> save(Iterable<S> entities) {
 
-		Assert.notNull(entities, "The given Iterable of entities not be null!");
+		Assert.notNull(entities, "The given Iterable of entities must not be null!");
 
 		List<S> result = new ArrayList<S>();
 
@@ -125,7 +125,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 		Select select = QueryBuilder.select().countAll().from(entityInformation.getTableName());
 		select.where(getIdClause(id));
 
-		Long num = cassandraDataTemplate.countByQuery(select);
+		Long num = cassandraDataTemplate.count(select.getQueryString(), null);
 		return num != null && num.longValue() > 0;
 	}
 
@@ -134,7 +134,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	 * @see org.springframework.data.repository.CrudRepository#count()
 	 */
 	public long count() {
-		return cassandraDataTemplate.count(entityInformation.getTableName());
+		return cassandraDataTemplate.countAll(entityInformation.getTableName(), null);
 	}
 
 	/*
@@ -209,7 +209,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 			return Collections.emptyList();
 		}
 
-		return cassandraDataTemplate.findByQuery(query, entityInformation.getJavaType());
+		return cassandraDataTemplate.find(query.getQueryString(), entityInformation.getJavaType(), null);
 	}
 
 	/**

@@ -426,7 +426,7 @@ public class CassandraAdminTemplate implements CassandraAdminOperations {
 
 		final CassandraPersistentEntity<?> entity = getEntity(entityClass);
 
-		return entity.getTable();
+		return entity.getTableName();
 	}
 
 	/**

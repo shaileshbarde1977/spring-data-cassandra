@@ -17,6 +17,7 @@ package org.springdata.cassandra.data.mapping;
 
 import org.springdata.cassandra.base.core.KeyPart;
 import org.springdata.cassandra.base.core.Ordering;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mapping.PersistentProperty;
 
 import com.datastax.driver.core.DataType;
@@ -89,5 +90,23 @@ public interface CassandraPersistentProperty extends PersistentProperty<Cassandr
 	 * @return
 	 */
 	Integer getOrdinal();
+
+	/**
+	 * Simple {@link Converter} implementation to transform a {@link CassandraPersistentProperty} into its column name.
+	 * 
+	 * @author Alex Shvid
+	 */
+	public enum PropertyToColumnNameConverter implements Converter<CassandraPersistentProperty, String> {
+
+		INSTANCE;
+
+		/*
+		 * (non-Javadoc)
+		 * @see org.springframework.core.convert.converter.Converter#convert(java.lang.Object)
+		 */
+		public String convert(CassandraPersistentProperty source) {
+			return source.getColumnName();
+		}
+	}
 
 }

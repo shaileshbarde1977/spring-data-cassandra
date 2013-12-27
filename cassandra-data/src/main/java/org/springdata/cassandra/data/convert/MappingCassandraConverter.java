@@ -315,7 +315,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 		final CreateTableSpecification spec = new CreateTableSpecification();
 
-		spec.name(entity.getTable());
+		spec.name(entity.getTableName());
 
 		final List<CassandraPersistentProperty> partitionKeyProperties = new ArrayList<CassandraPersistentProperty>(5);
 		final List<CassandraPersistentProperty> clusteringKeyProperties = new ArrayList<CassandraPersistentProperty>(5);
@@ -368,7 +368,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 		final AlterTableSpecification spec = new AlterTableSpecification();
 
-		spec.name(entity.getTable());
+		spec.name(entity.getTableName());
 
 		final Set<String> definedColumns = dropRemovedAttributeColumns ? new HashSet<String>() : Collections
 				.<String> emptySet();
@@ -439,7 +439,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 				}
 
 				if (prop.isIndexed()) {
-					indexList.add(new CreateIndexSpecification().optionalName(prop.getIndexName()).on(entity.getTable())
+					indexList.add(new CreateIndexSpecification().optionalName(prop.getIndexName()).on(entity.getTableName())
 							.column(prop.getColumnName()));
 				}
 			}
@@ -474,7 +474,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 				ColumnMetadata columnMetadata = table.getColumn(tableColumnName);
 
 				if (prop.isIndexed() && (columnMetadata == null || columnMetadata.getIndex() == null)) {
-					list.add(new CreateIndexSpecification().optionalName(prop.getIndexName()).on(entity.getTable())
+					list.add(new CreateIndexSpecification().optionalName(prop.getIndexName()).on(entity.getTableName())
 							.column(prop.getColumnName()));
 				} else if (!prop.isIndexed() && columnMetadata != null && columnMetadata.getIndex() != null) {
 					list.add(new DropIndexSpecification().name(columnMetadata.getIndex().getName()));

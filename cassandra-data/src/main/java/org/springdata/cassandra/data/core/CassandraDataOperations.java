@@ -20,8 +20,6 @@ import java.util.List;
 import org.springdata.cassandra.base.core.query.QueryOptions;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 
-import com.datastax.driver.core.querybuilder.Select;
-
 /**
  * Operations for interacting with Cassandra. These operations are used by the Repository implementation, but can also
  * be used directly when that is desired by the developer.
@@ -79,62 +77,50 @@ public interface CassandraDataOperations {
 	 * @param id
 	 * @param entityClass
 	 * @param tableName
-	 * @param options
+	 * @param optionsOrNull
 	 * @param <T>
 	 * @return
 	 */
-	<T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, QueryOptions options);
+	<T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, QueryOptions optionsOrNull);
 
 	/**
 	 * Execute query and convert ResultSet to the list of entities
 	 * 
 	 * @param query must not be {@literal null}.
-	 * @param selectClass must not be {@literal null}, mapped entity type.
+	 * @param entityClass must not be {@literal null}, mapped entity type.
+	 * @param optionsOrNull
 	 * @return
 	 */
-	@Deprecated
-	<T> List<T> findByQuery(String cql, Class<T> selectClass);
+	<T> List<T> find(String query, Class<T> entityClass, QueryOptions optionsOrNull);
 
 	/**
 	 * Execute query and convert ResultSet to the list of entities
 	 * 
-	 * @param selectQuery must not be {@literal null}.
-	 * @param selectClass must not be {@literal null}, mapped entity type.
-	 * @return
-	 */
-	@Deprecated
-	<T> List<T> findByQuery(Select selectQuery, Class<T> selectClass);
-
-	/**
-	 * Execute query and convert ResultSet to the entity
-	 * 
 	 * @param query must not be {@literal null}.
-	 * @param selectClass must not be {@literal null}, mapped entity type.
+	 * @param entityClass must not be {@literal null}, mapped entity type.
+	 * @param optionsOrNull
 	 * @return
 	 */
-	@Deprecated
-	<T> T findOneByQuery(String cql, Class<T> selectClass);
-
-	@Deprecated
-	<T> T findOneByQuery(Select selectQuery, Class<T> selectClass);
-
-	/**
-	 * Counts rows for given query
-	 * 
-	 * @param selectQuery
-	 * @return
-	 */
-	@Deprecated
-	Long countByQuery(Select selectQuery);
+	<T> T findOne(String query, Class<T> entityClass, QueryOptions optionsOrNull);
 
 	/**
 	 * Counts all rows for given table
 	 * 
 	 * @param tableName
+	 * @param optionsOrNull
 	 * @return
 	 */
 
-	Long count(String tableName);
+	Long countAll(String tableName, QueryOptions optionsOrNull);
+
+	/**
+	 * Counts rows for given query
+	 * 
+	 * @param query
+	 * @return
+	 */
+
+	Long count(String query, QueryOptions optionsOrNull);
 
 	/**
 	 * Insert the given object to the table.

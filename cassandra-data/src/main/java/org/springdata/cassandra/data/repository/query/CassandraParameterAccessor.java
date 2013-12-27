@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.data.mapping;
+package org.springdata.cassandra.data.repository.query;
 
-import org.springframework.data.mapping.PersistentEntity;
+import org.springdata.cassandra.base.core.query.QueryOptionsAccessor;
+import org.springframework.data.repository.query.ParameterAccessor;
 
 /**
- * Cassandra specific {@link PersistentEntity} abstraction.
+ * Cassandra specific {@link ParameterAccessor}.
  * 
  * @author Alex Shvid
  */
-public interface CassandraPersistentEntity<T> extends PersistentEntity<T, CassandraPersistentProperty> {
 
-	/**
-	 * Returns the table the entity shall be persisted to.
-	 * 
-	 * @return
-	 */
-	String getTableName();
+public interface CassandraParameterAccessor extends ParameterAccessor, QueryOptionsAccessor {
 
 }

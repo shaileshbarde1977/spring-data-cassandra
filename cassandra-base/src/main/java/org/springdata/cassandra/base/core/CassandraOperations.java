@@ -428,21 +428,7 @@ public interface CassandraOperations {
 	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
 	 * @param optionsOrNull The Query Options Object if exists
 	 */
-	void ingest(String cql, RowIterator rowIterator, QueryOptions optionsOrNull);
-
-	/**
-	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
-	 * all row values are bound to the single PreparedStatement and executed against the Session.
-	 * 
-	 * <p>
-	 * The List<?> length must match the number of bind variables in the CQL.
-	 * </p>
-	 * 
-	 * @param cql The CQL
-	 * @param rows List of List<?> with data to bind to the CQL.
-	 * @param optionsOrNull The Query Options Object is exists
-	 */
-	void ingest(String cql, List<List<?>> rows, QueryOptions optionsOrNull);
+	void ingest(String cql, Iterable<Object[]> rowIterator, QueryOptions optionsOrNull);
 
 	/**
 	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then

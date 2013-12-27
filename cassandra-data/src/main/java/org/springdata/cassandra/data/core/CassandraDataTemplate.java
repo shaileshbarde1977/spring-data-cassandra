@@ -29,7 +29,6 @@ import org.springdata.cassandra.base.core.query.QueryOptions;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.data.mapping.CassandraPersistentProperty;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.mapping.context.MappingContext;
@@ -39,6 +38,7 @@ import com.datastax.driver.core.Query;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.SimpleStatement;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Batch;
 import com.datastax.driver.core.querybuilder.Clause;
@@ -109,14 +109,70 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public Long countByQuery(Select selectQuery) {
-		return doSelectCount(selectQuery);
+	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, QueryOptions optionsOrNull) {
+		return doFindByPartitionKey(id, entityClass, getTableName(entityClass), optionsOrNull);
 	}
 
 	@Override
-	public Long count(String tableName) {
+	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, QueryOptions optionsOrNull) {
+		Assert.notNull(id);
+		Assert.notNull(entityClass);
+		Assert.notNull(tableName);
+		return doFindByPartitionKey(id, entityClass, tableName, optionsOrNull);
+	}
+
+	/**
+	 * Service method to find entities by PartitionKey
+	 * 
+	 * @param id
+	 * @param entityClass
+	 * @param tableName
+	 * @param optionsOrNull
+	 * @return
+	 */
+
+	protected <T> List<T> doFindByPartitionKey(Object id, Class<T> entityClass, String tableName,
+			QueryOptions optionsOrNull) {
+
+		Select select = QueryBuilder.select().all().from(tableName);
+		Select.Where w = select.where();
+
+		CassandraPersistentEntity<?> entity = getEntity(entityClass);
+
+		List<Clause> list = cassandraConverter.getPartitionKey(entity, id);
+
+		for (Clause c : list) {
+			w.and(c);
+		}
+
+		return doSelect(select.getQueryString(), new ReadRowCallback<T>(cassandraConverter, entityClass), optionsOrNull);
+	}
+
+	@Override
+	public <T> List<T> find(String query, Class<T> entityClass, QueryOptions optionsOrNull) {
+		Assert.notNull(query);
+		Assert.notNull(entityClass);
+
+		return doSelect(query, new ReadRowCallback<T>(cassandraConverter, entityClass), optionsOrNull);
+	}
+
+	@Override
+	public <T> T findOne(String query, Class<T> entityClass, QueryOptions optionsOrNull) {
+		Assert.notNull(query);
+		Assert.notNull(entityClass);
+
+		return doSelectOne(query, new ReadRowCallback<T>(cassandraConverter, entityClass), optionsOrNull);
+	}
+
+	@Override
+	public Long count(String cql, QueryOptions optionsOrNull) {
+		return doSelectCount(cql, optionsOrNull);
+	}
+
+	@Override
+	public Long countAll(String tableName, QueryOptions optionsOrNull) {
 		Select select = QueryBuilder.select().countAll().from(tableName);
-		return doSelectCount(select);
+		return doSelectCount(select.getQueryString(), optionsOrNull);
 	}
 
 	@Override
@@ -198,7 +254,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 			throw new InvalidDataAccessApiUsageException("No Persitent Entity information found for the class "
 					+ entityClass.getName());
 		}
-		return entity.getTable();
+		return entity.getTableName();
 	}
 
 	@Override
@@ -239,26 +295,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		Assert.notNull(tableName);
 		assertNotIterable(entity);
 		doInsert(asychronously, tableName, entity, optionsOrNull);
-	}
-
-	@Override
-	public <T> List<T> findByQuery(Select cql, Class<T> selectClass) {
-		return findByQuery(cql.getQueryString(), selectClass);
-	}
-
-	@Override
-	public <T> List<T> findByQuery(String cql, Class<T> selectClass) {
-		return doSelect(cql, new ReadRowCallback<T>(cassandraConverter, selectClass));
-	}
-
-	@Override
-	public <T> T findOneByQuery(Select selectQuery, Class<T> selectClass) {
-		return findOneByQuery(selectQuery.getQueryString(), selectClass);
-	}
-
-	@Override
-	public <T> T findOneByQuery(String cql, Class<T> selectClass) {
-		return doSelectOne(cql, new ReadRowCallback<T>(cassandraConverter, selectClass));
 	}
 
 	@Override
@@ -306,13 +342,18 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param readRowCallback
 	 * @return
 	 */
-	private <T> List<T> doSelect(final String query, ReadRowCallback<T> readRowCallback) {
+	private <T> List<T> doSelect(final String cql, ReadRowCallback<T> readRowCallback, final QueryOptions optionsOrNull) {
 
 		ResultSet resultSet = doExecute(new SessionCallback<ResultSet>() {
 
 			@Override
 			public ResultSet doInSession(Session s) {
-				return s.execute(query);
+
+				SimpleStatement statement = new SimpleStatement(cql);
+
+				addQueryOptions(statement, optionsOrNull);
+
+				return s.execute(statement);
 			}
 		});
 
@@ -334,7 +375,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param selectQuery
 	 * @return
 	 */
-	private Long doSelectCount(final Select query) {
+	private Long doSelectCount(final String cql, final QueryOptions optionsOrNull) {
 
 		Long count = null;
 
@@ -342,7 +383,12 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 			@Override
 			public ResultSet doInSession(Session s) {
-				return s.execute(query);
+
+				SimpleStatement statement = new SimpleStatement(cql);
+
+				addQueryOptions(statement, optionsOrNull);
+
+				return s.execute(statement);
 			}
 		});
 
@@ -365,9 +411,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param readRowCallback
 	 * @return
 	 */
-	private <T> T doSelectOne(final String query, ReadRowCallback<T> readRowCallback) {
+	private <T> T doSelectOne(final String cql, ReadRowCallback<T> readRowCallback, final QueryOptions optionsOrNull) {
 
-		logger.info(query);
+		logger.info(cql);
 
 		/*
 		 * Run the Query
@@ -376,7 +422,12 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 			@Override
 			public ResultSet doInSession(Session s) {
-				return s.execute(query);
+
+				SimpleStatement statement = new SimpleStatement(cql);
+
+				addQueryOptions(statement, optionsOrNull);
+
+				return s.execute(statement);
 			}
 		});
 
@@ -389,7 +440,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 			Row row = iterator.next();
 			T result = readRowCallback.doWith(row);
 			if (iterator.hasNext()) {
-				throw new DuplicateKeyException("found two or more results in query " + query);
+				throw new DuplicateKeyException("found two or more results in query " + cql);
 			}
 			return result;
 		}
@@ -926,9 +977,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 			w.and(c);
 		}
 
-		addQueryOptions(select, optionsOrNull);
-
-		return doSelectOne(select.getQueryString(), new ReadRowCallback<T>(cassandraConverter, entityClass));
+		return doSelectOne(select.getQueryString(), new ReadRowCallback<T>(cassandraConverter, entityClass), optionsOrNull);
 
 	}
 
@@ -955,32 +1004,4 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return entity;
 	}
 
-	@Override
-	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, QueryOptions options) {
-		return doFindByPartitionKey(id, entityClass, getTableName(entityClass), options);
-	}
-
-	@Override
-	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, QueryOptions optionsOrNull) {
-		return doFindByPartitionKey(id, entityClass, tableName, optionsOrNull);
-	}
-
-	protected <T> List<T> doFindByPartitionKey(Object id, Class<T> entityClass, String tableName,
-			QueryOptions optionsOrNull) {
-
-		Select select = QueryBuilder.select().all().from(tableName);
-		Select.Where w = select.where();
-
-		CassandraPersistentEntity<?> entity = getEntity(entityClass);
-
-		List<Clause> list = cassandraConverter.getPartitionKey(entity, id);
-
-		for (Clause c : list) {
-			w.and(c);
-		}
-
-		addQueryOptions(select, optionsOrNull);
-
-		return doSelect(select.getQueryString(), new ReadRowCallback<T>(cassandraConverter, entityClass));
-	}
 }
