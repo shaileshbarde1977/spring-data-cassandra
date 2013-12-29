@@ -32,6 +32,7 @@
 		<cassandra-unit.version>1.2.0.1</cassandra-unit.version>
 		<cassandra-driver-core.version>1.0.4-dse</cassandra-driver-core.version>
 		<failsafe.version>2.16</failsafe.version>
+		<guava.version>14.0.1</guava.version>
 	</properties>
 
 	<developers>
@@ -66,6 +67,12 @@
 				</exclusions>
 			</dependency>
 
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+            
 			<!-- Spring -->
 			<dependency>
 				<groupId>org.springframework</groupId>
