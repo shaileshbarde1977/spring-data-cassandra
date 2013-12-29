@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.google.common.collect.Lists;
 
 /**
  * Unit Tests for CassandraTemplate
@@ -371,7 +373,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		List<Book> books = cassandraTemplate.query("select * from book where isbn in ('1234','2345','3456')",
+		Iterator<Book> ibooks = cassandraTemplate.select("select * from book where isbn in ('1234','2345','3456')",
 				new RowMapper<Book>() {
 
 					@Override
@@ -380,6 +382,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 						return b;
 					}
 				}, null);
+
+		List<Book> books = Lists.newArrayList(ibooks);
 
 		log.debug("Size of Book List -> " + books.size());
 		assertEquals(books.size(), 3);
@@ -407,7 +411,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 		assertNotNull(rs);
 
-		List<Book> books = cassandraTemplate.process(rs, new RowMapper<Book>() {
+		Iterator<Book> ibooks = cassandraTemplate.process(rs, new RowMapper<Book>() {
 
 			@Override
 			public Book mapRow(Row row, int rowNum) {
@@ -415,6 +419,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				return b;
 			}
 		});
+
+		List<Book> books = Lists.newArrayList(ibooks);
 
 		log.debug("Size of Book List -> " + books.size());
 		assertEquals(books.size(), 3);
@@ -765,7 +771,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		final String cql = "select * from book where isbn = ?";
 		final String isbn = "999999999";
 
-		List<Book> books = cassandraTemplate.query(cql, new PreparedStatementBinder() {
+		Iterator<Book> ibooks = cassandraTemplate.select(cql, new PreparedStatementBinder() {
 
 			@Override
 			public BoundStatement bindValues(PreparedStatement ps) {
@@ -778,6 +784,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				return rowToBook(row);
 			}
 		}, null);
+
+		List<Book> books = Lists.newArrayList(ibooks);
 
 		Book b2 = getBook(isbn);
 
@@ -852,7 +860,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 		final String cql = "select * from book";
 
-		List<Book> books = cassandraTemplate.query(new PreparedStatementCreator() {
+		Iterator<Book> ibooks = cassandraTemplate.select(new PreparedStatementCreator() {
 
 			@Override
 			public PreparedStatement createPreparedStatement(Session session) {
@@ -865,6 +873,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				return rowToBook(row);
 			}
 		}, null);
+
+		List<Book> books = Lists.newArrayList(ibooks);
 
 		log.debug("Size of all Books -> " + books.size());
 
@@ -947,7 +957,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		final String cql = "select * from book where isbn = ?";
 		final String isbn = "999999999";
 
-		List<Book> books = cassandraTemplate.query(new PreparedStatementCreator() {
+		Iterator<Book> ibooks = cassandraTemplate.select(new PreparedStatementCreator() {
 
 			@Override
 			public PreparedStatement createPreparedStatement(Session session) {
@@ -966,6 +976,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 				return rowToBook(row);
 			}
 		}, null);
+
+		List<Book> books = Lists.newArrayList(ibooks);
 
 		Book b2 = getBook(isbn);
 

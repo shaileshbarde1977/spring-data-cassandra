@@ -169,7 +169,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> List<T> query(String cql, RowMapper<T> rowMapper, QueryOptions optionsOrNull) {
+	public <T> Iterator<T> select(String cql, RowMapper<T> rowMapper, QueryOptions optionsOrNull) {
 		Assert.notNull(cql);
 		Assert.notNull(rowMapper);
 		return process(doExecute(cql, optionsOrNull), rowMapper);
@@ -389,6 +389,54 @@ public class CassandraTemplate implements CassandraOperations {
 		}
 	}
 
+	/**
+	 * Service iterator
+	 * 
+	 * @author Alex Shvid
+	 * 
+	 * @param <T>
+	 */
+
+	protected class MappedRowIterator<T> implements Iterator<T> {
+
+		final Iterator<Row> backingIterator;
+		final RowMapper<T> mapper;
+		int row = 0;
+
+		MappedRowIterator(Iterator<Row> backingIterator, RowMapper<T> mapper) {
+			this.backingIterator = backingIterator;
+			this.mapper = mapper;
+		}
+
+		@Override
+		public final boolean hasNext() {
+			try {
+				return backingIterator.hasNext();
+			} catch (RuntimeException e) {
+				throw translateIfPossible(e);
+			}
+		}
+
+		@Override
+		public final T next() {
+			try {
+				return mapper.mapRow(backingIterator.next(), ++row);
+			} catch (RuntimeException e) {
+				throw translateIfPossible(e);
+			}
+		}
+
+		@Override
+		public final void remove() {
+			try {
+				backingIterator.remove();
+			} catch (RuntimeException e) {
+				throw translateIfPossible(e);
+			}
+		}
+
+	}
+
 	@Override
 	public <T> Collection<T> describeRing(HostMapper<T> hostMapper) {
 		Assert.notNull(hostMapper);
@@ -422,28 +470,21 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> List<T> process(ResultSet resultSet, final RowMapper<T> rowMapper) {
+	public <T> Iterator<T> process(ResultSet resultSet, final RowMapper<T> rowMapper) {
 		Assert.notNull(resultSet);
 		Assert.notNull(rowMapper);
 
-		return doProcess(resultSet, new ResultSetCallback<List<T>>() {
+		return doProcess(resultSet, new ResultSetCallback<Iterator<T>>() {
 
 			@Override
-			public List<T> doWithResultSet(ResultSet resultSet) {
+			public Iterator<T> doWithResultSet(ResultSet resultSet) {
 
-				List<Row> rows = resultSet.all();
-				if (rows == null || rows.isEmpty()) {
-					return Collections.emptyList();
+				Iterator<Row> iterator = resultSet.iterator();
+				if (iterator == null) {
+					return Collections.<T> emptyList().iterator();
 				}
 
-				List<T> mappedRows = new ArrayList<T>(rows.size());
-
-				int i = 0;
-				for (Row row : rows) {
-					mappedRows.add(rowMapper.mapRow(row, ++i));
-				}
-
-				return mappedRows;
+				return new MappedRowIterator<T>(iterator, rowMapper);
 			}
 
 		});
@@ -624,10 +665,10 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> List<T> query(PreparedStatementCreator psc, RowMapper<T> rowMapper, QueryOptions optionsOrNull) {
+	public <T> Iterator<T> select(PreparedStatementCreator psc, RowMapper<T> rowMapper, QueryOptions optionsOrNull) {
 		Assert.notNull(psc);
 		Assert.notNull(rowMapper);
-		return query(psc, null, rowMapper, optionsOrNull);
+		return select(psc, null, rowMapper, optionsOrNull);
 	}
 
 	@Override
@@ -664,9 +705,9 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> List<T> query(String cql, PreparedStatementBinder psbOrNull, RowMapper<T> rowMapper,
+	public <T> Iterator<T> select(String cql, PreparedStatementBinder psbOrNull, RowMapper<T> rowMapper,
 			QueryOptions optionsOrNull) {
-		return query(new SimplePreparedStatementCreator(cql), psbOrNull, rowMapper, optionsOrNull);
+		return select(new SimplePreparedStatementCreator(cql), psbOrNull, rowMapper, optionsOrNull);
 	}
 
 	@Override
@@ -692,14 +733,14 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> List<T> query(PreparedStatementCreator psc, final PreparedStatementBinder psbOrNull,
+	public <T> Iterator<T> select(PreparedStatementCreator psc, final PreparedStatementBinder psbOrNull,
 			final RowMapper<T> rowMapper, final QueryOptions optionsOrNull) {
 
 		Assert.notNull(psc);
 		Assert.notNull(rowMapper);
 
-		return execute(psc, new PreparedStatementCallback<List<T>>() {
-			public List<T> doInPreparedStatement(PreparedStatement ps) {
+		return execute(psc, new PreparedStatementCallback<Iterator<T>>() {
+			public Iterator<T> doInPreparedStatement(PreparedStatement ps) {
 				ResultSet rs = null;
 				BoundStatement bs = null;
 				if (psbOrNull != null) {
@@ -739,26 +780,34 @@ public class CassandraTemplate implements CassandraOperations {
 		ingest(cql, new Iterable<Object[]>() {
 
 			public Iterator<Object[]> iterator() {
-				return new RowIterator(rows);
+				return new ArrayIterator<Object[]>(rows);
 			}
 		}, optionsOrNull);
 	}
 
-	private static class RowIterator implements Iterator<Object[]> {
+	/**
+	 * Service iterator based on array
+	 * 
+	 * @author Alex Shvid
+	 * 
+	 * @param <T>
+	 */
 
-		private Object[][] rows;
+	private static class ArrayIterator<T> implements Iterator<T> {
+
+		private T[] array;
 		private int pos = 0;
 
-		public RowIterator(Object[][] rows) {
-			this.rows = rows;
+		public ArrayIterator(T[] array) {
+			this.array = array;
 		}
 
 		public boolean hasNext() {
-			return rows.length > pos;
+			return array.length > pos;
 		}
 
-		public Object[] next() {
-			return rows[pos++];
+		public T next() {
+			return array[pos++];
 		}
 
 		public void remove() {
