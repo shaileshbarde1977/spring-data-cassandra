@@ -42,7 +42,6 @@ import org.springdata.cassandra.base.core.PreparedStatementBinder;
 import org.springdata.cassandra.base.core.PreparedStatementCallback;
 import org.springdata.cassandra.base.core.PreparedStatementCreator;
 import org.springdata.cassandra.base.core.ResultSetExtractor;
-import org.springdata.cassandra.base.core.ResultSetFutureExtractor;
 import org.springdata.cassandra.base.core.RingMember;
 import org.springdata.cassandra.base.core.RowCallbackHandler;
 import org.springdata.cassandra.base.core.RowMapper;
@@ -54,7 +53,6 @@ import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.Host;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.google.common.collect.Lists;
@@ -261,7 +259,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 		final String isbn = "999999999";
 
-		Book b1 = cassandraTemplate.query("select * from book where isbn='" + isbn + "'", new ResultSetExtractor<Book>() {
+		Book b1 = cassandraTemplate.select("select * from book where isbn='" + isbn + "'", new ResultSetExtractor<Book>() {
 
 			@Override
 			public Book extractData(ResultSet rs) {
@@ -285,21 +283,13 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 		final String isbn = "999999999";
 
-		Book b1 = cassandraTemplate.queryAsynchronously("select * from book where isbn='" + isbn + "'",
-				new ResultSetFutureExtractor<Book>() {
+		ResultSet frs = cassandraTemplate.selectAsynchronously("select * from book where isbn='" + isbn + "'", null)
+				.getUninterruptibly();
 
-					@Override
-					public Book extractData(ResultSetFuture rs) {
+		Row r = frs.one();
+		assertNotNull(r);
 
-						ResultSet frs = rs.getUninterruptibly();
-						Row r = frs.one();
-						assertNotNull(r);
-
-						Book b = rowToBook(r);
-
-						return b;
-					}
-				}, null);
+		Book b1 = rowToBook(r);
 
 		Book b2 = getBook(isbn);
 
@@ -314,7 +304,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 		final Book b1 = getBook(isbn);
 
-		cassandraTemplate.query("select * from book where isbn='" + isbn + "'", new RowCallbackHandler() {
+		cassandraTemplate.select("select * from book where isbn='" + isbn + "'", new RowCallbackHandler() {
 
 			@Override
 			public void processRow(Row row) {
@@ -337,16 +327,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 		final Book b1 = getBook(isbn);
 
-		ResultSet rs = cassandraTemplate.queryAsynchronously("select * from book where isbn='" + isbn + "'",
-				new ResultSetFutureExtractor<ResultSet>() {
-
-					@Override
-					public ResultSet extractData(ResultSetFuture rs) {
-
-						ResultSet frs = rs.getUninterruptibly();
-						return frs;
-					}
-				}, null);
+		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn='" + isbn + "'", null)
+				.getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -398,16 +380,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		ResultSet rs = cassandraTemplate.queryAsynchronously("select * from book where isbn in ('1234','2345','3456')",
-				new ResultSetFutureExtractor<ResultSet>() {
-
-					@Override
-					public ResultSet extractData(ResultSetFuture rs) {
-
-						ResultSet frs = rs.getUninterruptibly();
-						return frs;
-					}
-				}, null);
+		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn in ('1234','2345','3456')",
+				null).getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -433,7 +407,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	@Test
 	public void queryForObjectTestCqlStringRowMapper() {
 
-		Book book = cassandraTemplate.queryForObject("select * from book where isbn in ('" + ISBN_NINES + "')",
+		Book book = cassandraTemplate.selectOne("select * from book where isbn in ('" + ISBN_NINES + "')",
 				new RowMapper<Book>() {
 					@Override
 					public Book mapRow(Row row, int rowNum) {
@@ -455,7 +429,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		Book book = cassandraTemplate.queryForObject("select * from book where isbn in ('1234','2345','3456')",
+		Book book = cassandraTemplate.selectOne("select * from book where isbn in ('1234','2345','3456')",
 				new RowMapper<Book>() {
 					@Override
 					public Book mapRow(Row row, int rowNum) {
@@ -471,16 +445,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		ResultSet rs = cassandraTemplate.queryAsynchronously("select * from book where isbn in ('" + ISBN_NINES + "')",
-				new ResultSetFutureExtractor<ResultSet>() {
-
-					@Override
-					public ResultSet extractData(ResultSetFuture rs) {
-
-						ResultSet frs = rs.getUninterruptibly();
-						return frs;
-					}
-				}, null);
+		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn in ('" + ISBN_NINES + "')",
+				null).getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -499,7 +465,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	@Test
 	public void quertForObjectTestCqlStringRequiredType() {
 
-		String title = cassandraTemplate.queryForObject("select title from book where isbn in ('" + ISBN_NINES + "')",
+		String title = cassandraTemplate.selectOne("select title from book where isbn in ('" + ISBN_NINES + "')",
 				String.class, null);
 
 		assertEquals(title, TITLE_NINES);
@@ -509,7 +475,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	@Test(expected = ClassCastException.class)
 	public void queryForObjectTestCqlStringRequiredTypeInvalid() {
 
-		Float title = cassandraTemplate.queryForObject("select title from book where isbn in ('" + ISBN_NINES + "')",
+		Float title = cassandraTemplate.selectOne("select title from book where isbn in ('" + ISBN_NINES + "')",
 				Float.class, null);
 
 	}
@@ -517,16 +483,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	@Test
 	public void processOneTestResultSetType() {
 
-		ResultSet rs = cassandraTemplate.queryAsynchronously("select title from book where isbn in ('" + ISBN_NINES + "')",
-				new ResultSetFutureExtractor<ResultSet>() {
-
-					@Override
-					public ResultSet extractData(ResultSetFuture rs) {
-
-						ResultSet frs = rs.getUninterruptibly();
-						return frs;
-					}
-				}, null);
+		ResultSet rs = cassandraTemplate.selectAsynchronously(
+				"select title from book where isbn in ('" + ISBN_NINES + "')", null).getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -539,8 +497,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	@Test
 	public void queryForMapTestCqlString() {
 
-		Map<String, Object> rsMap = cassandraTemplate.queryForMap(
-				"select * from book where isbn in ('" + ISBN_NINES + "')", null);
+		Map<String, Object> rsMap = cassandraTemplate.selectOneAsMap("select * from book where isbn in ('" + ISBN_NINES
+				+ "')", null);
 
 		log.debug(rsMap.toString());
 
@@ -555,20 +513,12 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	@Test
 	public void processMapTestResultSet() {
 
-		ResultSet rs = cassandraTemplate.queryAsynchronously("select * from book where isbn in ('" + ISBN_NINES + "')",
-				new ResultSetFutureExtractor<ResultSet>() {
-
-					@Override
-					public ResultSet extractData(ResultSetFuture rs) {
-
-						ResultSet frs = rs.getUninterruptibly();
-						return frs;
-					}
-				}, null);
+		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn in ('" + ISBN_NINES + "')",
+				null).getUninterruptibly();
 
 		assertNotNull(rs);
 
-		Map<String, Object> rsMap = cassandraTemplate.processMap(rs);
+		Map<String, Object> rsMap = cassandraTemplate.processOneAsMap(rs);
 
 		log.debug("Size of Book List -> " + rsMap.size());
 
@@ -586,8 +536,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		List<String> titles = cassandraTemplate.queryForList("select title from book where isbn in ('1234','2345','3456')",
-				String.class, null);
+		List<String> titles = cassandraTemplate.selectFirstColumnAsList(
+				"select title from book where isbn in ('1234','2345','3456')", String.class, null);
 
 		log.debug(titles.toString());
 
@@ -602,20 +552,12 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		ResultSet rs = cassandraTemplate.queryAsynchronously("select * from book where isbn in ('1234','2345','3456')",
-				new ResultSetFutureExtractor<ResultSet>() {
-
-					@Override
-					public ResultSet extractData(ResultSetFuture rs) {
-
-						ResultSet frs = rs.getUninterruptibly();
-						return frs;
-					}
-				}, null);
+		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn in ('1234','2345','3456')",
+				null).getUninterruptibly();
 
 		assertNotNull(rs);
 
-		List<String> titles = cassandraTemplate.processList(rs, String.class);
+		List<String> titles = cassandraTemplate.processFirstColumnAsList(rs, String.class);
 
 		log.debug(titles.toString());
 
@@ -629,7 +571,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		List<Map<String, Object>> results = cassandraTemplate.queryForListOfMap(
+		List<Map<String, Object>> results = cassandraTemplate.selectAsListOfMap(
 				"select * from book where isbn in ('1234','2345','3456')", null);
 
 		log.debug(results.toString());
@@ -644,20 +586,12 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		ResultSet rs = cassandraTemplate.queryAsynchronously("select * from book where isbn in ('1234','2345','3456')",
-				new ResultSetFutureExtractor<ResultSet>() {
-
-					@Override
-					public ResultSet extractData(ResultSetFuture rs) {
-
-						ResultSet frs = rs.getUninterruptibly();
-						return frs;
-					}
-				}, null);
+		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn in ('1234','2345','3456')",
+				null).getUninterruptibly();
 
 		assertNotNull(rs);
 
-		List<Map<String, Object>> results = cassandraTemplate.processListOfMap(rs);
+		List<Map<String, Object>> results = cassandraTemplate.processAsListOfMap(rs);
 
 		log.debug(results.toString());
 
@@ -713,7 +647,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		final String cql = "select * from book where isbn = ?";
 		final String isbn = "999999999";
 
-		Book b1 = cassandraTemplate.query(cql, new PreparedStatementBinder() {
+		Book b1 = cassandraTemplate.select(cql, new PreparedStatementBinder() {
 
 			@Override
 			public BoundStatement bindValues(PreparedStatement ps) {
@@ -743,7 +677,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		final String cql = "select * from book where isbn = ?";
 		final String isbn = "999999999";
 
-		cassandraTemplate.query(cql, new PreparedStatementBinder() {
+		cassandraTemplate.select(cql, new PreparedStatementBinder() {
 
 			@Override
 			public BoundStatement bindValues(PreparedStatement ps) {
@@ -800,7 +734,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 		final String cql = "select * from book";
 
-		List<Book> books = cassandraTemplate.query(new PreparedStatementCreator() {
+		List<Book> books = cassandraTemplate.select(new PreparedStatementCreator() {
 
 			@Override
 			public PreparedStatement createPreparedStatement(Session session) {
@@ -833,7 +767,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 		final String cql = "select * from book";
 
-		cassandraTemplate.query(new PreparedStatementCreator() {
+		cassandraTemplate.select(new PreparedStatementCreator() {
 
 			@Override
 			public PreparedStatement createPreparedStatement(Session session) {
@@ -887,7 +821,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		final String cql = "select * from book where isbn = ?";
 		final String isbn = "999999999";
 
-		List<Book> books = cassandraTemplate.query(new PreparedStatementCreator() {
+		List<Book> books = cassandraTemplate.select(new PreparedStatementCreator() {
 
 			@Override
 			public PreparedStatement createPreparedStatement(Session session) {
@@ -927,7 +861,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		final String cql = "select * from book where isbn = ?";
 		final String isbn = "999999999";
 
-		cassandraTemplate.query(new PreparedStatementCreator() {
+		cassandraTemplate.select(new PreparedStatementCreator() {
 
 			@Override
 			public PreparedStatement createPreparedStatement(Session session) {
@@ -1063,7 +997,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	 */
 	public Book getBook(final String isbn) {
 
-		Book b = this.cassandraTemplate.query("select * from book where isbn = ?", new PreparedStatementBinder() {
+		Book b = this.cassandraTemplate.select("select * from book where isbn = ?", new PreparedStatementBinder() {
 
 			@Override
 			public BoundStatement bindValues(PreparedStatement ps) {
