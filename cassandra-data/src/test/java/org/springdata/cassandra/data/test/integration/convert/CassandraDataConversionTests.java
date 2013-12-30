@@ -16,6 +16,9 @@ package org.springdata.cassandra.data.test.integration.convert;
  * limitations under the License.
  */
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.apache.cassandra.exceptions.ConfigurationException;
 import org.apache.thrift.transport.TTransportException;
 import org.cassandraunit.CassandraCQLUnit;
@@ -44,6 +47,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -127,7 +132,7 @@ public class CassandraDataConversionTests {
 	}
 
 	@Test
-	public void basicValuesTest() throws Exception {
+	public void basicValuesReadTest() throws Exception {
 
 		UUID uuid = UUID.fromString("f7a04220-6dda-11e3-981f-0800200c9a66");
 		long longValue = 555555555555L;
@@ -159,6 +164,52 @@ public class CassandraDataConversionTests {
 	}
 
 	@Test
+	public void basicValuesWriteTest() throws Exception {
+
+		ByteBuffer blob = ByteBuffer.wrap(new byte[] { (byte) 0xca, (byte) 0xfe, (byte) 0xba, (byte) 0xbe });
+		UUID uuid = UUID.fromString("f7a04220-6dda-11e3-981f-0800200c9a66");
+		long longValue = 555555555555L;
+		InetAddress inetaddr = Inet4Address.getByName("10.1.2.3");
+		Date date = ISODateTimeFormat.dateTime().parseDateTime("2013-12-25T12:34:00.000+00:00").toDate();
+
+		BasicTypesEntity newEntity = new BasicTypesEntity();
+		newEntity.setId("ascii");
+		newEntity.setPropascii("ascii test value");
+		newEntity.setPropbigint(longValue);
+		newEntity.setPropblob(blob);
+		newEntity.setPropboolean(true);
+		newEntity.setPropdecimal(new BigDecimal(10.56));
+		newEntity.setPropdouble(1.5E50);
+		newEntity.setPropfloat(1E9F);
+		newEntity.setPropinet(inetaddr);
+		newEntity.setPropint(123456);
+		newEntity.setProptext("text test value");
+		newEntity.setProptimestamp(date);
+		newEntity.setPropuuid(uuid);
+		newEntity.setProptimeuuid(uuid);
+		newEntity.setPropvarchar("varchar test value");
+		newEntity.setPropvarint(new BigInteger("12345678901234567890"));
+		cassandraDataTemplate.saveNew(false, newEntity, null);
+
+		BasicTypesEntity entity = cassandraDataTemplate.findById("ascii", BasicTypesEntity.class, null);
+		assertThat(entity, is(not(nullValue(BasicTypesEntity.class))));
+		assertThat(entity.getId(), is("ascii"));
+		assertThat(entity.getPropascii(), is("ascii test value"));
+		assertThat(entity.getPropboolean(), is(true));
+		assertThat(entity.getPropdecimal(), BigDecimalCloseTo.closeTo(new BigDecimal(10.56), new BigDecimal(0.001)));
+		assertThat(entity.getPropdouble(), IsCloseTo.closeTo(1.5E50, 0.001));
+		assertThat(entity.getPropfloat().doubleValue(), IsCloseTo.closeTo(1E9, 1.));
+		assertThat(entity.getPropinet(), is(inetaddr));
+		assertThat(entity.getPropint(), is(123456));
+		assertThat(entity.getProptext(), is("text test value"));
+		assertThat(entity.getProptimestamp(), is(date));
+		assertThat(entity.getPropuuid(), is(uuid));
+		assertThat(entity.getProptimeuuid(), is(uuid));
+		assertThat(entity.getPropvarchar(), is("varchar test value"));
+		assertThat(entity.getPropvarint(), is(new BigInteger("12345678901234567890")));
+	}
+
+	@Test
 	public void collectionsNullsTest() {
 
 		cassandraOperations.execute(false, "insert into test.collection_types_table (id) values ('nulls')", null);
@@ -175,7 +226,7 @@ public class CassandraDataConversionTests {
 	}
 
 	@Test
-	public void collectionsValuesTest() {
+	public void collectionsValuesReadTest() {
 
 		UUID mapUUID = UUID.fromString("f7a04220-6dda-11e3-981f-0800200c9a66");
 		UUID listUUID[] = { UUID.fromString("149f0c80-6ddb-11e3-981f-0800200c9a66"),
@@ -189,6 +240,58 @@ public class CassandraDataConversionTests {
 						+ "values ('values', ['text1', 'text2'], {'key1':'value1', 'key2':'value2'}, "
 						+ "{'settext1', 'settext2'}, {'uuid1':%s}, " + "[%s, %s], " + "{%s} )", mapUUID.toString(),
 						listUUID[0].toString(), listUUID[1].toString(), setUUID.toString()), null);
+
+		CollectionTypesEntity entity = cassandraDataTemplate.findById("values", CollectionTypesEntity.class, null);
+
+		assertThat(entity, is(not(nullValue(CollectionTypesEntity.class))));
+		assertThat(entity.getId(), is("values"));
+
+		List<String> textList = entity.getTextlist();
+		assertThat(textList.size(), is(2));
+		assertThat(textList.get(0), is("text1"));
+		assertThat(textList.get(1), is("text2"));
+
+		Map<String, String> textMap = entity.getTextmap();
+		assertThat(textMap.size(), is(2));
+		assertThat(textMap.get("key1"), is("value1"));
+		assertThat(textMap.get("key2"), is("value2"));
+
+		Set<String> textSet = entity.getTextset();
+		assertThat(textSet.size(), is(2));
+		assertThat(textSet.contains("settext1"), is(true));
+		assertThat(textSet.contains("settext2"), is(true));
+
+		Map<String, UUID> textuuidMap = entity.getTextuuidmap();
+		assertThat(textuuidMap.size(), is(1));
+		assertThat(textuuidMap.get("uuid1"), is(mapUUID));
+
+		List<UUID> uuidList = entity.getUuidlist();
+		for (int i = 0; i <= 1; ++i) {
+			assertThat(uuidList.get(i), is(listUUID[i]));
+		}
+
+		Set<UUID> uuidSet = entity.getUuidset();
+		assertThat(uuidSet.contains(setUUID), is(true));
+	}
+
+	@Test
+	public void collectionsValuesWriteTest() {
+
+		UUID mapUUID = UUID.fromString("f7a04220-6dda-11e3-981f-0800200c9a66");
+		UUID listUUID[] = { UUID.fromString("149f0c80-6ddb-11e3-981f-0800200c9a66"),
+				UUID.fromString("149f0c81-6ddb-11e3-981f-0800200c9a66") };
+		UUID setUUID = UUID.fromString("149f0c82-6ddb-11e3-981f-0800200c9a66");
+
+		CollectionTypesEntity newEntity = new CollectionTypesEntity();
+		newEntity.setId("values");
+		newEntity.setTextlist(ImmutableList.of("text1", "text2"));
+		newEntity.setTextmap(ImmutableMap.of("key1", "value1", "key2", "value2"));
+		newEntity.setTextset(ImmutableSet.of("settext1", "settext2"));
+		newEntity.setTextuuidmap(ImmutableMap.of("uuid1", mapUUID));
+		newEntity.setUuidlist(ImmutableList.of(listUUID[0], listUUID[1]));
+		newEntity.setUuidset(ImmutableSet.of(setUUID));
+
+		cassandraDataTemplate.saveNew(false, newEntity, null);
 
 		CollectionTypesEntity entity = cassandraDataTemplate.findById("values", CollectionTypesEntity.class, null);
 
