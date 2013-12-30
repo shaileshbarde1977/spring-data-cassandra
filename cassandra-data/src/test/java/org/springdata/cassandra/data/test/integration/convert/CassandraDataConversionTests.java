@@ -239,6 +239,67 @@ public class CassandraDataConversionTests {
 		assertThat(entity.getProptext(), equalTo("one"));
 	}
 
+	@Test
+	public void embeddedIdInsertTest() {
+
+		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(2, "second");
+		EmbeddedIdEntity newEntity = new EmbeddedIdEntity();
+		newEntity.setId(pk);
+		newEntity.setProptext("two");
+		cassandraDataTemplate.saveNew(false, newEntity, null);
+
+		EmbeddedIdEntity entity = cassandraDataTemplate.findById(pk, EmbeddedIdEntity.class, null);
+		assertThat(entity, is(not(nullValue(EmbeddedIdEntity.class))));
+		EmbeddedIdEntity.PK entityPk = entity.getId();
+		assertThat(entityPk, is(not(nullValue(EmbeddedIdEntity.PK.class))));
+		assertThat(entityPk.getPartitionKey(), equalTo(pk.getPartitionKey()));
+		assertThat(entityPk.getClusteringKey(), equalTo(pk.getClusteringKey()));
+		assertThat(entity.getProptext(), equalTo("two"));
+	}
+
+	@Test
+	public void embeddedIdUpdateTest() {
+
+		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(2, "second");
+
+		cassandraOperations.execute(false, "insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
+				+ " values (2, 'second', 'two')", null);
+
+		EmbeddedIdEntity entity = cassandraDataTemplate.findById(pk, EmbeddedIdEntity.class, null);
+		assertThat(entity, is(not(nullValue(EmbeddedIdEntity.class))));
+		EmbeddedIdEntity.PK entityPk = entity.getId();
+		assertThat(entityPk, is(not(nullValue(EmbeddedIdEntity.PK.class))));
+		assertThat(entityPk.getPartitionKey(), equalTo(pk.getPartitionKey()));
+		assertThat(entityPk.getClusteringKey(), equalTo(pk.getClusteringKey()));
+		assertThat(entity.getProptext(), equalTo("two"));
+
+		entity.setProptext("Two!");
+		cassandraDataTemplate.save(false, entity, null);
+		entity = cassandraDataTemplate.findById(pk, EmbeddedIdEntity.class, null);
+		assertThat(entity.getProptext(), equalTo("Two!"));
+	}
+
+	@Test
+	public void embeddedIdDeleteTest() {
+
+		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(2, "second");
+
+		cassandraOperations.execute(false, "insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
+				+ " values (2, 'second', 'two')", null);
+
+		EmbeddedIdEntity entity = cassandraDataTemplate.findById(pk, EmbeddedIdEntity.class, null);
+		assertThat(entity, is(not(nullValue(EmbeddedIdEntity.class))));
+		EmbeddedIdEntity.PK entityPk = entity.getId();
+		assertThat(entityPk, is(not(nullValue(EmbeddedIdEntity.PK.class))));
+		assertThat(entityPk.getPartitionKey(), equalTo(pk.getPartitionKey()));
+		assertThat(entityPk.getClusteringKey(), equalTo(pk.getClusteringKey()));
+		assertThat(entity.getProptext(), equalTo("two"));
+
+		cassandraDataTemplate.delete(false, entity, null);
+		entity = cassandraDataTemplate.findById(pk, EmbeddedIdEntity.class, null);
+		assertThat(entity, is(nullValue(EmbeddedIdEntity.class)));
+	}
+
 	@After
 	public void clearCassandra() {
 		EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
