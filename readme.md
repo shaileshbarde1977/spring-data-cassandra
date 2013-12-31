@@ -39,3 +39,8 @@ This is a standard Maven multimodule project.  Just issue the command `mvn clean
 Continuous integration
 --------
 https://travis-ci.org/SpringData/spring-data-cassandra
+
+
+Discussion forum
+--------
+http://sdc.1003000.n3.nabble.com/
