@@ -16,6 +16,7 @@
 package org.springdata.cassandra.base.core;
 
 import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.Session;
 
 /**
  * Prepared Statement Callback interface
@@ -25,6 +26,6 @@ import com.datastax.driver.core.PreparedStatement;
  */
 public interface PreparedStatementCallback<T> {
 
-	T doInPreparedStatement(PreparedStatement ps);
+	T doWithPreparedStatement(Session session, PreparedStatement ps);
 
 }

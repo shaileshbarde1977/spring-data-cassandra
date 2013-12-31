@@ -153,19 +153,11 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> T select(String cql, final ResultSetExtractor<T> rse, QueryOptions optionsOrNull) {
+	public <T> T select(String cql, final ResultSetCallback<T> rsc, QueryOptions optionsOrNull) {
 		Assert.notNull(cql);
-		Assert.notNull(rse);
+		Assert.notNull(rsc);
 		ResultSet resultSet = doExecute(cql, optionsOrNull);
-
-		return doProcess(resultSet, new ResultSetCallback<T>() {
-
-			@Override
-			public T doWithResultSet(ResultSet resultSet) {
-				return rse.extractData(resultSet);
-			}
-
-		});
+		return doProcess(resultSet, rsc);
 
 	}
 
@@ -477,13 +469,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 			@Override
 			public Iterator<T> doWithResultSet(ResultSet resultSet) {
-
-				Iterator<Row> iterator = resultSet.iterator();
-				if (iterator == null) {
-					return Collections.<T> emptyList().iterator();
-				}
-
-				return new MappedRowIterator<T>(iterator, rowMapper);
+				return new MappedRowIterator<T>(resultSet.iterator(), rowMapper);
 			}
 
 		});
@@ -500,16 +486,18 @@ public class CassandraTemplate implements CassandraOperations {
 			@Override
 			public T doWithResultSet(ResultSet resultSet) {
 
-				List<Row> rows = resultSet.all();
-				if (rows == null || rows.isEmpty()) {
+				Iterator<Row> iterator = resultSet.iterator();
+				if (!iterator.hasNext()) {
 					return null;
 				}
 
-				if (rows.size() > 1) {
+				Row firstRow = iterator.next();
+
+				if (iterator.hasNext()) {
 					throw new DataIntegrityViolationException("expected single row in the resultSet");
 				}
 
-				return rowMapper.mapRow(rows.get(0), 0);
+				return rowMapper.mapRow(firstRow, 0);
 			}
 
 		});
@@ -572,12 +560,8 @@ public class CassandraTemplate implements CassandraOperations {
 			@Override
 			public List<T> doWithResultSet(ResultSet resultSet) {
 
-				List<Row> rows = resultSet.all();
-				if (rows == null || rows.isEmpty()) {
-					return Collections.emptyList();
-				}
-				List<T> list = new ArrayList<T>(rows.size());
-				for (Row row : rows) {
+				List<T> list = new ArrayList<T>();
+				for (Row row : resultSet) {
 					list.add((T) firstColumnToObject(row));
 				}
 				return list;
@@ -625,19 +609,22 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> T execute(final PreparedStatementCreator psc, final PreparedStatementCallback<T> action,
-			final QueryOptions optionsOrNull) {
+	public PreparedStatement prepareStatement(final String cql, final QueryOptions optionsOrNull) {
 
-		Assert.notNull(psc);
-		Assert.notNull(action);
+		Assert.notNull(cql);
 
-		return doExecute(new SessionCallback<T>() {
+		return doExecute(new SessionCallback<PreparedStatement>() {
 
 			@Override
-			public T doInSession(Session session) {
-				PreparedStatement ps = psc.createPreparedStatement(getSession());
+			public PreparedStatement doInSession(Session session) {
+
+				PreparedStatementCreator psc = new SimplePreparedStatementCreator(cql);
+
+				PreparedStatement ps = psc.createPreparedStatement(session);
+
 				addPreparedStatementOptions(ps, optionsOrNull);
-				return action.doInPreparedStatement(ps);
+
+				return ps;
 			}
 
 		});
@@ -645,113 +632,158 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> T execute(String cql, PreparedStatementCallback<T> action, QueryOptions optionsOrNull) {
-		return execute(new SimplePreparedStatementCreator(cql), action, optionsOrNull);
-	}
-
-	@Override
-	public <T> T select(PreparedStatementCreator psc, ResultSetExtractor<T> rse, QueryOptions optionsOrNull) {
-		Assert.notNull(psc);
-		Assert.notNull(rse);
-		return select(psc, null, rse, optionsOrNull);
-	}
-
-	@Override
-	public void select(PreparedStatementCreator psc, RowCallbackHandler rch, QueryOptions optionsOrNull) {
-		Assert.notNull(psc);
-		Assert.notNull(rch);
-		select(psc, null, rch, optionsOrNull);
-	}
-
-	@Override
-	public <T> Iterator<T> select(PreparedStatementCreator psc, RowMapper<T> rowMapper, QueryOptions optionsOrNull) {
-		Assert.notNull(psc);
-		Assert.notNull(rowMapper);
-		return select(psc, null, rowMapper, optionsOrNull);
-	}
-
-	@Override
-	public <T> T select(PreparedStatementCreator psc, final PreparedStatementBinder psbOrNull,
-			final ResultSetExtractor<T> rse, final QueryOptions optionsOrNull) {
+	public PreparedStatement prepareStatement(final PreparedStatementCreator psc, final QueryOptions optionsOrNull) {
 
 		Assert.notNull(psc);
-		Assert.notNull(rse);
 
-		return execute(psc, new PreparedStatementCallback<T>() {
-			public T doInPreparedStatement(PreparedStatement ps) {
-				ResultSet rs = null;
-				BoundStatement bs = null;
-				if (psbOrNull != null) {
-					bs = psbOrNull.bindValues(ps);
-				} else {
-					bs = ps.bind();
-				}
-				rs = doExecute(bs, optionsOrNull);
-				return rse.extractData(rs);
+		return doExecute(new SessionCallback<PreparedStatement>() {
+
+			@Override
+			public PreparedStatement doInSession(Session session) {
+
+				PreparedStatement ps = psc.createPreparedStatement(session);
+
+				addPreparedStatementOptions(ps, optionsOrNull);
+
+				return ps;
 			}
-		}, optionsOrNull);
+
+		});
+
 	}
 
 	@Override
-	public <T> T select(String cql, PreparedStatementBinder psbOrNull, ResultSetExtractor<T> rse,
-			QueryOptions optionsOrNull) {
-		return select(new SimplePreparedStatementCreator(cql), psbOrNull, rse, optionsOrNull);
+	public <T> T execute(final PreparedStatement ps, final PreparedStatementCallback<T> rsc) {
+
+		Assert.notNull(ps);
+		Assert.notNull(rsc);
+
+		return doExecute(ps, rsc);
+
+	}
+
+	/**
+	 * Service method to deal with PreparedStatements
+	 * 
+	 * @param psc
+	 * @param rsc
+	 * @param optionsOrNull
+	 * @return
+	 */
+
+	protected <T> T doExecute(final PreparedStatement ps, final PreparedStatementCallback<T> rsc) {
+
+		return doExecute(new SessionCallback<T>() {
+
+			@Override
+			public T doInSession(Session session) {
+				return rsc.doWithPreparedStatement(session, ps);
+			}
+
+		});
 	}
 
 	@Override
-	public void select(String cql, PreparedStatementBinder psbOrNull, RowCallbackHandler rch, QueryOptions optionsOrNull) {
-		select(new SimplePreparedStatementCreator(cql), psbOrNull, rch, optionsOrNull);
+	public <T> T select(PreparedStatement ps, ResultSetCallback<T> rsc, QueryOptions optionsOrNull) {
+		Assert.notNull(ps);
+		Assert.notNull(rsc);
+		return select(ps, null, rsc, optionsOrNull);
 	}
 
 	@Override
-	public <T> Iterator<T> select(String cql, PreparedStatementBinder psbOrNull, RowMapper<T> rowMapper,
-			QueryOptions optionsOrNull) {
-		return select(new SimplePreparedStatementCreator(cql), psbOrNull, rowMapper, optionsOrNull);
-	}
-
-	@Override
-	public void select(PreparedStatementCreator psc, final PreparedStatementBinder psbOrNull,
-			final RowCallbackHandler rch, final QueryOptions optionsOrNull) {
-		Assert.notNull(psc);
+	public void select(PreparedStatement ps, RowCallbackHandler rch, QueryOptions optionsOrNull) {
+		Assert.notNull(ps);
 		Assert.notNull(rch);
+		select(ps, null, rch, optionsOrNull);
+	}
 
-		execute(psc, new PreparedStatementCallback<Object>() {
-			public Object doInPreparedStatement(PreparedStatement ps) {
-				ResultSet rs = null;
+	@Override
+	public <T> Iterator<T> select(PreparedStatement ps, RowMapper<T> rowMapper, QueryOptions optionsOrNull) {
+		Assert.notNull(ps);
+		Assert.notNull(rowMapper);
+		return select(ps, null, rowMapper, optionsOrNull);
+	}
+
+	@Override
+	public <T> T select(PreparedStatement ps, final PreparedStatementBinder psbOrNull, final ResultSetCallback<T> rsc,
+			final QueryOptions optionsOrNull) {
+
+		Assert.notNull(ps);
+		Assert.notNull(rsc);
+
+		return doExecute(ps, new PreparedStatementCallback<T>() {
+			public T doWithPreparedStatement(Session session, PreparedStatement ps) {
+
 				BoundStatement bs = null;
 				if (psbOrNull != null) {
 					bs = psbOrNull.bindValues(ps);
 				} else {
 					bs = ps.bind();
 				}
-				rs = doExecute(bs, optionsOrNull);
-				process(rs, rch);
+
+				addQueryOptions(bs, optionsOrNull);
+
+				return rsc.doWithResultSet(session.execute(bs));
+			}
+		});
+	}
+
+	@Override
+	public void select(PreparedStatement ps, final PreparedStatementBinder psbOrNull, final RowCallbackHandler rch,
+			final QueryOptions optionsOrNull) {
+		Assert.notNull(ps);
+		Assert.notNull(rch);
+
+		doExecute(ps, new PreparedStatementCallback<Object>() {
+
+			public Object doWithPreparedStatement(Session session, PreparedStatement ps) {
+
+				BoundStatement bs = null;
+				if (psbOrNull != null) {
+					bs = psbOrNull.bindValues(ps);
+				} else {
+					bs = ps.bind();
+				}
+
+				addQueryOptions(bs, optionsOrNull);
+
+				ResultSet rs = session.execute(bs);
+				for (Row row : rs) {
+					rch.processRow(row);
+				}
 				return null;
 			}
-		}, optionsOrNull);
+		});
+
 	}
 
 	@Override
-	public <T> Iterator<T> select(PreparedStatementCreator psc, final PreparedStatementBinder psbOrNull,
+	public <T> Iterator<T> select(PreparedStatement ps, final PreparedStatementBinder psbOrNull,
 			final RowMapper<T> rowMapper, final QueryOptions optionsOrNull) {
 
-		Assert.notNull(psc);
+		Assert.notNull(ps);
 		Assert.notNull(rowMapper);
 
-		return execute(psc, new PreparedStatementCallback<Iterator<T>>() {
-			public Iterator<T> doInPreparedStatement(PreparedStatement ps) {
-				ResultSet rs = null;
+		return doExecute(ps, new PreparedStatementCallback<Iterator<T>>() {
+
+			public Iterator<T> doWithPreparedStatement(Session session, PreparedStatement ps) {
+
 				BoundStatement bs = null;
 				if (psbOrNull != null) {
 					bs = psbOrNull.bindValues(ps);
 				} else {
 					bs = ps.bind();
 				}
-				rs = doExecute(bs, optionsOrNull);
 
-				return process(rs, rowMapper);
+				addQueryOptions(bs, optionsOrNull);
+
+				ResultSet rs = session.execute(bs);
+
+				return new MappedRowIterator<T>(rs.iterator(), rowMapper);
+
 			}
-		}, optionsOrNull);
+		});
+
 	}
 
 	@Override
@@ -924,7 +956,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param q
 	 * @param optionsByName
 	 */
-	public static void addPreparedStatementOptions(PreparedStatement s, QueryOptions optionsOrNull) {
+	public static void addPreparedStatementOptions(PreparedStatement ps, QueryOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;
@@ -935,10 +967,10 @@ public class CassandraTemplate implements CassandraOperations {
 		 */
 
 		if (optionsOrNull.getConsistencyLevel() != null) {
-			s.setConsistencyLevel(ConsistencyLevelResolver.resolve(optionsOrNull.getConsistencyLevel()));
+			ps.setConsistencyLevel(ConsistencyLevelResolver.resolve(optionsOrNull.getConsistencyLevel()));
 		}
 		if (optionsOrNull.getRetryPolicy() != null) {
-			s.setRetryPolicy(RetryPolicyResolver.resolve(optionsOrNull.getRetryPolicy()));
+			ps.setRetryPolicy(RetryPolicyResolver.resolve(optionsOrNull.getRetryPolicy()));
 		}
 
 	}
