@@ -23,6 +23,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,12 +50,15 @@ import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SimpleStatement;
-import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Truncate;
 import com.datastax.driver.core.querybuilder.Update;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * <b>This is the Central class in the Cassandra core package.</b> It simplifies the use of Cassandra and helps to avoid
@@ -136,20 +142,11 @@ public class CassandraTemplate implements CassandraOperations {
 	@Override
 	public void execute(boolean asynchronously, String cql, QueryOptions optionsOrNull) {
 		Assert.notNull(cql);
-		doExecute(asynchronously, cql, optionsOrNull);
-	}
-
-	@Override
-	public ResultSetFuture selectAsynchronously(final String cql, final QueryOptions optionsOrNull) {
-		Assert.notNull(cql);
-		return doExecute(new SessionCallback<ResultSetFuture>() {
-			@Override
-			public ResultSetFuture doInSession(Session s) {
-				Statement statement = new SimpleStatement(cql);
-				addQueryOptions(statement, optionsOrNull);
-				return s.executeAsync(statement);
-			}
-		});
+		if (asynchronously) {
+			doExecuteAsync(cql, optionsOrNull);
+		} else {
+			doExecute(cql, optionsOrNull);
+		}
 	}
 
 	@Override
@@ -158,14 +155,58 @@ public class CassandraTemplate implements CassandraOperations {
 		Assert.notNull(rsc);
 		ResultSet resultSet = doExecute(cql, optionsOrNull);
 		return doProcess(resultSet, rsc);
-
 	}
 
 	@Override
-	public void select(String cql, RowCallbackHandler rch, QueryOptions optionsOrNull) {
+	public CassandraFuture<ResultSet> selectAsync(final String cql, final QueryOptions optionsOrNull) {
+		Assert.notNull(cql);
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+		return new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
+	}
+
+	@Override
+	public <T> T selectNonstop(final String cql, final ResultSetCallback<T> rsc, final int timeoutMls,
+			final QueryOptions optionsOrNull) throws TimeoutException {
+		Assert.notNull(cql);
+		Assert.notNull(rsc);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
+		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+		return doProcess(resultSet, rsc);
+	}
+
+	@Override
+	public void select(String cql, final RowCallbackHandler rch, QueryOptions optionsOrNull) {
 		Assert.notNull(cql);
 		Assert.notNull(rch);
 		process(doExecute(cql, optionsOrNull), rch);
+	}
+
+	@Override
+	public void selectAsync(String cql, final RowCallbackHandler.Async rch, Executor executor, QueryOptions optionsOrNull) {
+		Assert.notNull(cql);
+		Assert.notNull(rch);
+		Assert.notNull(executor);
+
+		ResultSetFuture future = doExecuteAsync(cql, optionsOrNull);
+
+		Futures.addCallback(future, new FutureCallback<ResultSet>() {
+
+			@Override
+			public void onFailure(Throwable t) {
+				if (t instanceof RuntimeException) {
+					t = translateIfPossible((RuntimeException) t);
+				}
+				rch.onFailure(t);
+			}
+
+			public void onSuccess(ResultSet rs) {
+				process(rs, rch);
+			}
+
+		}, executor);
+
 	}
 
 	@Override
@@ -173,6 +214,27 @@ public class CassandraTemplate implements CassandraOperations {
 		Assert.notNull(cql);
 		Assert.notNull(rowMapper);
 		return process(doExecute(cql, optionsOrNull), rowMapper);
+	}
+
+	@Override
+	public <T> CassandraFuture<Iterator<T>> selectAsync(String cql, final RowMapper<T> rowMapper,
+			QueryOptions optionsOrNull) {
+
+		Assert.notNull(cql);
+		Assert.notNull(rowMapper);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+
+		ListenableFuture<Iterator<T>> future = Futures.transform(resultSetFuture, new Function<ResultSet, Iterator<T>>() {
+
+			@Override
+			public Iterator<T> apply(ResultSet resultSet) {
+				return process(resultSet, rowMapper);
+			}
+
+		});
+
+		return new CassandraFuture<Iterator<T>>(future, getExceptionTranslator());
 	}
 
 	@Override
@@ -226,38 +288,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	/**
-	 * Execute a command at the Session Level
-	 * 
-	 * @param callback
-	 * @return
-	 */
-	protected void doExecute(final boolean asynchronously, final String cql, final QueryOptions optionsOrNull) {
-
-		logger.info(cql);
-
-		doExecute(new SessionCallback<Object>() {
-
-			@Override
-			public ResultSet doInSession(Session s) {
-
-				SimpleStatement statement = new SimpleStatement(cql);
-
-				addQueryOptions(statement, optionsOrNull);
-
-				if (asynchronously) {
-					s.executeAsync(statement);
-				} else {
-					s.execute(statement);
-				}
-
-				return null;
-			}
-
-		});
-	}
-
-	/**
-	 * Execute a command at the Session Level
+	 * Execute as a command at the Session Level
 	 * 
 	 * @param callback
 	 * @return
@@ -276,6 +307,30 @@ public class CassandraTemplate implements CassandraOperations {
 				addQueryOptions(statement, optionsOrNull);
 
 				return s.execute(statement);
+			}
+		});
+	}
+
+	/**
+	 * Execute asynchronously a command at the Session Level
+	 * 
+	 * @param callback
+	 * @return
+	 */
+	protected ResultSetFuture doExecuteAsync(final String cql, final QueryOptions optionsOrNull) {
+
+		logger.info(cql);
+
+		return doExecute(new SessionCallback<ResultSetFuture>() {
+
+			@Override
+			public ResultSetFuture doInSession(Session s) {
+
+				SimpleStatement statement = new SimpleStatement(cql);
+
+				addQueryOptions(statement, optionsOrNull);
+
+				return s.executeAsync(statement);
 			}
 		});
 	}
@@ -850,7 +905,11 @@ public class CassandraTemplate implements CassandraOperations {
 	@Override
 	public void truncate(boolean asynchronously, String tableName, QueryOptions optionsOrNull) throws DataAccessException {
 		Truncate truncate = QueryBuilder.truncate(tableName);
-		doExecute(asynchronously, truncate.getQueryString(), optionsOrNull);
+		if (asynchronously) {
+			doExecuteAsync(truncate.getQueryString(), optionsOrNull);
+		} else {
+			doExecute(truncate.getQueryString(), optionsOrNull);
+		}
 	}
 
 	/**

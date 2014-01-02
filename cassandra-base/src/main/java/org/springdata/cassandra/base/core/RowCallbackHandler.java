@@ -28,4 +28,17 @@ public interface RowCallbackHandler {
 
 	void processRow(Row row);
 
+	/**
+	 * Async extension of the interface
+	 * 
+	 * @author Alex Shvid
+	 * 
+	 */
+
+	public interface Async extends RowCallbackHandler {
+
+		void onFailure(Throwable t);
+
+	}
+
 }

@@ -283,7 +283,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 		final String isbn = "999999999";
 
-		ResultSet frs = cassandraTemplate.selectAsynchronously("select * from book where isbn='" + isbn + "'", null)
+		ResultSet frs = cassandraTemplate.selectAsync("select * from book where isbn='" + isbn + "'", null)
 				.getUninterruptibly();
 
 		Row r = frs.one();
@@ -327,7 +327,7 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 
 		final Book b1 = getBook(isbn);
 
-		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn='" + isbn + "'", null)
+		ResultSet rs = cassandraTemplate.selectAsync("select * from book where isbn='" + isbn + "'", null)
 				.getUninterruptibly();
 
 		assertNotNull(rs);
@@ -380,8 +380,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn in ('1234','2345','3456')",
-				null).getUninterruptibly();
+		ResultSet rs = cassandraTemplate.selectAsync("select * from book where isbn in ('1234','2345','3456')", null)
+				.getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -445,8 +445,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn in ('" + ISBN_NINES + "')",
-				null).getUninterruptibly();
+		ResultSet rs = cassandraTemplate.selectAsync("select * from book where isbn in ('" + ISBN_NINES + "')", null)
+				.getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -483,8 +483,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	@Test
 	public void processOneTestResultSetType() {
 
-		ResultSet rs = cassandraTemplate.selectAsynchronously(
-				"select title from book where isbn in ('" + ISBN_NINES + "')", null).getUninterruptibly();
+		ResultSet rs = cassandraTemplate.selectAsync("select title from book where isbn in ('" + ISBN_NINES + "')", null)
+				.getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -513,8 +513,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 	@Test
 	public void processMapTestResultSet() {
 
-		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn in ('" + ISBN_NINES + "')",
-				null).getUninterruptibly();
+		ResultSet rs = cassandraTemplate.selectAsync("select * from book where isbn in ('" + ISBN_NINES + "')", null)
+				.getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -552,8 +552,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn in ('1234','2345','3456')",
-				null).getUninterruptibly();
+		ResultSet rs = cassandraTemplate.selectAsync("select * from book where isbn in ('1234','2345','3456')", null)
+				.getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -586,8 +586,8 @@ public class CassandraOperationsTest extends AbstractEmbeddedCassandraIntegratio
 		// Insert our 3 test books.
 		ingestionTestObjectArray();
 
-		ResultSet rs = cassandraTemplate.selectAsynchronously("select * from book where isbn in ('1234','2345','3456')",
-				null).getUninterruptibly();
+		ResultSet rs = cassandraTemplate.selectAsync("select * from book where isbn in ('1234','2345','3456')", null)
+				.getUninterruptibly();
 
 		assertNotNull(rs);
 
