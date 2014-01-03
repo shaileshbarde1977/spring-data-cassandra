@@ -15,6 +15,7 @@
  */
 package org.springdata.cassandra.data.test.integration.table;
 
+import org.springdata.cassandra.base.core.cql.options.TableOptions;
 import org.springdata.cassandra.data.mapping.Id;
 import org.springdata.cassandra.data.mapping.Table;
 
@@ -100,5 +101,9 @@ public class Book {
 		sb.append("author -> " + author).append("\n");
 		sb.append("pages -> " + pages).append("\n");
 		return sb.toString();
+	}
+
+	public static TableOptions tableOptions() {
+		return new TableOptions();
 	}
 }

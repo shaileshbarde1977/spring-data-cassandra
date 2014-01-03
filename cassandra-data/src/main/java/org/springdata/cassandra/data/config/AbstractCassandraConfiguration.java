@@ -22,8 +22,6 @@ import org.springdata.cassandra.base.core.CassandraOperations;
 import org.springdata.cassandra.base.core.CassandraTemplate;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springdata.cassandra.data.convert.MappingCassandraConverter;
-import org.springdata.cassandra.data.core.CassandraAdminOperations;
-import org.springdata.cassandra.data.core.CassandraAdminTemplate;
 import org.springdata.cassandra.data.core.CassandraDataOperations;
 import org.springdata.cassandra.data.core.CassandraDataTemplate;
 import org.springdata.cassandra.data.core.CassandraSessionFactoryBean;
@@ -124,7 +122,7 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 */
 	@Bean
 	public CassandraOperations cassandraTemplate() throws ClassNotFoundException {
-		return new CassandraTemplate(session());
+		return new CassandraTemplate(session(), keyspace());
 	}
 
 	/**
@@ -137,18 +135,6 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	@Bean
 	public CassandraDataOperations cassandraDataTemplate() throws ClassNotFoundException {
 		return new CassandraDataTemplate(session(), converter(), keyspace());
-	}
-
-	/**
-	 * Creates a {@link CassandraAdminTemplate}.
-	 * 
-	 * @return
-	 * @throws ClassNotFoundException
-	 * @throws Exception
-	 */
-	@Bean
-	public CassandraAdminOperations cassandraAdminTemplate() throws ClassNotFoundException {
-		return new CassandraAdminTemplate(session(), converter(), keyspace());
 	}
 
 	/**

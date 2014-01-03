@@ -425,4 +425,30 @@ public interface CassandraOperations {
 	 */
 	void truncate(boolean asynchronously, String tableName, QueryOptions optionsOrNull);
 
+	/**
+	 * Support keyspace operations
+	 * 
+	 * @return KeyspaceOperations
+	 */
+
+	KeyspaceOperations keyspaceOps();
+
+	/**
+	 * Support table operations
+	 * 
+	 * @param keyspace
+	 * @return
+	 */
+
+	TableOperations tableOps(String tableName);
+
+	/**
+	 * Support index operations
+	 * 
+	 * @param keyspace
+	 * @return
+	 */
+
+	IndexOperations indexOps(String tableName);
+
 }

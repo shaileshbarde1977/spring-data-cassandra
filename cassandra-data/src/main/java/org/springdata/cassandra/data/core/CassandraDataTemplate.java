@@ -73,7 +73,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 	}
 
-	private String keyspace;
 	private CassandraConverter cassandraConverter;
 	private MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
 
@@ -84,10 +83,8 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param converter must not be {@literal null}.
 	 */
 	public CassandraDataTemplate(Session session, CassandraConverter converter, String keyspace) {
-		super(session);
+		super(session, keyspace);
 		Assert.notNull(converter);
-		Assert.notNull(keyspace);
-		this.keyspace = keyspace;
 		this.cassandraConverter = converter;
 		this.mappingContext = this.cassandraConverter.getMappingContext();
 	}
@@ -325,11 +322,21 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		doUpdate(asychronously, tableName, entity, optionsOrNull);
 	}
 
+	@Override
+	public TableDataOperations tableDataOps(String tableName) {
+		return new DefaultTableDataOperations(this, tableName);
+	}
+
+	@Override
+	public IndexDataOperations indexDataOps(String tableName) {
+		return new DefaultIndexDataOperations(this, getKeyspace(), tableName);
+	}
+
 	/**
 	 * @param obj
 	 * @return
 	 */
-	private <T> String determineTableName(T obj) {
+	protected <T> String determineTableName(T obj) {
 		if (null != obj) {
 			return determineTableName(obj.getClass());
 		}
@@ -342,7 +349,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param readRowCallback
 	 * @return
 	 */
-	private <T> List<T> doSelect(final String cql, ReadRowCallback<T> readRowCallback, final QueryOptions optionsOrNull) {
+	protected <T> List<T> doSelect(final String cql, ReadRowCallback<T> readRowCallback, final QueryOptions optionsOrNull) {
 
 		ResultSet resultSet = doExecute(new SessionCallback<ResultSet>() {
 
@@ -375,7 +382,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param selectQuery
 	 * @return
 	 */
-	private Long doSelectCount(final String cql, final QueryOptions optionsOrNull) {
+	protected Long doSelectCount(final String cql, final QueryOptions optionsOrNull) {
 
 		Long count = null;
 
@@ -411,7 +418,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param readRowCallback
 	 * @return
 	 */
-	private <T> T doSelectOne(final String cql, ReadRowCallback<T> readRowCallback, final QueryOptions optionsOrNull) {
+	protected <T> T doSelectOne(final String cql, ReadRowCallback<T> readRowCallback, final QueryOptions optionsOrNull) {
 
 		logger.info(cql);
 
@@ -740,9 +747,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * 
 	 * @return The Query object to run with session.execute();
 	 */
-	public Query toInsertQuery(String tableName, final Object objectToSave, QueryOptions optionsOrNull) {
+	protected Query toInsertQuery(String tableName, final Object objectToSave, QueryOptions optionsOrNull) {
 
-		final Insert query = QueryBuilder.insertInto(keyspace, tableName);
+		final Insert query = QueryBuilder.insertInto(getKeyspace(), tableName);
 
 		/*
 		 * Write properties
@@ -774,9 +781,9 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * 
 	 * @return The Query object to run with session.execute();
 	 */
-	public Query toUpdateQuery(String tableName, final Object objectToSave, QueryOptions optionsOrNull) {
+	protected Query toUpdateQuery(String tableName, final Object objectToSave, QueryOptions optionsOrNull) {
 
-		final Update query = QueryBuilder.update(keyspace, tableName);
+		final Update query = QueryBuilder.update(getKeyspace(), tableName);
 
 		/*
 		 * Write properties
@@ -807,12 +814,12 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param optionsByName
 	 * @return
 	 */
-	public Query toDeleteQueryById(String tableName, final Object id, Class<?> entityClass, QueryOptions optionsOrNull) {
+	protected Query toDeleteQueryById(String tableName, final Object id, Class<?> entityClass, QueryOptions optionsOrNull) {
 
 		CassandraPersistentEntity<?> entity = getEntity(entityClass);
 
 		final Delete.Selection ds = QueryBuilder.delete();
-		final Delete query = ds.from(keyspace, tableName);
+		final Delete query = ds.from(getKeyspace(), tableName);
 		final Where w = query.where();
 
 		List<Clause> list = cassandraConverter.getPrimaryKey(entity, id);
@@ -890,10 +897,10 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param optionsByName
 	 * @return
 	 */
-	public Query toDeleteQuery(String tableName, final Object objectToRemove, QueryOptions optionsOrNull) {
+	protected Query toDeleteQuery(String tableName, final Object objectToRemove, QueryOptions optionsOrNull) {
 
 		final Delete.Selection ds = QueryBuilder.delete();
-		final Delete query = ds.from(keyspace, tableName);
+		final Delete query = ds.from(getKeyspace(), tableName);
 		final Where w = query.where();
 
 		/*

@@ -81,6 +81,7 @@ public class CassandraTemplate implements CassandraOperations {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private Session session;
+	private String keyspace;
 
 	private CassandraExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
 
@@ -88,9 +89,11 @@ public class CassandraTemplate implements CassandraOperations {
 	 * Constructor used for a basic template configuration
 	 * 
 	 * @param session must not be {@literal null}.
+	 * @param keyspace must not be {@literal null}.
 	 */
-	public CassandraTemplate(Session session) {
+	public CassandraTemplate(Session session, String keyspace) {
 		setSession(session);
+		setKeyspace(keyspace);
 	}
 
 	/**
@@ -99,6 +102,9 @@ public class CassandraTemplate implements CassandraOperations {
 	public void afterPropertiesSet() {
 		if (getSession() == null) {
 			throw new IllegalArgumentException("Property 'session' is required");
+		}
+		if (getKeyspace() == null) {
+			throw new IllegalArgumentException("Property 'keyspace' is required");
 		}
 	}
 
@@ -115,6 +121,21 @@ public class CassandraTemplate implements CassandraOperations {
 	public void setSession(Session session) {
 		Assert.notNull(session);
 		this.session = session;
+	}
+
+	/**
+	 * @return Returns the keyspace.
+	 */
+	public String getKeyspace() {
+		return keyspace;
+	}
+
+	/**
+	 * @param keyspace The keyspace to set.
+	 */
+	public void setKeyspace(String keyspace) {
+		Assert.notNull(session);
+		this.keyspace = keyspace;
 	}
 
 	/**
@@ -293,7 +314,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param callback
 	 * @return
 	 */
-	protected ResultSet doExecute(final String cql, final QueryOptions optionsOrNull) {
+	public ResultSet doExecute(final String cql, final QueryOptions optionsOrNull) {
 
 		logger.info(cql);
 
@@ -317,7 +338,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param callback
 	 * @return
 	 */
-	protected ResultSetFuture doExecuteAsync(final String cql, final QueryOptions optionsOrNull) {
+	public ResultSetFuture doExecuteAsync(final String cql, final QueryOptions optionsOrNull) {
 
 		logger.info(cql);
 
@@ -658,7 +679,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param ex
 	 * @return
 	 */
-	protected RuntimeException translateIfPossible(RuntimeException ex) {
+	public RuntimeException translateIfPossible(RuntimeException ex) {
 		RuntimeException resolved = getExceptionTranslator().translateExceptionIfPossible(ex);
 		return resolved == null ? ex : resolved;
 	}
@@ -715,6 +736,16 @@ public class CassandraTemplate implements CassandraOperations {
 
 		return doExecute(ps, rsc);
 
+	}
+
+	@Override
+	public TableOperations tableOps(String tableName) {
+		return new DefaultTableOperations(this, keyspace, tableName);
+	}
+
+	@Override
+	public IndexOperations indexOps(String tableName) {
+		return new DefaultIndexOperations(this, keyspace, tableName);
 	}
 
 	/**
@@ -910,6 +941,11 @@ public class CassandraTemplate implements CassandraOperations {
 		} else {
 			doExecute(truncate.getQueryString(), optionsOrNull);
 		}
+	}
+
+	@Override
+	public KeyspaceOperations keyspaceOps() {
+		return new DefaultKeyspaceOperations(this);
 	}
 
 	/**

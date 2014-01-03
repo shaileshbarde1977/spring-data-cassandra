@@ -272,4 +272,18 @@ public interface CassandraDataOperations {
 	 * @return
 	 */
 	CassandraConverter getConverter();
+
+	/**
+	 * Returns table specific operations
+	 * 
+	 * @return TableDataOperations
+	 */
+	TableDataOperations tableDataOps(String tableName);
+
+	/**
+	 * Returns idnex specific operations
+	 * 
+	 * @return TableDataOperations
+	 */
+	IndexDataOperations indexDataOps(String tableName);
 }

@@ -48,6 +48,7 @@
 	
 	<bean id="cassandraTemplate" class="org.springdata.cassandra.base.core.CassandraTemplate">
 		<constructor-arg ref="cassandra-session" />
+		<constructor-arg value="${cassandra.keyspace}" />
 	</bean>
 
 </beans>

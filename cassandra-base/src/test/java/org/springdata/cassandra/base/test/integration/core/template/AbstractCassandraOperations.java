@@ -65,7 +65,7 @@ public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassan
 
 	@Before
 	public void setupTemplate() {
-		cassandraTemplate = new CassandraTemplate(session);
+		cassandraTemplate = new CassandraTemplate(session, keyspace);
 	}
 
 	/**

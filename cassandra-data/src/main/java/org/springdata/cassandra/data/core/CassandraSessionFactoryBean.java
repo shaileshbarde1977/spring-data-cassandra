@@ -15,12 +15,13 @@
  */
 package org.springdata.cassandra.data.core;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdata.cassandra.base.core.CassandraTemplate;
+import org.springdata.cassandra.base.core.KeyspaceOperations;
 import org.springdata.cassandra.base.core.cql.options.KeyspaceOptions;
 import org.springdata.cassandra.base.core.cql.options.KeyspaceReplicationOptions;
 import org.springdata.cassandra.base.core.cql.spec.KeyspaceOption;
@@ -46,7 +47,6 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.KeyspaceMetadata;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.TableMetadata;
-import com.datastax.driver.core.exceptions.NoHostAvailableException;
 
 /**
  * Convenient factory for configuring a Cassandra Session. It is enough to have one session per application.
@@ -125,9 +125,12 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 		if (StringUtils.hasText(keyspace)) {
 
-			CassandraAdminTemplate cassandraAdminTemplate = new CassandraAdminTemplate(session, converter, keyspace);
+			CassandraTemplate cassandraTemplate = new CassandraTemplate(session, keyspace);
+			KeyspaceOperations keyspaceOps = cassandraTemplate.keyspaceOps();
 
-			KeyspaceMetadata keyspaceMetadata = cassandraAdminTemplate.getKeyspaceMetadata();
+			CassandraDataTemplate cassandraDataTemplate = new CassandraDataTemplate(session, converter, keyspace);
+
+			KeyspaceMetadata keyspaceMetadata = keyspaceOps.getKeyspaceMetadata();
 			boolean keyspaceExists = keyspaceMetadata != null;
 			boolean keyspaceCreated = false;
 
@@ -143,7 +146,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 			if (keyspaceExists && (keyspaceAttributes.isCreate() || keyspaceAttributes.isCreateDrop())) {
 
 				log.info("Drop keyspace " + keyspace + " on afterPropertiesSet");
-				cassandraAdminTemplate.dropKeyspace(keyspace);
+				keyspaceOps.dropKeyspace(null);
 				keyspaceExists = false;
 
 			}
@@ -154,7 +157,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 				log.info("Create keyspace " + keyspace + " on afterPropertiesSet");
 
-				cassandraAdminTemplate.createKeyspace(keyspace, createKeyspaceOptions().getOptions());
+				keyspaceOps.createKeyspace(createKeyspaceOptions(), null);
 				keyspaceCreated = true;
 			}
 
@@ -165,7 +168,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 					log.info("Update keyspace " + keyspace + " on afterPropertiesSet");
 
-					cassandraAdminTemplate.alterKeyspace(keyspace, createKeyspaceOptions().getOptions());
+					keyspaceOps.alterKeyspace(createKeyspaceOptions(), null);
 
 				}
 
@@ -186,7 +189,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 			}
 
-			cassandraAdminTemplate.useKeyspace(keyspace);
+			keyspaceOps.useKeyspace(null);
 
 			if (!CollectionUtils.isEmpty(keyspaceAttributes.getTables())) {
 
@@ -195,38 +198,38 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 					String entityClassName = tableAttributes.getEntity();
 					Class<?> entityClass = ClassUtils.forName(entityClassName, this.beanClassLoader);
 
-					String useTableName = tableAttributes.getName() != null ? tableAttributes.getName() : cassandraAdminTemplate
+					String useTableName = tableAttributes.getName() != null ? tableAttributes.getName() : cassandraDataTemplate
 							.getTableName(entityClass);
 
 					if (keyspaceCreated) {
-						createNewTable(cassandraAdminTemplate, useTableName, entityClass);
+						createNewTable(cassandraDataTemplate, useTableName, entityClass);
 					} else if (keyspaceAttributes.isUpdate()) {
-						TableMetadata table = cassandraAdminTemplate.getTableMetadata(useTableName);
+						TableMetadata table = cassandraTemplate.tableOps(useTableName).getTableMetadata();
 						if (table == null) {
-							createNewTable(cassandraAdminTemplate, useTableName, entityClass);
+							createNewTable(cassandraDataTemplate, useTableName, entityClass);
 						} else {
 
-							cassandraAdminTemplate.alterTable(useTableName, entityClass, true);
+							cassandraDataTemplate.tableDataOps(useTableName).alterTable(entityClass, true);
 
-							cassandraAdminTemplate.alterIndexes(useTableName, entityClass);
+							cassandraDataTemplate.indexDataOps(useTableName).alterIndexes(entityClass);
 
 						}
 					} else if (keyspaceAttributes.isValidate()) {
 
-						TableMetadata table = cassandraAdminTemplate.getTableMetadata(useTableName);
+						TableMetadata table = cassandraTemplate.tableOps(useTableName).getTableMetadata();
 						if (table == null) {
 							throw new InvalidDataAccessApiUsageException("not found table " + useTableName + " for entity "
 									+ entityClassName);
 						}
 
-						String query = cassandraAdminTemplate.validateTable(useTableName, entityClass);
+						String query = cassandraDataTemplate.tableDataOps(useTableName).validateTable(entityClass);
 
 						if (query != null) {
 							throw new InvalidDataAccessApiUsageException("invalid table " + useTableName + " for entity "
 									+ entityClassName + ". modify it by " + query);
 						}
 
-						List<String> queryList = cassandraAdminTemplate.validateIndexes(useTableName, entityClass);
+						List<String> queryList = cassandraDataTemplate.indexDataOps(useTableName).validateIndexes(entityClass);
 
 						if (!queryList.isEmpty()) {
 							throw new InvalidDataAccessApiUsageException("invalid indexes in table " + useTableName + " for entity "
@@ -256,25 +259,26 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 		return keyspaceOptions;
 	}
 
-	private void createNewTable(CassandraAdminTemplate cassandraAdminTemplate, String useTableName, Class<?> entityClass)
-			throws NoHostAvailableException {
+	private void createNewTable(CassandraDataTemplate cassandraDataTemplate, String useTableName, Class<?> entityClass) {
 
-		cassandraAdminTemplate.createTable(false, useTableName, entityClass, Collections.<String, Object> emptyMap());
+		cassandraDataTemplate.tableDataOps(useTableName).createTable(false, entityClass);
 
-		cassandraAdminTemplate.createIndexes(useTableName, entityClass);
+		cassandraDataTemplate.indexDataOps(useTableName).createIndexes(entityClass);
 
 	}
 
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.beans.factory.DisposableBean#destroy()
-	 */
 	public void destroy() throws Exception {
 
 		if (StringUtils.hasText(keyspace) && keyspaceAttributes != null && keyspaceAttributes.isCreateDrop()) {
+
 			log.info("Drop keyspace " + keyspace + " on destroy");
-			session.execute("USE system");
-			session.execute("DROP KEYSPACE " + keyspace);
+
+			CassandraTemplate casandraTemplate = new CassandraTemplate(session, keyspace);
+			KeyspaceOperations keyspaceOps = casandraTemplate.keyspaceOps();
+
+			keyspaceOps.useSystemKeyspace(null);
+			keyspaceOps.dropKeyspace(null);
+
 		}
 		this.session.shutdown();
 	}
