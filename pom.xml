@@ -5,19 +5,37 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.springdata</groupId>
-	<artifactId>spring-data-cassandra-parent</artifactId>
+	<artifactId>cassandra-parent</artifactId>
 	<version>1.0.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>SpringData Cassandra</name>
+	<name>Spring Data Cassandra</name>
 	<description>Cassandra support for Spring Data</description>
 	<url>http://www.springdata.org/cassandra</url>
 
+	<licenses>
+	  <license>
+	    <name>The Apache Software License, Version 2.0</name>
+	    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+	    <distribution>repo</distribution>
+	  </license>
+	</licenses>
+	
+	<scm>
+	  <url>https://github.com/SpringData/spring-data-cassandra</url>
+	  <connection>scm:git:git@github.com:SpringData/spring-data-cassandra.git</connection>
+	  <developerConnection>scm:git:git@github.com:SpringData/spring-data-cassandra.git</developerConnection>
+	</scm>	  
+    
+    <issueManagement>
+      <system>GitHub</system>
+      <url>https://github.com/SpringData/spring-data-cassandra/issues</url>
+    </issueManagement>	  
+	  
 	<parent>
-		<groupId>org.springframework.data.build</groupId>
-		<artifactId>spring-data-parent</artifactId>
-		<version>1.2.0.RELEASE</version>
-		<relativePath>../spring-data-build/parent/pom.xml</relativePath>
+	  <groupId>org.sonatype.oss</groupId>
+	  <artifactId>oss-parent</artifactId>
+	  <version>7</version>
 	</parent>
 
 	<modules>
@@ -33,13 +51,27 @@
 		<cassandra-driver-core.version>1.0.4-dse</cassandra-driver-core.version>
 		<failsafe.version>2.16</failsafe.version>
 		<guava.version>14.0.1</guava.version>
+		
+		<apt>1.1.0</apt>
+		<aspectj>1.7.2</aspectj>
+		<cdi>1.0</cdi>
+		<hamcrest>1.3</hamcrest>
+		<jodatime>2.1</jodatime>
+		<junit>4.11</junit>
+		<logback>1.0.11</logback>
+		<mockito>1.9.5</mockito>
+		<querydsl>3.2.3</querydsl>
+		<slf4j>1.7.1</slf4j>
+		<spring>3.1.4.RELEASE</spring>
+		<spring30>3.0.7.RELEASE</spring30>
+		<webbeans>1.1.7</webbeans>
 	</properties>
 
 	<developers>
 		<developer>
 			<id>ashvid</id>
 			<name>Alex Shvid</name>
-			<email>springdata at shvid.com</email>
+			<email>a at shvid.com</email>
 			<roles>
 			    <role>Project Lead</role>
 				<role>Developer</role>
@@ -189,8 +221,70 @@
 				<version>${jodatime}</version>
 				<scope>test</scope>
 			</dependency>
+			
 		</dependencies>
 	</dependencyManagement>
+
+	<dependencies>
+	
+		<!-- Test -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>${hamcrest}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>${hamcrest}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback}</version>
+			<scope>test</scope>
+		</dependency>				
+
+	</dependencies>
 
 	<repositories>
 		<repository>

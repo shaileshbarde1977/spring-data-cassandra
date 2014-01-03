@@ -11,7 +11,7 @@
 
 	<parent>
 		<groupId>org.springdata</groupId>
-		<artifactId>spring-data-cassandra-parent</artifactId>
+		<artifactId>cassandra-parent</artifactId>
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
