@@ -209,9 +209,9 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 							createNewTable(cassandraDataTemplate, useTableName, entityClass);
 						} else {
 
-							cassandraDataTemplate.tableDataOps(useTableName).alterTable(entityClass, true);
+							cassandraDataTemplate.tableDataOps(useTableName).alterTable(entityClass, true, null);
 
-							cassandraDataTemplate.indexDataOps(useTableName).alterIndexes(entityClass);
+							cassandraDataTemplate.indexDataOps(useTableName).alterIndexes(entityClass, null);
 
 						}
 					} else if (keyspaceAttributes.isValidate()) {
@@ -261,9 +261,9 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 	private void createNewTable(CassandraDataTemplate cassandraDataTemplate, String useTableName, Class<?> entityClass) {
 
-		cassandraDataTemplate.tableDataOps(useTableName).createTable(false, entityClass);
+		cassandraDataTemplate.tableDataOps(useTableName).createTable(false, entityClass, null);
 
-		cassandraDataTemplate.indexDataOps(useTableName).createIndexes(entityClass);
+		cassandraDataTemplate.indexDataOps(useTableName).createIndexes(entityClass, null);
 
 	}
 

@@ -15,6 +15,8 @@
  */
 package org.springdata.cassandra.data.core;
 
+import org.springdata.cassandra.base.core.query.QueryOptions;
+
 /**
  * TableDataOperations interface
  * 
@@ -32,9 +34,10 @@ public interface TableDataOperations {
 	 * @param ifNotExists If true, will only create the table if it doesn't exist, else the create operation will be
 	 *          ignored and the method will return {@literal false}.
 	 * @param entityClass The class whose fields determine the columns created.
+	 * @param optionsOrNull The Query Options Object is exists
 	 * @return Returns true if a table was created, false if not.
 	 */
-	boolean createTable(boolean ifNotExists, Class<?> entityClass);
+	boolean createTable(boolean ifNotExists, Class<?> entityClass, QueryOptions optionsOrNull);
 
 	/**
 	 * Add columns to the given table from the given class. If parameter dropRemovedAttributColumns is true, then this
@@ -43,8 +46,9 @@ public interface TableDataOperations {
 	 * @param entityClass The class whose fields determine the columns added.
 	 * @param dropRemovedAttributeColumns Whether to drop columns that exist on the table but that don't have
 	 *          corresponding fields in the class. If true, this effectively becomes a synchronziation operation.
+	 * @param optionsOrNull The Query Options Object is exists
 	 */
-	void alterTable(Class<?> entityClass, boolean dropRemovedAttributeColumns);
+	void alterTable(Class<?> entityClass, boolean dropRemovedAttributeColumns, QueryOptions optionsOrNull);
 
 	/**
 	 * Validate columns in the given table from the given class.
@@ -57,7 +61,9 @@ public interface TableDataOperations {
 	/**
 	 * Drops the named table.
 	 * 
+	 * @param optionsOrNull The Query Options Object is exists
+	 * 
 	 */
-	void dropTable();
+	void dropTable(QueryOptions optionsOrNull);
 
 }

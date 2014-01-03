@@ -21,6 +21,7 @@ import org.springdata.cassandra.base.core.cql.generator.DropTableCqlGenerator;
 import org.springdata.cassandra.base.core.cql.spec.AlterTableSpecification;
 import org.springdata.cassandra.base.core.cql.spec.CreateTableSpecification;
 import org.springdata.cassandra.base.core.cql.spec.DropTableSpecification;
+import org.springdata.cassandra.base.core.query.QueryOptions;
 import org.springdata.cassandra.base.support.exception.CassandraTableExistsException;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
 import org.springframework.util.Assert;
@@ -46,7 +47,7 @@ public class DefaultTableDataOperations implements TableDataOperations {
 	}
 
 	@Override
-	public boolean createTable(boolean ifNotExists, Class<?> entityClass) {
+	public boolean createTable(boolean ifNotExists, Class<?> entityClass, QueryOptions optionsOrNull) {
 
 		Assert.notNull(entityClass);
 
@@ -60,7 +61,7 @@ public class DefaultTableDataOperations implements TableDataOperations {
 
 			String cql = generator.toCql();
 
-			dataTemplate.doExecute(cql, null);
+			dataTemplate.doExecute(cql, optionsOrNull);
 
 			return true;
 
@@ -72,14 +73,14 @@ public class DefaultTableDataOperations implements TableDataOperations {
 	}
 
 	@Override
-	public void alterTable(Class<?> entityClass, boolean dropRemovedAttributeColumns) {
+	public void alterTable(Class<?> entityClass, boolean dropRemovedAttributeColumns, QueryOptions optionsOrNull) {
 
 		Assert.notNull(entityClass);
 
 		String cql = alterTableCql(entityClass, dropRemovedAttributeColumns);
 
 		if (cql != null) {
-			dataTemplate.doExecute(cql, null);
+			dataTemplate.doExecute(cql, optionsOrNull);
 		}
 	}
 
@@ -122,12 +123,12 @@ public class DefaultTableDataOperations implements TableDataOperations {
 	}
 
 	@Override
-	public void dropTable() {
+	public void dropTable(QueryOptions optionsOrNull) {
 
 		DropTableSpecification spec = new DropTableSpecification().name(tableName);
 		String cql = new DropTableCqlGenerator(spec).toCql();
 
-		dataTemplate.doExecute(cql, null);
+		dataTemplate.doExecute(cql, optionsOrNull);
 
 	}
 

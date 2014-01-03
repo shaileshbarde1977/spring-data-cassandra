@@ -24,6 +24,7 @@ import org.springdata.cassandra.base.core.cql.generator.DropIndexCqlGenerator;
 import org.springdata.cassandra.base.core.cql.spec.CreateIndexSpecification;
 import org.springdata.cassandra.base.core.cql.spec.DropIndexSpecification;
 import org.springdata.cassandra.base.core.cql.spec.WithNameSpecification;
+import org.springdata.cassandra.base.core.query.QueryOptions;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
@@ -54,7 +55,7 @@ public class DefaultIndexDataOperations implements IndexDataOperations {
 	}
 
 	@Override
-	public void createIndexes(Class<?> entityClass) {
+	public void createIndexes(Class<?> entityClass, QueryOptions optionsOrNull) {
 
 		Assert.notNull(entityClass);
 
@@ -65,20 +66,20 @@ public class DefaultIndexDataOperations implements IndexDataOperations {
 		for (CreateIndexSpecification spec : specList) {
 			String cql = new CreateIndexCqlGenerator(spec).toCql();
 
-			dataTemplate.doExecute(cql, null);
+			dataTemplate.doExecute(cql, optionsOrNull);
 		}
 
 	}
 
 	@Override
-	public void alterIndexes(Class<?> entityClass) {
+	public void alterIndexes(Class<?> entityClass, QueryOptions optionsOrNull) {
 
 		Assert.notNull(entityClass);
 
 		List<String> cqlList = alterIndexesCql(entityClass);
 
 		for (String cql : cqlList) {
-			dataTemplate.doExecute(cql, null);
+			dataTemplate.doExecute(cql, optionsOrNull);
 		}
 
 	}

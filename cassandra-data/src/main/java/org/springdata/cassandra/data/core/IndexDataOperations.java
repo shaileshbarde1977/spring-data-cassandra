@@ -17,6 +17,8 @@ package org.springdata.cassandra.data.core;
 
 import java.util.List;
 
+import org.springdata.cassandra.base.core.query.QueryOptions;
+
 /**
  * IndexDataOperations interface
  * 
@@ -29,15 +31,17 @@ public interface IndexDataOperations {
 	 * Create all indexed annotated in entityClass
 	 * 
 	 * @param entityClass The class whose fields determine the new table's columns.
+	 * @param optionsOrNull The Query Options Object is exists.
 	 */
-	void createIndexes(Class<?> entityClass);
+	void createIndexes(Class<?> entityClass, QueryOptions optionsOrNull);
 
 	/**
 	 * Create all indexed annotated in entityClass
 	 * 
 	 * @param entityClass The class whose fields determine the new table's columns.
+	 * @param optionsOrNull The Query Options Object is exists.
 	 */
-	void alterIndexes(Class<?> entityClass);
+	void alterIndexes(Class<?> entityClass, QueryOptions optionsOrNull);
 
 	/**
 	 * Create all indexed annotated in entityClass
