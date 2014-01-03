@@ -22,18 +22,43 @@ CQL
 Fully supported CQL 3.0 version. Specification is here http://www.datastax.com/documentation/cql/3.0/pdf/cql30.pdf
 
 
-Cloning
--------
-When cloning this repo, it's a good idea to also clone two others from Spring Data that this project depends on.  Assuming your current working directory is the root of this repository, issue the following commands:
-
-	cd ..
-	git clone https://github.com/spring-projects/spring-data-build.git
-	git clone https://github.com/spring-projects/spring-data-commons.git
-
-
 Building
 --------
 This is a standard Maven multimodule project.  Just issue the command `mvn clean install` from the repo root.
+
+Using
+-------
+
+Add snapshot repository to the pom.xml
+
+```
+
+<repositories>
+  <repository>
+    <id>sonatype-nexus-snapshots</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+  </repository>
+</repositories>
+
+```
+
+Add dependencies
+
+```
+
+<dependency>
+  <groupId>org.springdata</groupId>
+  <artifactId>cassandra-base</artifactId>
+  <version>1.0.0.BUILD-SNAPSHOT</version>
+</dependency>
+
+<dependency>
+  <groupId>org.springdata</groupId>
+  <artifactId>cassandra-data</artifactId>
+  <version>1.0.0.BUILD-SNAPSHOT</version>
+</dependency>
+
+```
 
 
 Continuous integration
