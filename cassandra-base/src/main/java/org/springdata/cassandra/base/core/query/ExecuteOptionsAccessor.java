@@ -22,7 +22,7 @@ package org.springdata.cassandra.base.core.query;
  * 
  */
 
-public interface QueryOptionsAccessor {
+public interface ExecuteOptionsAccessor {
 
 	/**
 	 * Returns ConsistencyLevel for the query operation. By default Cassandra uses ConsistencyLevel.QUORUM. Useful for all

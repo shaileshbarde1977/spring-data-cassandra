@@ -21,7 +21,7 @@ import org.springdata.cassandra.base.core.cql.generator.DropTableCqlGenerator;
 import org.springdata.cassandra.base.core.cql.spec.AlterTableSpecification;
 import org.springdata.cassandra.base.core.cql.spec.CreateTableSpecification;
 import org.springdata.cassandra.base.core.cql.spec.DropTableSpecification;
-import org.springdata.cassandra.base.core.query.QueryOptions;
+import org.springdata.cassandra.base.core.query.ExecuteOptions;
 import org.springdata.cassandra.base.support.exception.CassandraTableExistsException;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
 import org.springframework.util.Assert;
@@ -47,7 +47,7 @@ public class DefaultTableDataOperations implements TableDataOperations {
 	}
 
 	@Override
-	public boolean createTable(boolean ifNotExists, Class<?> entityClass, QueryOptions optionsOrNull) {
+	public boolean createTable(boolean ifNotExists, Class<?> entityClass, ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(entityClass);
 
@@ -73,7 +73,7 @@ public class DefaultTableDataOperations implements TableDataOperations {
 	}
 
 	@Override
-	public void alterTable(Class<?> entityClass, boolean dropRemovedAttributeColumns, QueryOptions optionsOrNull) {
+	public void alterTable(Class<?> entityClass, boolean dropRemovedAttributeColumns, ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(entityClass);
 
@@ -123,7 +123,7 @@ public class DefaultTableDataOperations implements TableDataOperations {
 	}
 
 	@Override
-	public void dropTable(QueryOptions optionsOrNull) {
+	public void dropTable(ExecuteOptions optionsOrNull) {
 
 		DropTableSpecification spec = new DropTableSpecification().name(tableName);
 		String cql = new DropTableCqlGenerator(spec).toCql();

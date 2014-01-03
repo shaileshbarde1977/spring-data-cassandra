@@ -25,7 +25,7 @@ import java.util.Set;
 
 import org.springdata.cassandra.base.core.CassandraTemplate;
 import org.springdata.cassandra.base.core.SessionCallback;
-import org.springdata.cassandra.base.core.query.QueryOptions;
+import org.springdata.cassandra.base.core.query.ExecuteOptions;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.data.mapping.CassandraPersistentProperty;
@@ -90,14 +90,14 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> T findById(Object id, Class<T> entityClass, QueryOptions optionsOrNull) {
+	public <T> T findById(Object id, Class<T> entityClass, ExecuteOptions optionsOrNull) {
 		String tableName = getTableName(entityClass);
 		Assert.notNull(tableName);
 		return findById(id, entityClass, tableName, optionsOrNull);
 	}
 
 	@Override
-	public <T> T findById(Object id, Class<T> entityClass, String tableName, QueryOptions optionsOrNull) {
+	public <T> T findById(Object id, Class<T> entityClass, String tableName, ExecuteOptions optionsOrNull) {
 		Assert.notNull(id);
 		assertNotIterable(id);
 		Assert.notNull(entityClass);
@@ -106,12 +106,12 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, QueryOptions optionsOrNull) {
+	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, ExecuteOptions optionsOrNull) {
 		return doFindByPartitionKey(id, entityClass, getTableName(entityClass), optionsOrNull);
 	}
 
 	@Override
-	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, QueryOptions optionsOrNull) {
+	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, ExecuteOptions optionsOrNull) {
 		Assert.notNull(id);
 		Assert.notNull(entityClass);
 		Assert.notNull(tableName);
@@ -129,7 +129,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 */
 
 	protected <T> List<T> doFindByPartitionKey(Object id, Class<T> entityClass, String tableName,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 
 		Select select = QueryBuilder.select().all().from(tableName);
 		Select.Where w = select.where();
@@ -146,7 +146,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> List<T> find(String query, Class<T> entityClass, QueryOptions optionsOrNull) {
+	public <T> List<T> find(String query, Class<T> entityClass, ExecuteOptions optionsOrNull) {
 		Assert.notNull(query);
 		Assert.notNull(entityClass);
 
@@ -154,7 +154,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> T findOne(String query, Class<T> entityClass, QueryOptions optionsOrNull) {
+	public <T> T findOne(String query, Class<T> entityClass, ExecuteOptions optionsOrNull) {
 		Assert.notNull(query);
 		Assert.notNull(entityClass);
 
@@ -162,19 +162,19 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public Long count(String cql, QueryOptions optionsOrNull) {
+	public Long count(String cql, ExecuteOptions optionsOrNull) {
 		return doSelectCount(cql, optionsOrNull);
 	}
 
 	@Override
-	public Long countAll(String tableName, QueryOptions optionsOrNull) {
+	public Long countAll(String tableName, ExecuteOptions optionsOrNull) {
 		Select select = QueryBuilder.select().countAll().from(tableName);
 		return doSelectCount(select.getQueryString(), optionsOrNull);
 	}
 
 	@Override
 	public <T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 		String tableName = getTableName(entityClass);
 		Assert.notNull(tableName);
 		deleteInBatchById(asychronously, ids, entityClass, tableName, optionsOrNull);
@@ -182,7 +182,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 	@Override
 	public <T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, String tableName,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 		Assert.notNull(ids);
 		Assert.notNull(entityClass);
 		Assert.notNull(tableName);
@@ -190,7 +190,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, QueryOptions optionsOrNull) {
+	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, ExecuteOptions optionsOrNull) {
 		String tableName = getTableName(entityClass);
 		Assert.notNull(tableName);
 		deleteById(asychronously, id, entityClass, tableName, optionsOrNull);
@@ -198,7 +198,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 	@Override
 	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 		Assert.notNull(id);
 		assertNotIterable(id);
 		Assert.notNull(entityClass);
@@ -207,28 +207,28 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void deleteInBatch(boolean asychronously, Iterable<T> entities, QueryOptions optionsOrNull) {
+	public <T> void deleteInBatch(boolean asychronously, Iterable<T> entities, ExecuteOptions optionsOrNull) {
 		Assert.notNull(entities);
 		doBatchDelete(asychronously, null, entities, optionsOrNull);
 	}
 
 	@Override
 	public <T> void deleteInBatch(boolean asychronously, Iterable<T> entities, String tableName,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 		Assert.notNull(entities);
 		Assert.notNull(tableName);
 		doBatchDelete(asychronously, tableName, entities, optionsOrNull);
 	}
 
 	@Override
-	public <T> void delete(boolean asychronously, T entity, QueryOptions optionsOrNull) {
+	public <T> void delete(boolean asychronously, T entity, ExecuteOptions optionsOrNull) {
 		String tableName = getTableName(entity.getClass());
 		Assert.notNull(tableName);
 		delete(asychronously, entity, tableName, optionsOrNull);
 	}
 
 	@Override
-	public <T> void delete(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull) {
+	public <T> void delete(boolean asychronously, T entity, String tableName, ExecuteOptions optionsOrNull) {
 		Assert.notNull(entity);
 		assertNotIterable(entity);
 		Assert.notNull(tableName);
@@ -265,28 +265,28 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, QueryOptions optionsOrNull) {
+	public <T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, ExecuteOptions optionsOrNull) {
 		Assert.notNull(entities);
 		doBatchInsert(asychronously, null, entities, optionsOrNull);
 	}
 
 	@Override
 	public <T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, String tableName,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 		Assert.notNull(entities);
 		Assert.notNull(tableName);
 		doBatchInsert(asychronously, tableName, entities, optionsOrNull);
 	}
 
 	@Override
-	public <T> void saveNew(boolean asychronously, T entity, QueryOptions optionsOrNull) {
+	public <T> void saveNew(boolean asychronously, T entity, ExecuteOptions optionsOrNull) {
 		String tableName = determineTableName(entity);
 		Assert.notNull(tableName);
 		saveNew(asychronously, entity, tableName, optionsOrNull);
 	}
 
 	@Override
-	public <T> void saveNew(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull) {
+	public <T> void saveNew(boolean asychronously, T entity, String tableName, ExecuteOptions optionsOrNull) {
 		Assert.notNull(entity);
 		assertNotIterable(entity);
 		Assert.notNull(tableName);
@@ -295,27 +295,27 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void saveInBatch(boolean asychronously, Iterable<T> entities, QueryOptions optionsOrNull) {
+	public <T> void saveInBatch(boolean asychronously, Iterable<T> entities, ExecuteOptions optionsOrNull) {
 		Assert.notNull(entities);
 		doBatchUpdate(asychronously, null, entities, optionsOrNull);
 	}
 
 	@Override
-	public <T> void saveInBatch(boolean asychronously, Iterable<T> entities, String tableName, QueryOptions optionsOrNull) {
+	public <T> void saveInBatch(boolean asychronously, Iterable<T> entities, String tableName, ExecuteOptions optionsOrNull) {
 		Assert.notNull(entities);
 		Assert.notNull(tableName);
 		doBatchUpdate(asychronously, tableName, entities, optionsOrNull);
 	}
 
 	@Override
-	public <T> void save(boolean asychronously, T entity, QueryOptions options) {
+	public <T> void save(boolean asychronously, T entity, ExecuteOptions options) {
 		String tableName = getTableName(entity.getClass());
 		Assert.notNull(tableName);
 		save(asychronously, entity, tableName, options);
 	}
 
 	@Override
-	public <T> void save(boolean asychronously, T entity, String tableName, QueryOptions optionsOrNull) {
+	public <T> void save(boolean asychronously, T entity, String tableName, ExecuteOptions optionsOrNull) {
 		Assert.notNull(entity);
 		assertNotIterable(entity);
 		Assert.notNull(tableName);
@@ -349,7 +349,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param readRowCallback
 	 * @return
 	 */
-	protected <T> List<T> doSelect(final String cql, ReadRowCallback<T> readRowCallback, final QueryOptions optionsOrNull) {
+	protected <T> List<T> doSelect(final String cql, ReadRowCallback<T> readRowCallback, final ExecuteOptions optionsOrNull) {
 
 		ResultSet resultSet = doExecute(new SessionCallback<ResultSet>() {
 
@@ -382,7 +382,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param selectQuery
 	 * @return
 	 */
-	protected Long doSelectCount(final String cql, final QueryOptions optionsOrNull) {
+	protected Long doSelectCount(final String cql, final ExecuteOptions optionsOrNull) {
 
 		Long count = null;
 
@@ -418,7 +418,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param readRowCallback
 	 * @return
 	 */
-	protected <T> T doSelectOne(final String cql, ReadRowCallback<T> readRowCallback, final QueryOptions optionsOrNull) {
+	protected <T> T doSelectOne(final String cql, ReadRowCallback<T> readRowCallback, final ExecuteOptions optionsOrNull) {
 
 		logger.info(cql);
 
@@ -465,7 +465,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @return
 	 */
 	protected <T> void doBatchInsert(final boolean insertAsychronously, String tableNameOrNull,
-			final Iterable<T> entities, QueryOptions optionsOrNull) {
+			final Iterable<T> entities, ExecuteOptions optionsOrNull) {
 
 		/*
 		 * Return variable is a Batch statement
@@ -523,7 +523,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @return
 	 */
 	protected <T> void doBatchUpdate(final boolean updateAsychronously, String tableNameOrNull,
-			final Iterable<T> entities, QueryOptions optionsOrNull) {
+			final Iterable<T> entities, ExecuteOptions optionsOrNull) {
 
 		/*
 		 * Return variable is a Batch statement
@@ -578,7 +578,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param objectToRemove
 	 */
 	protected <T> void doDeleteById(final boolean asychronously, final String tableName, final T id,
-			Class<?> entityClass, QueryOptions optionsOrNull) {
+			Class<?> entityClass, ExecuteOptions optionsOrNull) {
 
 		final Query query = toDeleteQueryById(tableName, id, entityClass, optionsOrNull);
 
@@ -609,7 +609,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param objectToRemove
 	 */
 	protected <T> void doDelete(final boolean asychronously, final String tableName, final T objectToRemove,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 
 		final Query query = toDeleteQuery(tableName, objectToRemove, optionsOrNull);
 
@@ -659,7 +659,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param entity
 	 */
 	protected <T> void doInsert(final boolean insertAsychronously, final String tableName, final T entity,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 
 		final Query query = toInsertQuery(tableName, entity, optionsOrNull);
 
@@ -699,7 +699,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @return
 	 */
 	protected <T> void doUpdate(final boolean updateAsychronously, final String tableName, final T entity,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 
 		final Query q = toUpdateQuery(tableName, entity, optionsOrNull);
 
@@ -747,7 +747,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * 
 	 * @return The Query object to run with session.execute();
 	 */
-	protected Query toInsertQuery(String tableName, final Object objectToSave, QueryOptions optionsOrNull) {
+	protected Query toInsertQuery(String tableName, final Object objectToSave, ExecuteOptions optionsOrNull) {
 
 		final Insert query = QueryBuilder.insertInto(getKeyspace(), tableName);
 
@@ -781,7 +781,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * 
 	 * @return The Query object to run with session.execute();
 	 */
-	protected Query toUpdateQuery(String tableName, final Object objectToSave, QueryOptions optionsOrNull) {
+	protected Query toUpdateQuery(String tableName, final Object objectToSave, ExecuteOptions optionsOrNull) {
 
 		final Update query = QueryBuilder.update(getKeyspace(), tableName);
 
@@ -814,7 +814,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param optionsByName
 	 * @return
 	 */
-	protected Query toDeleteQueryById(String tableName, final Object id, Class<?> entityClass, QueryOptions optionsOrNull) {
+	protected Query toDeleteQueryById(String tableName, final Object id, Class<?> entityClass, ExecuteOptions optionsOrNull) {
 
 		CassandraPersistentEntity<?> entity = getEntity(entityClass);
 
@@ -843,7 +843,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param objectToRemove
 	 */
 	protected <T> void doBatchDeleteById(final boolean asychronously, String tableName, final Iterable<T> ids,
-			Class<?> entityClass, QueryOptions optionsOrNull) {
+			Class<?> entityClass, ExecuteOptions optionsOrNull) {
 
 		/*
 		 * Return variable is a Batch statement
@@ -897,7 +897,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param optionsByName
 	 * @return
 	 */
-	protected Query toDeleteQuery(String tableName, final Object objectToRemove, QueryOptions optionsOrNull) {
+	protected Query toDeleteQuery(String tableName, final Object objectToRemove, ExecuteOptions optionsOrNull) {
 
 		final Delete.Selection ds = QueryBuilder.delete();
 		final Delete query = ds.from(getKeyspace(), tableName);
@@ -923,7 +923,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param objectToRemove
 	 */
 	protected <T> void doBatchDelete(final boolean asychronously, String tableNameOrNull, final Iterable<T> entities,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 
 		/*
 		 * Return variable is a Batch statement
@@ -972,7 +972,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 	}
 
-	protected <T> T doFindById(Object id, Class<T> entityClass, String tableName, QueryOptions optionsOrNull) {
+	protected <T> T doFindById(Object id, Class<T> entityClass, String tableName, ExecuteOptions optionsOrNull) {
 		Select select = QueryBuilder.select().all().from(tableName);
 		Select.Where w = select.where();
 

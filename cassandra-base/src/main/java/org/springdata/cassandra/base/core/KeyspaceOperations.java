@@ -16,7 +16,7 @@
 package org.springdata.cassandra.base.core;
 
 import org.springdata.cassandra.base.core.cql.options.KeyspaceOptions;
-import org.springdata.cassandra.base.core.query.QueryOptions;
+import org.springdata.cassandra.base.core.query.ExecuteOptions;
 
 import com.datastax.driver.core.KeyspaceMetadata;
 
@@ -33,41 +33,41 @@ public interface KeyspaceOperations {
 	 * Creates Keyspace with given options
 	 * 
 	 * @param keyspaceOptions Keyspace options.
-	 * @param optionsOrNull The Query Options Object is exists
+	 * @param optionsOrNull The Execute Options Object if exists
 	 */
-	void createKeyspace(KeyspaceOptions keyspaceOptions, QueryOptions optionsOrNull);
+	void createKeyspace(KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Alters Keyspace with given name and options
 	 * 
 	 * @param keyspaceOptions Keyspace options.
-	 * @param optionsOrNull The Query Options Object is exists
+	 * @param optionsOrNull The Execute Options Object if exists
 	 */
-	void alterKeyspace(KeyspaceOptions keyspaceOptions, QueryOptions optionsOrNull);
+	void alterKeyspace(KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Drop keyspace
 	 * 
-	 * @param optionsOrNull The Query Options Object is exists
+	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void dropKeyspace(QueryOptions optionsOrNull);
+	void dropKeyspace(ExecuteOptions optionsOrNull);
 
 	/**
 	 * Use keyspace
 	 * 
-	 * @param optionsOrNull The Query Options Object is exists
+	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void useKeyspace(QueryOptions optionsOrNull);
+	void useKeyspace(ExecuteOptions optionsOrNull);
 
 	/**
 	 * Use system keyspace
 	 * 
-	 * @param optionsOrNull The Query Options Object is exists
+	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void useSystemKeyspace(QueryOptions optionsOrNull);
+	void useSystemKeyspace(ExecuteOptions optionsOrNull);
 
 	/**
 	 * Gets the keyspace metadata.

@@ -30,7 +30,7 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
-import org.springdata.cassandra.base.core.query.QueryOptions;
+import org.springdata.cassandra.base.core.query.ExecuteOptions;
 import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
 import org.springdata.cassandra.base.support.CassandraExceptionTranslator;
 import org.springframework.dao.DataAccessException;
@@ -161,7 +161,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void execute(boolean asynchronously, String cql, QueryOptions optionsOrNull) {
+	public void execute(boolean asynchronously, String cql, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		if (asynchronously) {
 			doExecuteAsync(cql, optionsOrNull);
@@ -171,7 +171,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> T select(String cql, final ResultSetCallback<T> rsc, QueryOptions optionsOrNull) {
+	public <T> T select(String cql, final ResultSetCallback<T> rsc, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		Assert.notNull(rsc);
 		ResultSet resultSet = doExecute(cql, optionsOrNull);
@@ -179,7 +179,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public CassandraFuture<ResultSet> selectAsync(final String cql, final QueryOptions optionsOrNull) {
+	public CassandraFuture<ResultSet> selectAsync(final String cql, final ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
 		return new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
@@ -187,7 +187,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 	@Override
 	public <T> T selectNonstop(final String cql, final ResultSetCallback<T> rsc, final int timeoutMls,
-			final QueryOptions optionsOrNull) throws TimeoutException {
+			final ExecuteOptions optionsOrNull) throws TimeoutException {
 		Assert.notNull(cql);
 		Assert.notNull(rsc);
 
@@ -198,14 +198,14 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void select(String cql, final RowCallbackHandler rch, QueryOptions optionsOrNull) {
+	public void select(String cql, final RowCallbackHandler rch, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		Assert.notNull(rch);
 		process(doExecute(cql, optionsOrNull), rch);
 	}
 
 	@Override
-	public void selectAsync(String cql, final RowCallbackHandler.Async rch, Executor executor, QueryOptions optionsOrNull) {
+	public void selectAsync(String cql, final RowCallbackHandler.Async rch, Executor executor, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		Assert.notNull(rch);
 		Assert.notNull(executor);
@@ -231,7 +231,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> Iterator<T> select(String cql, RowMapper<T> rowMapper, QueryOptions optionsOrNull) {
+	public <T> Iterator<T> select(String cql, RowMapper<T> rowMapper, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		Assert.notNull(rowMapper);
 		return process(doExecute(cql, optionsOrNull), rowMapper);
@@ -239,7 +239,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 	@Override
 	public <T> CassandraFuture<Iterator<T>> selectAsync(String cql, final RowMapper<T> rowMapper,
-			QueryOptions optionsOrNull) {
+			ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(cql);
 		Assert.notNull(rowMapper);
@@ -259,33 +259,33 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public List<Map<String, Object>> selectAsListOfMap(String cql, QueryOptions optionsOrNull) {
+	public List<Map<String, Object>> selectAsListOfMap(String cql, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		return processAsListOfMap(doExecute(cql, optionsOrNull));
 	}
 
 	@Override
-	public <T> List<T> selectFirstColumnAsList(String cql, Class<T> elementType, QueryOptions optionsOrNull) {
+	public <T> List<T> selectFirstColumnAsList(String cql, Class<T> elementType, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		Assert.notNull(elementType);
 		return processFirstColumnAsList(doExecute(cql, optionsOrNull), elementType);
 	}
 
 	@Override
-	public Map<String, Object> selectOneAsMap(String cql, QueryOptions optionsOrNull) {
+	public Map<String, Object> selectOneAsMap(String cql, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		return processOneAsMap(doExecute(cql, optionsOrNull));
 	}
 
 	@Override
-	public <T> T selectOne(String cql, Class<T> elementType, QueryOptions optionsOrNull) {
+	public <T> T selectOne(String cql, Class<T> elementType, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		Assert.notNull(elementType);
 		return processOne(doExecute(cql, optionsOrNull), elementType);
 	}
 
 	@Override
-	public <T> T selectOne(String cql, RowMapper<T> rowMapper, QueryOptions optionsOrNull) {
+	public <T> T selectOne(String cql, RowMapper<T> rowMapper, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		Assert.notNull(rowMapper);
 		return processOne(doExecute(cql, optionsOrNull), rowMapper);
@@ -314,7 +314,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param callback
 	 * @return
 	 */
-	public ResultSet doExecute(final String cql, final QueryOptions optionsOrNull) {
+	public ResultSet doExecute(final String cql, final ExecuteOptions optionsOrNull) {
 
 		logger.info(cql);
 
@@ -338,7 +338,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param callback
 	 * @return
 	 */
-	public ResultSetFuture doExecuteAsync(final String cql, final QueryOptions optionsOrNull) {
+	public ResultSetFuture doExecuteAsync(final String cql, final ExecuteOptions optionsOrNull) {
 
 		logger.info(cql);
 
@@ -362,7 +362,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param callback
 	 * @return
 	 */
-	protected ResultSet doExecute(final BoundStatement bs, final QueryOptions optionsOrNull) {
+	protected ResultSet doExecute(final BoundStatement bs, final ExecuteOptions optionsOrNull) {
 
 		return doExecute(new SessionCallback<ResultSet>() {
 
@@ -685,7 +685,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public PreparedStatement prepareStatement(final String cql, final QueryOptions optionsOrNull) {
+	public PreparedStatement prepareStatement(final String cql, final ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(cql);
 
@@ -708,7 +708,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public PreparedStatement prepareStatement(final PreparedStatementCreator psc, final QueryOptions optionsOrNull) {
+	public PreparedStatement prepareStatement(final PreparedStatementCreator psc, final ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(psc);
 
@@ -770,21 +770,21 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> T select(PreparedStatement ps, ResultSetCallback<T> rsc, QueryOptions optionsOrNull) {
+	public <T> T select(PreparedStatement ps, ResultSetCallback<T> rsc, ExecuteOptions optionsOrNull) {
 		Assert.notNull(ps);
 		Assert.notNull(rsc);
 		return select(ps, null, rsc, optionsOrNull);
 	}
 
 	@Override
-	public void select(PreparedStatement ps, RowCallbackHandler rch, QueryOptions optionsOrNull) {
+	public void select(PreparedStatement ps, RowCallbackHandler rch, ExecuteOptions optionsOrNull) {
 		Assert.notNull(ps);
 		Assert.notNull(rch);
 		select(ps, null, rch, optionsOrNull);
 	}
 
 	@Override
-	public <T> Iterator<T> select(PreparedStatement ps, RowMapper<T> rowMapper, QueryOptions optionsOrNull) {
+	public <T> Iterator<T> select(PreparedStatement ps, RowMapper<T> rowMapper, ExecuteOptions optionsOrNull) {
 		Assert.notNull(ps);
 		Assert.notNull(rowMapper);
 		return select(ps, null, rowMapper, optionsOrNull);
@@ -792,7 +792,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 	@Override
 	public <T> T select(PreparedStatement ps, final PreparedStatementBinder psbOrNull, final ResultSetCallback<T> rsc,
-			final QueryOptions optionsOrNull) {
+			final ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(ps);
 		Assert.notNull(rsc);
@@ -816,7 +816,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 	@Override
 	public void select(PreparedStatement ps, final PreparedStatementBinder psbOrNull, final RowCallbackHandler rch,
-			final QueryOptions optionsOrNull) {
+			final ExecuteOptions optionsOrNull) {
 		Assert.notNull(ps);
 		Assert.notNull(rch);
 
@@ -845,7 +845,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 	@Override
 	public <T> Iterator<T> select(PreparedStatement ps, final PreparedStatementBinder psbOrNull,
-			final RowMapper<T> rowMapper, final QueryOptions optionsOrNull) {
+			final RowMapper<T> rowMapper, final ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(ps);
 		Assert.notNull(rowMapper);
@@ -873,7 +873,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void ingest(String cql, Iterable<Object[]> rowIterator, QueryOptions optionsOrNull) {
+	public void ingest(String cql, Iterable<Object[]> rowIterator, ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(cql);
 		Assert.notNull(rowIterator);
@@ -888,7 +888,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void ingest(String cql, final Object[][] rows, final QueryOptions optionsOrNull) {
+	public void ingest(String cql, final Object[][] rows, final ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(cql);
 		Assert.notNull(rows);
@@ -934,7 +934,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void truncate(boolean asynchronously, String tableName, QueryOptions optionsOrNull) throws DataAccessException {
+	public void truncate(boolean asynchronously, String tableName, ExecuteOptions optionsOrNull) throws DataAccessException {
 		Truncate truncate = QueryBuilder.truncate(tableName);
 		if (asynchronously) {
 			doExecuteAsync(truncate.getQueryString(), optionsOrNull);
@@ -955,7 +955,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param optionsOrNull
 	 */
 
-	public static void addQueryOptions(Query q, QueryOptions optionsOrNull) {
+	public static void addQueryOptions(Query q, ExecuteOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;
@@ -980,7 +980,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param optionsByName
 	 */
 
-	public static void addInsertOptions(Insert query, QueryOptions optionsOrNull) {
+	public static void addInsertOptions(Insert query, ExecuteOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;
@@ -1005,7 +1005,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param optionsByName
 	 */
 
-	public static void addUpdateOptions(Update query, QueryOptions optionsOrNull) {
+	public static void addUpdateOptions(Update query, ExecuteOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;
@@ -1030,7 +1030,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param optionsByName
 	 */
 
-	public static void addDeleteOptions(Delete query, QueryOptions optionsOrNull) {
+	public static void addDeleteOptions(Delete query, ExecuteOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;
@@ -1051,7 +1051,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param q
 	 * @param optionsByName
 	 */
-	public static void addPreparedStatementOptions(PreparedStatement ps, QueryOptions optionsOrNull) {
+	public static void addPreparedStatementOptions(PreparedStatement ps, ExecuteOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;

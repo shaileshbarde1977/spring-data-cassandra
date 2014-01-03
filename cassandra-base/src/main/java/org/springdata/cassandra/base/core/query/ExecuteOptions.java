@@ -16,13 +16,14 @@
 package org.springdata.cassandra.base.core.query;
 
 /**
- * Contains Query Options for Cassandra queries. This controls the Consistency Tuning and Retry Policy for a Query.
+ * Contains Execute Options for Cassandra command execution. This controls the Consistency Tuning and Retry Policy for a
+ * Statement.
  * 
  * @author David Webb
  * @author Alex Shvid
  * 
  */
-public class QueryOptions implements QueryOptionsAccessor {
+public class ExecuteOptions implements ExecuteOptionsAccessor {
 
 	private ConsistencyLevel consistencyLevel;
 	private RetryPolicy retryPolicy;
@@ -35,8 +36,8 @@ public class QueryOptions implements QueryOptionsAccessor {
 	 * @return QueryOptions new instance
 	 */
 
-	public static QueryOptions builder() {
-		return new QueryOptions();
+	public static ExecuteOptions builder() {
+		return new ExecuteOptions();
 	}
 
 	/**
@@ -49,7 +50,7 @@ public class QueryOptions implements QueryOptionsAccessor {
 	/**
 	 * @param consistencyLevel The consistencyLevel to set.
 	 */
-	public QueryOptions withConsistencyLevel(ConsistencyLevel consistencyLevel) {
+	public ExecuteOptions withConsistencyLevel(ConsistencyLevel consistencyLevel) {
 		this.consistencyLevel = consistencyLevel;
 		return this;
 	}
@@ -64,7 +65,7 @@ public class QueryOptions implements QueryOptionsAccessor {
 	/**
 	 * @param retryPolicy The retryPolicy to set.
 	 */
-	public QueryOptions withRetryPolicy(RetryPolicy retryPolicy) {
+	public ExecuteOptions withRetryPolicy(RetryPolicy retryPolicy) {
 		this.retryPolicy = retryPolicy;
 		return this;
 	}
@@ -79,7 +80,7 @@ public class QueryOptions implements QueryOptionsAccessor {
 	/**
 	 * @param ttl The ttl of the entry to set.
 	 */
-	public QueryOptions withTtl(Integer ttl) {
+	public ExecuteOptions withTtl(Integer ttl) {
 		this.ttl = ttl;
 		return this;
 	}
@@ -94,7 +95,7 @@ public class QueryOptions implements QueryOptionsAccessor {
 	/**
 	 * @param timestamp The timestamp of the entry to set.
 	 */
-	public QueryOptions withTimestamp(Long timestamp) {
+	public ExecuteOptions withTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 		return this;
 	}

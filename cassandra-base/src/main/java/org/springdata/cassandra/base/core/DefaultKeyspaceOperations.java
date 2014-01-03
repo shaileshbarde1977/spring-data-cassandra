@@ -24,7 +24,7 @@ import org.springdata.cassandra.base.core.cql.spec.AlterKeyspaceSpecification;
 import org.springdata.cassandra.base.core.cql.spec.CreateKeyspaceSpecification;
 import org.springdata.cassandra.base.core.cql.spec.DropKeyspaceSpecification;
 import org.springdata.cassandra.base.core.cql.spec.UseKeyspaceSpecification;
-import org.springdata.cassandra.base.core.query.QueryOptions;
+import org.springdata.cassandra.base.core.query.ExecuteOptions;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.KeyspaceMetadata;
@@ -48,7 +48,7 @@ public class DefaultKeyspaceOperations implements KeyspaceOperations {
 	}
 
 	@Override
-	public void createKeyspace(final KeyspaceOptions keyspaceOptions, QueryOptions optionsOrNull) {
+	public void createKeyspace(final KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(keyspaceOptions);
 
@@ -64,7 +64,7 @@ public class DefaultKeyspaceOperations implements KeyspaceOperations {
 	}
 
 	@Override
-	public void alterKeyspace(KeyspaceOptions keyspaceOptions, QueryOptions optionsOrNull) {
+	public void alterKeyspace(KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull) {
 
 		Assert.notNull(keyspaceOptions);
 
@@ -80,7 +80,7 @@ public class DefaultKeyspaceOperations implements KeyspaceOperations {
 	}
 
 	@Override
-	public void dropKeyspace(QueryOptions optionsOrNull) {
+	public void dropKeyspace(ExecuteOptions optionsOrNull) {
 
 		DropKeyspaceSpecification spec = new DropKeyspaceSpecification().name(cassandraTemplate.getKeyspace());
 		DropKeyspaceCqlGenerator generator = new DropKeyspaceCqlGenerator(spec);
@@ -92,7 +92,7 @@ public class DefaultKeyspaceOperations implements KeyspaceOperations {
 	}
 
 	@Override
-	public void useKeyspace(QueryOptions optionsOrNull) {
+	public void useKeyspace(ExecuteOptions optionsOrNull) {
 
 		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(cassandraTemplate.getKeyspace());
 		UseKeyspaceCqlGenerator generator = new UseKeyspaceCqlGenerator(spec);
@@ -104,7 +104,7 @@ public class DefaultKeyspaceOperations implements KeyspaceOperations {
 	}
 
 	@Override
-	public void useSystemKeyspace(QueryOptions optionsOrNull) {
+	public void useSystemKeyspace(ExecuteOptions optionsOrNull) {
 
 		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(SYSTEM_KEYSPACE);
 		UseKeyspaceCqlGenerator generator = new UseKeyspaceCqlGenerator(spec);

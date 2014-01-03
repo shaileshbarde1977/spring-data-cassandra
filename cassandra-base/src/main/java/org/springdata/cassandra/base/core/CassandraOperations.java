@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
-import org.springdata.cassandra.base.core.query.QueryOptions;
+import org.springdata.cassandra.base.core.query.ExecuteOptions;
 
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
@@ -51,20 +51,20 @@ public interface CassandraOperations {
 	 * 
 	 * @param asynchronously Flag to execute asynchronously
 	 * @param cql The Query
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 */
-	void execute(boolean asynchronously, String cql, QueryOptions optionsOrNull);
+	void execute(boolean asynchronously, String cql, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback.
 	 * 
 	 * @param cql The Query
 	 * @param rsc The implementation for extracting data from the ResultSet
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * 
 	 * @return
 	 */
-	<T> T select(String cql, ResultSetCallback<T> rsc, QueryOptions optionsOrNull);
+	<T> T select(String cql, ResultSetCallback<T> rsc, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback with given timeout.
@@ -72,20 +72,20 @@ public interface CassandraOperations {
 	 * @param cql The Query
 	 * @param rsc The implementation for extracting data from the ResultSet
 	 * @param timeoutMls Nonstop timeout in milliseconds
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return extracted value T or TimeoutException
 	 */
-	<T> T selectNonstop(String cql, ResultSetCallback<T> rsc, int timeoutMls, QueryOptions optionsOrNull)
+	<T> T selectNonstop(String cql, ResultSetCallback<T> rsc, int timeoutMls, ExecuteOptions optionsOrNull)
 			throws TimeoutException;
 
 	/**
 	 * Executes the provided CQL Query asynchronously, and extracts the results with the ResultSetFutureExtractor
 	 * 
 	 * @param cql The Query
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return CassandraFuture<ResultSet>
 	 */
-	CassandraFuture<ResultSet> selectAsync(String cql, QueryOptions optionsOrNull);
+	CassandraFuture<ResultSet> selectAsync(String cql, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Executes the provided CQL Query, and then processes the results with the <code>RowCallbackHandler</code>.
@@ -94,7 +94,7 @@ public interface CassandraOperations {
 	 * @param rch The implementation for processing the rows returned.
 	 * @param optionsOrNull Query Options Object
 	 */
-	void select(String cql, RowCallbackHandler rch, QueryOptions optionsOrNull);
+	void select(String cql, RowCallbackHandler rch, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Executes the provided CQL Query, and then processes the results with the <code>AsyncRowCallbackHandler</code>.
@@ -105,7 +105,7 @@ public interface CassandraOperations {
 	 * @param optionsOrNull Query Options Object
 	 */
 
-	void selectAsync(String cql, RowCallbackHandler.Async rch, Executor executor, QueryOptions optionsOrNull);
+	void selectAsync(String cql, RowCallbackHandler.Async rch, Executor executor, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Processes the ResultSet through the RowCallbackHandler and return nothing. This is used internal to the Template
@@ -122,20 +122,20 @@ public interface CassandraOperations {
 	 * 
 	 * @param cql The Query
 	 * @param rowMapper The implementation for mapping all rows
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return Iterator of <T> processed by the RowMapper
 	 */
-	<T> Iterator<T> select(String cql, RowMapper<T> rowMapper, QueryOptions optionsOrNull);
+	<T> Iterator<T> select(String cql, RowMapper<T> rowMapper, ExecuteOptions optionsOrNull);
 
 	/**
 	 * 
 	 * @param cql The Query
 	 * @param rowMapper The implementation for mapping all rows
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return CassandraFuture<Iterator<T>> The future of the Iterator of <T> processed by the RowMapper
 	 */
 
-	<T> CassandraFuture<Iterator<T>> selectAsync(String cql, RowMapper<T> rowMapper, QueryOptions optionsOrNull);
+	<T> CassandraFuture<Iterator<T>> selectAsync(String cql, RowMapper<T> rowMapper, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Processes the ResultSet through the RowMapper and returns the List of mapped Rows. This is used internal to the
@@ -157,10 +157,10 @@ public interface CassandraOperations {
 	 * 
 	 * @param cql The Query
 	 * @param rowMapper The implementation for convert the Row to <T>
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return Object<T>
 	 */
-	<T> T selectOne(String cql, RowMapper<T> rowMapper, QueryOptions optionsOrNull);
+	<T> T selectOne(String cql, RowMapper<T> rowMapper, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Process a ResultSet through a RowMapper. This is used internal to the Template for core operations, but is made
@@ -178,10 +178,10 @@ public interface CassandraOperations {
 	 * 
 	 * @param cql The Query
 	 * @param elementType Valid Class that Cassandra Data Types can be converted to.
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return The Object<T> - item [0,0] in the result table of the query.
 	 */
-	<T> T selectOne(String cql, Class<T> elementType, QueryOptions optionsOrNull);
+	<T> T selectOne(String cql, Class<T> elementType, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Process a ResultSet, trying to convert the first columns of the first Row to Class<T>. This is used internal to the
@@ -199,10 +199,10 @@ public interface CassandraOperations {
 	 * is returned from the Query, an exception will be thrown.
 	 * 
 	 * @param cql The Query
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return Map representing the results of the Query
 	 */
-	Map<String, Object> selectOneAsMap(String cql, QueryOptions optionsOrNull);
+	Map<String, Object> selectOneAsMap(String cql, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Process a ResultSet with <b>ONE</b> Row and convert to a Map. This is used internal to the Template for core
@@ -220,10 +220,10 @@ public interface CassandraOperations {
 	 * 
 	 * @param cql The Query
 	 * @param elementType Type to cast the data values to
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return List of elementType
 	 */
-	<T> List<T> selectFirstColumnAsList(String cql, Class<T> elementType, QueryOptions optionsOrNull);
+	<T> List<T> selectFirstColumnAsList(String cql, Class<T> elementType, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Process a ResultSet and convert the first column of the results to a List. This is used internal to the Template
@@ -241,10 +241,10 @@ public interface CassandraOperations {
 	 * Row returned from the Query. Each Row's columns are put into the map as column/value.
 	 * 
 	 * @param cql The Query
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return List of Maps with the query results
 	 */
-	List<Map<String, Object>> selectAsListOfMap(String cql, QueryOptions optionsOrNull);
+	List<Map<String, Object>> selectAsListOfMap(String cql, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Process a ResultSet and convert it to a List of Maps with column/value. This is used internal to the Template for
@@ -264,7 +264,7 @@ public interface CassandraOperations {
 	 * @return PreparedStatement
 	 */
 
-	PreparedStatement prepareStatement(String cql, QueryOptions optionsOrNull);
+	PreparedStatement prepareStatement(String cql, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Uses the provided PreparedStatementCreator to prepare a new PreparedSession
@@ -273,7 +273,7 @@ public interface CassandraOperations {
 	 * @return PreparedStatement
 	 */
 
-	PreparedStatement prepareStatement(PreparedStatementCreator psc, QueryOptions optionsOrNull);
+	PreparedStatement prepareStatement(PreparedStatementCreator psc, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Executes the prepared statement and processes the statement using the provided Callback. <b>This can only be used
@@ -293,10 +293,10 @@ public interface CassandraOperations {
 	 * 
 	 * @param psc The PreparedStatement
 	 * @param rsc Implementation for extracting data from the ResultSet
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return Type <T> which is the output of the ResultSetCallback
 	 */
-	<T> T select(PreparedStatement ps, ResultSetCallback<T> rsc, QueryOptions optionsOrNull);
+	<T> T select(PreparedStatement ps, ResultSetCallback<T> rsc, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Uses the provided PreparedStatementCreator to prepare a new Session call. <b>This can only be used for CQL
@@ -305,9 +305,9 @@ public interface CassandraOperations {
 	 * 
 	 * @param ps The PreparedStatement
 	 * @param rch The implementation to process Results
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 */
-	void select(PreparedStatement ps, RowCallbackHandler rch, QueryOptions optionsOrNull);
+	void select(PreparedStatement ps, RowCallbackHandler rch, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Uses the provided PreparedStatementCreator to prepare a new Session call. <b>This can only be used for CQL
@@ -316,10 +316,10 @@ public interface CassandraOperations {
 	 * 
 	 * @param ps The PreparedStatement
 	 * @param rowMapper The implementation for mapping each Row returned.
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return Iterator of Type <T> mapped from each Row in the Results
 	 */
-	<T> Iterator<T> select(PreparedStatement ps, RowMapper<T> rowMapper, QueryOptions optionsOrNull);
+	<T> Iterator<T> select(PreparedStatement ps, RowMapper<T> rowMapper, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Uses the provided PreparedStatementCreator to prepare a new Session call. Binds the values from the
@@ -329,11 +329,11 @@ public interface CassandraOperations {
 	 * @param ps The PreparedStatement
 	 * @param psbOrNull The implementation to bind variables to values if exists
 	 * @param rsc Implementation for extracting data from the ResultSet
-	 * @param optionsOrNull Query Options Object if exists
+	 * @param optionsOrNull Execute Options Object if exists
 	 * @return Type <T> which is the output of the ResultSetCallback
 	 */
 	<T> T select(PreparedStatement ps, PreparedStatementBinder psbOrNull, ResultSetCallback<T> rsc,
-			QueryOptions optionsOrNull);
+			ExecuteOptions optionsOrNull);
 
 	/**
 	 * Uses the provided PreparedStatementCreator to prepare a new Session call. Binds the values from the
@@ -347,7 +347,7 @@ public interface CassandraOperations {
 	 * @return Type <T> which is the output of the ResultSetCallback
 	 */
 	void select(PreparedStatement ps, PreparedStatementBinder psbOrNull, RowCallbackHandler rch,
-			QueryOptions optionsOrNull);
+			ExecuteOptions optionsOrNull);
 
 	/**
 	 * Uses the provided PreparedStatementCreator to prepare a new Session call. Binds the values from the
@@ -361,7 +361,7 @@ public interface CassandraOperations {
 	 * @return Iterator <T> which is the output of the ResultSetCallback
 	 */
 	<T> Iterator<T> select(PreparedStatement ps, PreparedStatementBinder psbOrNull, RowMapper<T> rowMapper,
-			QueryOptions optionsOrNull);
+			ExecuteOptions optionsOrNull);
 
 	/**
 	 * Describe the current Ring. This uses the provided {@link RingMemberHostMapper} to provide the basics of the
@@ -400,7 +400,7 @@ public interface CassandraOperations {
 	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
 	 * @param optionsOrNull The Query Options Object if exists
 	 */
-	void ingest(String cql, Iterable<Object[]> rowIterator, QueryOptions optionsOrNull);
+	void ingest(String cql, Iterable<Object[]> rowIterator, ExecuteOptions optionsOrNull);
 
 	/**
 	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
@@ -412,9 +412,9 @@ public interface CassandraOperations {
 	 * 
 	 * @param cql The CQL
 	 * @param rows Object array of Object array of values to bind to the CQL.
-	 * @param optionsOrNull The Query Options Object is exists
+	 * @param optionsOrNull The Execute Options Object if exists
 	 */
-	void ingest(String cql, Object[][] rows, QueryOptions optionsOrNull);
+	void ingest(String cql, Object[][] rows, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Delete all rows in the table
@@ -423,7 +423,7 @@ public interface CassandraOperations {
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	void truncate(boolean asynchronously, String tableName, QueryOptions optionsOrNull);
+	void truncate(boolean asynchronously, String tableName, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Support keyspace operations
