@@ -135,7 +135,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		final String author = "David Webb";
 		final Integer pages = 1;
 
-		cassandraTemplate.execute(false, "insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title
+		cassandraTemplate.execute("insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title
 				+ "', '" + author + "', " + pages + ")", null);
 
 		Book b = getBook(isbn);
@@ -336,7 +336,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	@Test
 	public void quertForObjectTestCqlStringRequiredType() {
 
-		String title = cassandraTemplate.selectOne("select title from book where isbn in ('" + ISBN_NINES + "')",
+		String title = cassandraTemplate.selectOneFirstColumn("select title from book where isbn in ('" + ISBN_NINES + "')",
 				String.class, null);
 
 		assertEquals(title, TITLE_NINES);
@@ -346,7 +346,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	@Test(expected = ClassCastException.class)
 	public void queryForObjectTestCqlStringRequiredTypeInvalid() {
 
-		Float title = cassandraTemplate.selectOne("select title from book where isbn in ('" + ISBN_NINES + "')",
+		Float title = cassandraTemplate.selectOneFirstColumn("select title from book where isbn in ('" + ISBN_NINES + "')",
 				Float.class, null);
 
 	}
@@ -359,7 +359,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 
 		assertNotNull(rs);
 
-		String title = cassandraTemplate.processOne(rs, String.class);
+		String title = cassandraTemplate.processOneFirstColumn(rs, String.class);
 
 		assertNotNull(title);
 		assertEquals(title, TITLE_NINES);

@@ -161,13 +161,23 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void execute(boolean asynchronously, String cql, ExecuteOptions optionsOrNull) {
+	public void execute(String cql, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
-		if (asynchronously) {
-			doExecuteAsync(cql, optionsOrNull);
-		} else {
-			doExecute(cql, optionsOrNull);
-		}
+		doExecute(cql, optionsOrNull);
+	}
+
+	@Override
+	public void executeNonstop(String cql, int timeoutMls, ExecuteOptions optionsOrNull) throws TimeoutException {
+		Assert.notNull(cql);
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
+		wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+	}
+
+	@Override
+	public void executeAsync(String cql, ExecuteOptions optionsOrNull) {
+		Assert.notNull(cql);
+		doExecuteAsync(cql, optionsOrNull);
 	}
 
 	@Override
@@ -205,7 +215,19 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void selectAsync(String cql, final RowCallbackHandler.Async rch, Executor executor, ExecuteOptions optionsOrNull) {
+	public void selectNonstop(String cql, final RowCallbackHandler rch, int timeoutMls, ExecuteOptions optionsOrNull)
+			throws TimeoutException {
+		Assert.notNull(cql);
+		Assert.notNull(rch);
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
+		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+		process(resultSet, rch);
+	}
+
+	@Override
+	public void selectAsync(String cql, final RowCallbackHandler.Async rch, Executor executor,
+			ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
 		Assert.notNull(rch);
 		Assert.notNull(executor);
@@ -238,6 +260,18 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
+	public <T> Iterator<T> selectNonstop(String cql, RowMapper<T> rowMapper, int timeoutMls, ExecuteOptions optionsOrNull)
+			throws TimeoutException {
+		Assert.notNull(cql);
+		Assert.notNull(rowMapper);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
+		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+		return process(resultSet, rowMapper);
+	}
+
+	@Override
 	public <T> CassandraFuture<Iterator<T>> selectAsync(String cql, final RowMapper<T> rowMapper,
 			ExecuteOptions optionsOrNull) {
 
@@ -259,9 +293,118 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public List<Map<String, Object>> selectAsListOfMap(String cql, ExecuteOptions optionsOrNull) {
+	public <T> T selectOne(String cql, RowMapper<T> rowMapper, ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
-		return processAsListOfMap(doExecute(cql, optionsOrNull));
+		Assert.notNull(rowMapper);
+		return processOne(doExecute(cql, optionsOrNull), rowMapper);
+	}
+
+	@Override
+	public <T> T selectOneNonstop(String cql, RowMapper<T> rowMapper, int timeoutMls, ExecuteOptions optionsOrNull)
+			throws TimeoutException {
+		Assert.notNull(cql);
+		Assert.notNull(rowMapper);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
+		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+		return processOne(resultSet, rowMapper);
+	}
+
+	@Override
+	public <T> CassandraFuture<T> selectOneAsync(String cql, final RowMapper<T> rowMapper, ExecuteOptions optionsOrNull) {
+		Assert.notNull(cql);
+		Assert.notNull(rowMapper);
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+
+		ListenableFuture<T> future = Futures.transform(resultSetFuture, new Function<ResultSet, T>() {
+
+			@Override
+			public T apply(ResultSet resultSet) {
+				return processOne(resultSet, rowMapper);
+			}
+
+		});
+
+		return new CassandraFuture<T>(future, getExceptionTranslator());
+	}
+
+	@Override
+	public <T> T selectOneFirstColumn(String cql, Class<T> elementType, ExecuteOptions optionsOrNull) {
+		Assert.notNull(cql);
+		Assert.notNull(elementType);
+		return processOneFirstColumn(doExecute(cql, optionsOrNull), elementType);
+	}
+
+	@Override
+	public <T> T selectOneFirstColumnNonstop(String cql, Class<T> elementType, int timeoutMls,
+			ExecuteOptions optionsOrNull) throws TimeoutException {
+		Assert.notNull(cql);
+		Assert.notNull(elementType);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
+		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+
+		return processOneFirstColumn(resultSet, elementType);
+	}
+
+	@Override
+	public <T> CassandraFuture<T> selectOneFirstColumnAsync(String cql, final Class<T> elementType,
+			ExecuteOptions optionsOrNull) {
+		Assert.notNull(cql);
+		Assert.notNull(elementType);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+
+		ListenableFuture<T> future = Futures.transform(resultSetFuture, new Function<ResultSet, T>() {
+
+			@Override
+			public T apply(ResultSet resultSet) {
+				return processOneFirstColumn(resultSet, elementType);
+			}
+
+		});
+
+		return new CassandraFuture<T>(future, getExceptionTranslator());
+
+	}
+
+	@Override
+	public Map<String, Object> selectOneAsMap(String cql, ExecuteOptions optionsOrNull) {
+		Assert.notNull(cql);
+		return processOneAsMap(doExecute(cql, optionsOrNull));
+	}
+
+	@Override
+	public Map<String, Object> selectOneAsMapNonstop(String cql, int timeoutMls, ExecuteOptions optionsOrNull)
+			throws TimeoutException {
+		Assert.notNull(cql);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
+		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+
+		return processOneAsMap(resultSet);
+	}
+
+	@Override
+	public CassandraFuture<Map<String, Object>> selectOneAsMapAsync(String cql, ExecuteOptions optionsOrNull) {
+		Assert.notNull(cql);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+
+		ListenableFuture<Map<String, Object>> future = Futures.transform(resultSetFuture,
+				new Function<ResultSet, Map<String, Object>>() {
+
+					@Override
+					public Map<String, Object> apply(ResultSet resultSet) {
+						return processOneAsMap(resultSet);
+					}
+
+				});
+
+		return new CassandraFuture<Map<String, Object>>(future, getExceptionTranslator());
 	}
 
 	@Override
@@ -272,23 +415,75 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public Map<String, Object> selectOneAsMap(String cql, ExecuteOptions optionsOrNull) {
-		Assert.notNull(cql);
-		return processOneAsMap(doExecute(cql, optionsOrNull));
-	}
-
-	@Override
-	public <T> T selectOne(String cql, Class<T> elementType, ExecuteOptions optionsOrNull) {
+	public <T> List<T> selectFirstColumnAsListNonstop(String cql, Class<T> elementType, int timeoutMls,
+			ExecuteOptions optionsOrNull) throws TimeoutException {
 		Assert.notNull(cql);
 		Assert.notNull(elementType);
-		return processOne(doExecute(cql, optionsOrNull), elementType);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
+		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+
+		return processFirstColumnAsList(resultSet, elementType);
 	}
 
 	@Override
-	public <T> T selectOne(String cql, RowMapper<T> rowMapper, ExecuteOptions optionsOrNull) {
+	public <T> CassandraFuture<List<T>> selectFirstColumnAsListAsync(String cql, final Class<T> elementType,
+			ExecuteOptions optionsOrNull) {
 		Assert.notNull(cql);
-		Assert.notNull(rowMapper);
-		return processOne(doExecute(cql, optionsOrNull), rowMapper);
+		Assert.notNull(elementType);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+
+		ListenableFuture<List<T>> future = Futures.transform(resultSetFuture, new Function<ResultSet, List<T>>() {
+
+			@Override
+			public List<T> apply(ResultSet resultSet) {
+				return processFirstColumnAsList(resultSet, elementType);
+			}
+
+		});
+
+		return new CassandraFuture<List<T>>(future, getExceptionTranslator());
+
+	}
+
+	@Override
+	public List<Map<String, Object>> selectAsListOfMap(String cql, ExecuteOptions optionsOrNull) {
+		Assert.notNull(cql);
+		return processAsListOfMap(doExecute(cql, optionsOrNull));
+	}
+
+	@Override
+	public List<Map<String, Object>> selectAsListOfMapNonstop(String cql, int timeoutMls, ExecuteOptions optionsOrNull)
+			throws TimeoutException {
+		Assert.notNull(cql);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
+		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+
+		return processAsListOfMap(resultSet);
+	}
+
+	@Override
+	public CassandraFuture<List<Map<String, Object>>> selectAsListOfMapAsync(String cql, ExecuteOptions optionsOrNull) {
+		Assert.notNull(cql);
+
+		ResultSetFuture resultSetFuture = doExecuteAsync(cql, optionsOrNull);
+
+		ListenableFuture<List<Map<String, Object>>> future = Futures.transform(resultSetFuture,
+				new Function<ResultSet, List<Map<String, Object>>>() {
+
+					@Override
+					public List<Map<String, Object>> apply(ResultSet resultSet) {
+						return processAsListOfMap(resultSet);
+					}
+
+				});
+
+		return new CassandraFuture<List<Map<String, Object>>>(future, getExceptionTranslator());
+
 	}
 
 	/**
@@ -582,7 +777,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T processOne(ResultSet resultSet, Class<T> elementType) {
+	public <T> T processOneFirstColumn(ResultSet resultSet, Class<T> elementType) {
 		Assert.notNull(resultSet);
 		Assert.notNull(elementType);
 
@@ -934,7 +1129,8 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void truncate(boolean asynchronously, String tableName, ExecuteOptions optionsOrNull) throws DataAccessException {
+	public void truncate(boolean asynchronously, String tableName, ExecuteOptions optionsOrNull)
+			throws DataAccessException {
 		Truncate truncate = QueryBuilder.truncate(tableName);
 		if (asynchronously) {
 			doExecuteAsync(truncate.getQueryString(), optionsOrNull);
