@@ -1,5 +1,3 @@
-package org.springdata.cassandra.data.test.integration.convert;
-
 /*
  * Copyright 2013 the original author or authors.
  *
@@ -15,10 +13,28 @@ package org.springdata.cassandra.data.test.integration.convert;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springdata.cassandra.data.test.integration.convert;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.inject.Named;
+
 import org.apache.cassandra.exceptions.ConfigurationException;
 import org.apache.thrift.transport.TTransportException;
 import org.cassandraunit.CassandraCQLUnit;
@@ -29,6 +45,11 @@ import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.hamcrest.number.BigDecimalCloseTo;
 import org.hamcrest.number.IsCloseTo;
 import org.joda.time.format.ISODateTimeFormat;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,25 +64,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.nio.ByteBuffer;
-import java.text.DateFormat;
-import java.util.*;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-
-import javax.inject.Named;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Tests for data conversion related classes
@@ -109,7 +114,7 @@ public class CassandraDataConversionTests {
 	@Test
 	public void basicNullsTest() {
 
-		cassandraOperations.execute(false, "insert into test.basic_types_table (id) values ('nulls')", null);
+		cassandraOperations.update("insert into test.basic_types_table (id) values ('nulls')", null);
 
 		BasicTypesEntity nullProps = cassandraDataTemplate.findById("nulls", BasicTypesEntity.class, null);
 		assertThat(nullProps, is(not(nullValue(BasicTypesEntity.class))));
@@ -137,7 +142,7 @@ public class CassandraDataConversionTests {
 		UUID uuid = UUID.fromString("f7a04220-6dda-11e3-981f-0800200c9a66");
 		long longValue = 555555555555L;
 
-		cassandraOperations.execute(false, String.format(
+		cassandraOperations.update(String.format(
 				"insert into test.basic_types_table (id, propascii, propbigint, propblob, propboolean, "
 						+ "propdecimal, propdouble, propfloat, propinet, propint, proptext, proptimestamp, propuuid, "
 						+ "proptimeuuid, propvarchar, propvarint) "
@@ -212,7 +217,7 @@ public class CassandraDataConversionTests {
 	@Test
 	public void collectionsNullsTest() {
 
-		cassandraOperations.execute(false, "insert into test.collection_types_table (id) values ('nulls')", null);
+		cassandraOperations.update("insert into test.collection_types_table (id) values ('nulls')", null);
 
 		CollectionTypesEntity nullProps = cassandraDataTemplate.findById("nulls", CollectionTypesEntity.class, null);
 		assertThat(nullProps, is(not(nullValue(CollectionTypesEntity.class))));
@@ -233,8 +238,7 @@ public class CassandraDataConversionTests {
 				UUID.fromString("149f0c81-6ddb-11e3-981f-0800200c9a66") };
 		UUID setUUID = UUID.fromString("149f0c82-6ddb-11e3-981f-0800200c9a66");
 
-		cassandraOperations.execute(
-				false,
+		cassandraOperations.update(
 				String.format("insert into test.collection_types_table "
 						+ "(id, textlist, textmap, textset, textuuidmap, uuidlist, uuidset) "
 						+ "values ('values', ['text1', 'text2'], {'key1':'value1', 'key2':'value2'}, "
@@ -329,7 +333,7 @@ public class CassandraDataConversionTests {
 	@Test
 	public void embeddedIdReadTest() {
 
-		cassandraOperations.execute(false, "insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
+		cassandraOperations.update("insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
 				+ " values (1, 'first', 'one')", null);
 
 		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(1, "first");
@@ -365,7 +369,7 @@ public class CassandraDataConversionTests {
 
 		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(2, "second");
 
-		cassandraOperations.execute(false, "insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
+		cassandraOperations.update("insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
 				+ " values (2, 'second', 'two')", null);
 
 		EmbeddedIdEntity entity = cassandraDataTemplate.findById(pk, EmbeddedIdEntity.class, null);
@@ -387,7 +391,7 @@ public class CassandraDataConversionTests {
 
 		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(2, "second");
 
-		cassandraOperations.execute(false, "insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
+		cassandraOperations.update("insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
 				+ " values (2, 'second', 'two')", null);
 
 		EmbeddedIdEntity entity = cassandraDataTemplate.findById(pk, EmbeddedIdEntity.class, null);

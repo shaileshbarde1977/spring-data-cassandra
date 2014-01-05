@@ -174,7 +174,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	 * @see org.springframework.data.repository.CrudRepository#deleteAll()
 	 */
 	public void deleteAll() {
-		cassandraDataTemplate.truncate(false, entityInformation.getTableName(), null);
+		cassandraDataTemplate.truncate(entityInformation.getTableName(), null);
 	}
 
 	/*

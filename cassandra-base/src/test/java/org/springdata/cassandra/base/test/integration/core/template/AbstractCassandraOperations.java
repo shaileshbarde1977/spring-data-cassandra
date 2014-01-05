@@ -148,13 +148,7 @@ public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassan
 
 		PreparedStatement ps = cassandraTemplate.prepareStatement("select * from book where isbn = ?", null);
 
-		Book b = this.cassandraTemplate.select(ps, new PreparedStatementBinder() {
-
-			@Override
-			public BoundStatement bindValues(PreparedStatement ps) {
-				return ps.bind(isbn);
-			}
-		}, new ResultSetCallback<Book>() {
+		Book b = this.cassandraTemplate.select(ps, new ResultSetCallback<Book>() {
 
 			@Override
 			public Book doWithResultSet(ResultSet rs) {
@@ -165,6 +159,12 @@ public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassan
 				b.setAuthor(r.getString("author"));
 				b.setPages(r.getInt("pages"));
 				return b;
+			}
+		}, new PreparedStatementBinder() {
+
+			@Override
+			public BoundStatement bindValues(PreparedStatement ps) {
+				return ps.bind(isbn);
 			}
 		}, null);
 
