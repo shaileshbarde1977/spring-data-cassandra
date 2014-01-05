@@ -135,8 +135,8 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		final String author = "David Webb";
 		final Integer pages = 1;
 
-		cassandraTemplate.update("insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title
-				+ "', '" + author + "', " + pages + ")", null);
+		cassandraTemplate.update("insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title + "', '"
+				+ author + "', " + pages + ")", null);
 
 		Book b = getBook(isbn);
 
@@ -336,8 +336,8 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	@Test
 	public void quertForObjectTestCqlStringRequiredType() {
 
-		String title = cassandraTemplate.selectOneFirstColumn("select title from book where isbn in ('" + ISBN_NINES + "')",
-				String.class, null);
+		String title = cassandraTemplate.selectOneFirstColumn(
+				"select title from book where isbn in ('" + ISBN_NINES + "')", String.class, null);
 
 		assertEquals(title, TITLE_NINES);
 
