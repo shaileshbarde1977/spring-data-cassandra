@@ -135,7 +135,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		final String author = "David Webb";
 		final Integer pages = 1;
 
-		cassandraTemplate.update(cassandraTemplate.prepareQuery("insert into book (isbn, title, author, pages) values ('"
+		cassandraTemplate.update(cassandraTemplate.toQuery("insert into book (isbn, title, author, pages) values ('"
 				+ isbn + "', '" + title + "', '" + author + "', " + pages + ")"));
 
 		Book b = getBook(isbn);
@@ -149,7 +149,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 
 		final String isbn = "999999999";
 
-		Book b1 = cassandraTemplate.select(cassandraTemplate.prepareQuery("select * from book where isbn='" + isbn + "'"),
+		Book b1 = cassandraTemplate.select(cassandraTemplate.toQuery("select * from book where isbn='" + isbn + "'"),
 				new ResultSetCallback<Book>() {
 
 					@Override
@@ -176,7 +176,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 
 		final Book b1 = getBook(isbn);
 
-		cassandraTemplate.select(cassandraTemplate.prepareQuery("select * from book where isbn='" + isbn + "'"),
+		cassandraTemplate.select(cassandraTemplate.toQuery("select * from book where isbn='" + isbn + "'"),
 				new RowCallbackHandler() {
 
 					@Override
@@ -201,7 +201,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		final Book b1 = getBook(isbn);
 
 		ResultSet rs = cassandraTemplate.selectAsync(
-				cassandraTemplate.prepareQuery("select * from book where isbn='" + isbn + "'")).getUninterruptibly();
+				cassandraTemplate.toQuery("select * from book where isbn='" + isbn + "'")).getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -229,7 +229,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		insertBooks();
 
 		Iterator<Book> ibooks = cassandraTemplate.select(
-				cassandraTemplate.prepareQuery("select * from book where isbn in ('1234','2345','3456')"),
+				cassandraTemplate.toQuery("select * from book where isbn in ('1234','2345','3456')"),
 				new RowMapper<Book>() {
 
 					@Override
@@ -255,7 +255,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		insertBooks();
 
 		ResultSet rs = cassandraTemplate.selectAsync(
-				cassandraTemplate.prepareQuery("select * from book where isbn in ('1234','2345','3456')")).getUninterruptibly();
+				cassandraTemplate.toQuery("select * from book where isbn in ('1234','2345','3456')")).getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -282,7 +282,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	public void queryForObjectTestCqlStringRowMapper() {
 
 		Book book = cassandraTemplate.selectOne(
-				cassandraTemplate.prepareQuery("select * from book where isbn in ('" + ISBN_NINES + "')"),
+				cassandraTemplate.toQuery("select * from book where isbn in ('" + ISBN_NINES + "')"),
 				new RowMapper<Book>() {
 					@Override
 					public Book mapRow(Row row, int rowNum) {
@@ -305,7 +305,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		insertBooks();
 
 		Book book = cassandraTemplate.selectOne(
-				cassandraTemplate.prepareQuery("select * from book where isbn in ('1234','2345','3456')"),
+				cassandraTemplate.toQuery("select * from book where isbn in ('1234','2345','3456')"),
 				new RowMapper<Book>() {
 					@Override
 					public Book mapRow(Row row, int rowNum) {
@@ -322,7 +322,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		insertBooks();
 
 		ResultSet rs = cassandraTemplate.selectAsync(
-				cassandraTemplate.prepareQuery("select * from book where isbn in ('" + ISBN_NINES + "')")).getUninterruptibly();
+				cassandraTemplate.toQuery("select * from book where isbn in ('" + ISBN_NINES + "')")).getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -342,7 +342,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	public void quertForObjectTestCqlStringRequiredType() {
 
 		String title = cassandraTemplate.selectOneFirstColumn(
-				cassandraTemplate.prepareQuery("select title from book where isbn in ('" + ISBN_NINES + "')"), String.class);
+				cassandraTemplate.toQuery("select title from book where isbn in ('" + ISBN_NINES + "')"), String.class);
 
 		assertEquals(title, TITLE_NINES);
 
@@ -352,7 +352,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	public void queryForObjectTestCqlStringRequiredTypeInvalid() {
 
 		Float title = cassandraTemplate.selectOneFirstColumn(
-				cassandraTemplate.prepareQuery("select title from book where isbn in ('" + ISBN_NINES + "')"), Float.class);
+				cassandraTemplate.toQuery("select title from book where isbn in ('" + ISBN_NINES + "')"), Float.class);
 
 	}
 
@@ -360,7 +360,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	public void processOneTestResultSetType() {
 
 		ResultSet rs = cassandraTemplate.selectAsync(
-				cassandraTemplate.prepareQuery("select title from book where isbn in ('" + ISBN_NINES + "')"))
+				cassandraTemplate.toQuery("select title from book where isbn in ('" + ISBN_NINES + "')"))
 				.getUninterruptibly();
 
 		assertNotNull(rs);
@@ -375,7 +375,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	public void queryForMapTestCqlString() {
 
 		Map<String, Object> rsMap = cassandraTemplate.selectOneAsMap(cassandraTemplate
-				.prepareQuery("select * from book where isbn in ('" + ISBN_NINES + "')"));
+				.toQuery("select * from book where isbn in ('" + ISBN_NINES + "')"));
 
 		log.debug(rsMap.toString());
 
@@ -391,7 +391,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	public void processMapTestResultSet() {
 
 		ResultSet rs = cassandraTemplate.selectAsync(
-				cassandraTemplate.prepareQuery("select * from book where isbn in ('" + ISBN_NINES + "')")).getUninterruptibly();
+				cassandraTemplate.toQuery("select * from book where isbn in ('" + ISBN_NINES + "')")).getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -414,7 +414,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		insertBooks();
 
 		List<String> titles = cassandraTemplate.selectFirstColumnAsList(
-				cassandraTemplate.prepareQuery("select title from book where isbn in ('1234','2345','3456')"), String.class);
+				cassandraTemplate.toQuery("select title from book where isbn in ('1234','2345','3456')"), String.class);
 
 		log.debug(titles.toString());
 
@@ -430,7 +430,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		insertBooks();
 
 		ResultSet rs = cassandraTemplate.selectAsync(
-				cassandraTemplate.prepareQuery("select * from book where isbn in ('1234','2345','3456')")).getUninterruptibly();
+				cassandraTemplate.toQuery("select * from book where isbn in ('1234','2345','3456')")).getUninterruptibly();
 
 		assertNotNull(rs);
 
@@ -449,7 +449,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		insertBooks();
 
 		List<Map<String, Object>> results = cassandraTemplate.selectAsListOfMap(cassandraTemplate
-				.prepareQuery("select * from book where isbn in ('1234','2345','3456')"));
+				.toQuery("select * from book where isbn in ('1234','2345','3456')"));
 
 		log.debug(results.toString());
 
@@ -464,7 +464,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		insertBooks();
 
 		ResultSet rs = cassandraTemplate.selectAsync(
-				cassandraTemplate.prepareQuery("select * from book where isbn in ('1234','2345','3456')")).getUninterruptibly();
+				cassandraTemplate.toQuery("select * from book where isbn in ('1234','2345','3456')")).getUninterruptibly();
 
 		assertNotNull(rs);
 

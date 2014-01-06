@@ -59,13 +59,13 @@ public interface CassandraOperations {
 	 * @param traceQuery
 	 * @return
 	 */
-	Query prepareQuery(String cql);
+	Query toQuery(String cql);
 
-	Query prepareQuery(String cql, ConsistencyLevel consistency);
+	Query toQuery(String cql, ConsistencyLevel consistency);
 
-	Query prepareQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy);
+	Query toQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy);
 
-	Query prepareQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy, Boolean traceQuery);
+	Query toQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy, Boolean traceQuery);
 
 	/**
 	 * Executes the supplied CQL Query and returns nothing.

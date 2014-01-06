@@ -36,7 +36,7 @@ public class NonstopCassandraTemplateTest extends AbstractCassandraOperations {
 		final String isbn = "999999999";
 
 		Book b1 = cassandraTemplate.selectNonstop(
-				cassandraTemplate.prepareQuery("select * from book where isbn='" + isbn + "'"), new ResultSetCallback<Book>() {
+				cassandraTemplate.toQuery("select * from book where isbn='" + isbn + "'"), new ResultSetCallback<Book>() {
 
 					@Override
 					public Book doWithResultSet(ResultSet rs) {

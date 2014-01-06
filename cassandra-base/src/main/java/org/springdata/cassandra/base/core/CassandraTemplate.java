@@ -162,21 +162,21 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public Query prepareQuery(String cql) {
+	public Query toQuery(String cql) {
 		return doPrepareQuery(cql, null, null, null);
 	}
 
 	@Override
-	public Query prepareQuery(String cql, ConsistencyLevel consistency) {
+	public Query toQuery(String cql, ConsistencyLevel consistency) {
 		return doPrepareQuery(cql, consistency, null, null);
 	}
 
 	@Override
-	public Query prepareQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy) {
+	public Query toQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy) {
 		return doPrepareQuery(cql, consistency, retryPolicy, null);
 	}
 
-	public Query prepareQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy, Boolean traceQuery) {
+	public Query toQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy, Boolean traceQuery) {
 		return doPrepareQuery(cql, consistency, retryPolicy, traceQuery);
 	}
 
