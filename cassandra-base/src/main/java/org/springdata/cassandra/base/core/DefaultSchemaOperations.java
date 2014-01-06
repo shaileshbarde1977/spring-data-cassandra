@@ -28,27 +28,24 @@ import com.datastax.driver.core.TableMetadata;
  * @author Alex Shvid
  * 
  */
-public class DefaultTableOperations implements TableOperations {
+public class DefaultSchemaOperations implements CassandraSchemaOperations {
 
-	private static final Logger log = LoggerFactory.getLogger(DefaultTableOperations.class);
+	private static final Logger log = LoggerFactory.getLogger(DefaultSchemaOperations.class);
 
 	private final CassandraTemplate cassandraTemplate;
 	private final String keyspace;
-	private final String tableName;
 
-	protected DefaultTableOperations(CassandraTemplate cassandraTemplate, String keyspace, String tableName) {
+	protected DefaultSchemaOperations(CassandraTemplate cassandraTemplate, String keyspace) {
 
 		Assert.notNull(cassandraTemplate);
 		Assert.notNull(keyspace);
-		Assert.notNull(tableName);
 
 		this.cassandraTemplate = cassandraTemplate;
 		this.keyspace = keyspace;
-		this.tableName = tableName;
 	}
 
 	@Override
-	public TableMetadata getTableMetadata() {
+	public TableMetadata getTableMetadata(final String tableName) {
 
 		return cassandraTemplate.doExecute(new SessionCallback<TableMetadata>() {
 

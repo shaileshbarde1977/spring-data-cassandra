@@ -29,10 +29,8 @@ import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdata.cassandra.base.core.query.ConsistencyLevel;
 import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
 import org.springdata.cassandra.base.core.query.ExecuteOptions;
-import org.springdata.cassandra.base.core.query.RetryPolicy;
 import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
 import org.springdata.cassandra.base.support.CassandraExceptionTranslator;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -1143,18 +1141,13 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public KeyspaceOperations keyspaceOps() {
-		return new DefaultKeyspaceOperations(this);
+	public CassandraAdminOperations adminOps() {
+		return new DefaultAdminOperations(this);
 	}
 
 	@Override
-	public TableOperations tableOps(String tableName) {
-		return new DefaultTableOperations(this, keyspace, tableName);
-	}
-
-	@Override
-	public IndexOperations indexOps(String tableName) {
-		return new DefaultIndexOperations(this, keyspace, tableName);
+	public CassandraSchemaOperations schemaOps() {
+		return new DefaultSchemaOperations(this, keyspace);
 	}
 
 	/**

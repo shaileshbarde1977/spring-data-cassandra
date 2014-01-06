@@ -324,13 +324,8 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public TableDataOperations tableDataOps(String tableName) {
-		return new DefaultTableDataOperations(this, tableName);
-	}
-
-	@Override
-	public IndexDataOperations indexDataOps(String tableName) {
-		return new DefaultIndexDataOperations(this, getKeyspace(), tableName);
+	public CassandraSchemaDataOperations schemaDataOps() {
+		return new DefaultSchemaDataOperations(this);
 	}
 
 	/**

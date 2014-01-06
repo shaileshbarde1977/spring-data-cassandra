@@ -491,24 +491,14 @@ public interface CassandraOperations {
 	 * @return KeyspaceOperations
 	 */
 
-	KeyspaceOperations keyspaceOps();
+	CassandraAdminOperations adminOps();
 
 	/**
-	 * Support table operations
+	 * Support schema operations
 	 * 
-	 * @param keyspace
 	 * @return
 	 */
 
-	TableOperations tableOps(String tableName);
-
-	/**
-	 * Support index operations
-	 * 
-	 * @param keyspace
-	 * @return
-	 */
-
-	IndexOperations indexOps(String tableName);
+	CassandraSchemaOperations schemaOps();
 
 }

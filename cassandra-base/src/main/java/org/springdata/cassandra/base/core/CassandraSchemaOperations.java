@@ -15,16 +15,25 @@
  */
 package org.springdata.cassandra.base.core;
 
+import com.datastax.driver.core.TableMetadata;
+
 /**
- * Index Operations interface
+ * Cassandra Schema Operations interface
  * 
  * TODO:
  * 
- * Add methods: createIndex, dropIndex, ensureIndex
+ * Add createTable, alterTable, dropIndex methods
  * 
  * @author Alex Shvid
  * 
  */
-public interface IndexOperations {
+public interface CassandraSchemaOperations {
+
+	/**
+	 * Get the given table's metadata.
+	 * 
+	 * @param tableName The name of the table.
+	 */
+	TableMetadata getTableMetadata(String tableName);
 
 }

@@ -21,7 +21,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.base.core.CassandraTemplate;
-import org.springdata.cassandra.base.core.KeyspaceOperations;
+import org.springdata.cassandra.base.core.CassandraAdminOperations;
 import org.springdata.cassandra.base.core.cql.options.KeyspaceOptions;
 import org.springdata.cassandra.base.core.cql.options.KeyspaceReplicationOptions;
 import org.springdata.cassandra.base.core.cql.spec.KeyspaceOption;
@@ -126,11 +126,11 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 		if (StringUtils.hasText(keyspace)) {
 
 			CassandraTemplate cassandraTemplate = new CassandraTemplate(session, keyspace);
-			KeyspaceOperations keyspaceOps = cassandraTemplate.keyspaceOps();
+			CassandraAdminOperations adminOps = cassandraTemplate.adminOps();
 
 			CassandraDataTemplate cassandraDataTemplate = new CassandraDataTemplate(session, converter, keyspace);
 
-			KeyspaceMetadata keyspaceMetadata = keyspaceOps.getKeyspaceMetadata();
+			KeyspaceMetadata keyspaceMetadata = adminOps.getKeyspaceMetadata(keyspace);
 			boolean keyspaceExists = keyspaceMetadata != null;
 			boolean keyspaceCreated = false;
 
@@ -146,7 +146,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 			if (keyspaceExists && (keyspaceAttributes.isCreate() || keyspaceAttributes.isCreateDrop())) {
 
 				log.info("Drop keyspace " + keyspace + " on afterPropertiesSet");
-				keyspaceOps.dropKeyspace(null);
+				adminOps.dropKeyspace(keyspace, null);
 				keyspaceExists = false;
 
 			}
@@ -157,7 +157,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 				log.info("Create keyspace " + keyspace + " on afterPropertiesSet");
 
-				keyspaceOps.createKeyspace(createKeyspaceOptions(), null);
+				adminOps.createKeyspace(keyspace, createKeyspaceOptions(), null);
 				keyspaceCreated = true;
 			}
 
@@ -168,7 +168,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 					log.info("Update keyspace " + keyspace + " on afterPropertiesSet");
 
-					keyspaceOps.alterKeyspace(createKeyspaceOptions(), null);
+					adminOps.alterKeyspace(keyspace, createKeyspaceOptions(), null);
 
 				}
 
@@ -189,7 +189,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 			}
 
-			keyspaceOps.useKeyspace(null);
+			adminOps.useKeyspace(keyspace, null);
 
 			if (!CollectionUtils.isEmpty(keyspaceAttributes.getTables())) {
 
@@ -204,32 +204,32 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 					if (keyspaceCreated) {
 						createNewTable(cassandraDataTemplate, useTableName, entityClass);
 					} else if (keyspaceAttributes.isUpdate()) {
-						TableMetadata table = cassandraTemplate.tableOps(useTableName).getTableMetadata();
+						TableMetadata table = cassandraTemplate.schemaOps().getTableMetadata(useTableName);
 						if (table == null) {
 							createNewTable(cassandraDataTemplate, useTableName, entityClass);
 						} else {
 
-							cassandraDataTemplate.tableDataOps(useTableName).alterTable(entityClass, true, null);
+							cassandraDataTemplate.schemaDataOps().alterTable(useTableName, entityClass, true, null);
 
-							cassandraDataTemplate.indexDataOps(useTableName).alterIndexes(entityClass, null);
+							cassandraDataTemplate.schemaDataOps().alterIndexes(useTableName, entityClass, null);
 
 						}
 					} else if (keyspaceAttributes.isValidate()) {
 
-						TableMetadata table = cassandraTemplate.tableOps(useTableName).getTableMetadata();
+						TableMetadata table = cassandraTemplate.schemaOps().getTableMetadata(useTableName);
 						if (table == null) {
 							throw new InvalidDataAccessApiUsageException("not found table " + useTableName + " for entity "
 									+ entityClassName);
 						}
 
-						String query = cassandraDataTemplate.tableDataOps(useTableName).validateTable(entityClass);
+						String query = cassandraDataTemplate.schemaDataOps().validateTable(useTableName, entityClass);
 
 						if (query != null) {
 							throw new InvalidDataAccessApiUsageException("invalid table " + useTableName + " for entity "
 									+ entityClassName + ". modify it by " + query);
 						}
 
-						List<String> queryList = cassandraDataTemplate.indexDataOps(useTableName).validateIndexes(entityClass);
+						List<String> queryList = cassandraDataTemplate.schemaDataOps().validateIndexes(useTableName, entityClass);
 
 						if (!queryList.isEmpty()) {
 							throw new InvalidDataAccessApiUsageException("invalid indexes in table " + useTableName + " for entity "
@@ -261,9 +261,9 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 	private void createNewTable(CassandraDataTemplate cassandraDataTemplate, String useTableName, Class<?> entityClass) {
 
-		cassandraDataTemplate.tableDataOps(useTableName).createTable(false, entityClass, null);
+		cassandraDataTemplate.schemaDataOps().createTable(false, useTableName, entityClass, null);
 
-		cassandraDataTemplate.indexDataOps(useTableName).createIndexes(entityClass, null);
+		cassandraDataTemplate.schemaDataOps().createIndexes(useTableName, entityClass, null);
 
 	}
 
@@ -274,10 +274,10 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 			log.info("Drop keyspace " + keyspace + " on destroy");
 
 			CassandraTemplate casandraTemplate = new CassandraTemplate(session, keyspace);
-			KeyspaceOperations keyspaceOps = casandraTemplate.keyspaceOps();
+			CassandraAdminOperations keyspaceOps = casandraTemplate.adminOps();
 
 			keyspaceOps.useSystemKeyspace(null);
-			keyspaceOps.dropKeyspace(null);
+			keyspaceOps.dropKeyspace(keyspace, null);
 
 		}
 		this.session.shutdown();

@@ -278,12 +278,6 @@ public interface CassandraDataOperations {
 	 * 
 	 * @return TableDataOperations
 	 */
-	TableDataOperations tableDataOps(String tableName);
+	CassandraSchemaDataOperations schemaDataOps();
 
-	/**
-	 * Returns idnex specific operations
-	 * 
-	 * @return TableDataOperations
-	 */
-	IndexDataOperations indexDataOps(String tableName);
 }

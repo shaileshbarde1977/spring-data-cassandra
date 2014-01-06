@@ -31,28 +31,29 @@ import com.datastax.driver.core.KeyspaceMetadata;
 import com.datastax.driver.core.Session;
 
 /**
- * Default implementation of {@link KeyspaceOperations}.
+ * Default implementation of {@link CassandraAdminOperations}.
  * 
  * @author Alex Shvid
  */
-public class DefaultKeyspaceOperations implements KeyspaceOperations {
+public class DefaultAdminOperations implements CassandraAdminOperations {
 
 	private static final String SYSTEM_KEYSPACE = "system";
 
 	private final CassandraTemplate cassandraTemplate;
 
-	protected DefaultKeyspaceOperations(CassandraTemplate cassandraTemplate) {
+	protected DefaultAdminOperations(CassandraTemplate cassandraTemplate) {
 		Assert.notNull(cassandraTemplate);
 
 		this.cassandraTemplate = cassandraTemplate;
 	}
 
 	@Override
-	public void createKeyspace(final KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull) {
+	public void createKeyspace(String keyspace, final KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull) {
 
+		Assert.notNull(keyspace);
 		Assert.notNull(keyspaceOptions);
 
-		CreateKeyspaceSpecification spec = new CreateKeyspaceSpecification().name(cassandraTemplate.getKeyspace()).with(
+		CreateKeyspaceSpecification spec = new CreateKeyspaceSpecification().name(keyspace).with(
 				keyspaceOptions.getOptions());
 
 		CreateKeyspaceCqlGenerator generator = new CreateKeyspaceCqlGenerator(spec);
@@ -64,12 +65,13 @@ public class DefaultKeyspaceOperations implements KeyspaceOperations {
 	}
 
 	@Override
-	public void alterKeyspace(KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull) {
+	public void alterKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull) {
 
+		Assert.notNull(keyspace);
 		Assert.notNull(keyspaceOptions);
 
-		AlterKeyspaceSpecification spec = new AlterKeyspaceSpecification().name(cassandraTemplate.getKeyspace()).with(
-				keyspaceOptions.getOptions());
+		AlterKeyspaceSpecification spec = new AlterKeyspaceSpecification().name(keyspace)
+				.with(keyspaceOptions.getOptions());
 
 		AlterKeyspaceCqlGenerator generator = new AlterKeyspaceCqlGenerator(spec);
 
@@ -80,9 +82,11 @@ public class DefaultKeyspaceOperations implements KeyspaceOperations {
 	}
 
 	@Override
-	public void dropKeyspace(ExecuteOptions optionsOrNull) {
+	public void dropKeyspace(String keyspace, ExecuteOptions optionsOrNull) {
 
-		DropKeyspaceSpecification spec = new DropKeyspaceSpecification().name(cassandraTemplate.getKeyspace());
+		Assert.notNull(keyspace);
+
+		DropKeyspaceSpecification spec = new DropKeyspaceSpecification().name(keyspace);
 		DropKeyspaceCqlGenerator generator = new DropKeyspaceCqlGenerator(spec);
 
 		final String cql = generator.toCql();
@@ -92,9 +96,11 @@ public class DefaultKeyspaceOperations implements KeyspaceOperations {
 	}
 
 	@Override
-	public void useKeyspace(ExecuteOptions optionsOrNull) {
+	public void useKeyspace(String keyspace, ExecuteOptions optionsOrNull) {
 
-		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(cassandraTemplate.getKeyspace());
+		Assert.notNull(keyspace);
+
+		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(keyspace);
 		UseKeyspaceCqlGenerator generator = new UseKeyspaceCqlGenerator(spec);
 
 		final String cql = generator.toCql();
@@ -121,13 +127,15 @@ public class DefaultKeyspaceOperations implements KeyspaceOperations {
 	 * @param keyspace The name of the table.
 	 */
 	@Override
-	public KeyspaceMetadata getKeyspaceMetadata() {
+	public KeyspaceMetadata getKeyspaceMetadata(final String keyspace) {
+
+		Assert.notNull(keyspace);
 
 		return cassandraTemplate.doExecute(new SessionCallback<KeyspaceMetadata>() {
 
 			public KeyspaceMetadata doInSession(Session s) {
 
-				return s.getCluster().getMetadata().getKeyspace(cassandraTemplate.getKeyspace().toLowerCase());
+				return s.getCluster().getMetadata().getKeyspace(keyspace.toLowerCase());
 			}
 		});
 

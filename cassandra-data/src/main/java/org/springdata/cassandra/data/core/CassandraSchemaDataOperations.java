@@ -15,6 +15,8 @@
  */
 package org.springdata.cassandra.data.core;
 
+import java.util.List;
+
 import org.springdata.cassandra.base.core.query.ExecuteOptions;
 
 /**
@@ -23,7 +25,7 @@ import org.springdata.cassandra.base.core.query.ExecuteOptions;
  * @author Alex Shvid
  * 
  */
-public interface TableDataOperations {
+public interface CassandraSchemaDataOperations {
 
 	/**
 	 * Create a table with the name given and fields corresponding to the given class. If the table already exists and
@@ -37,7 +39,7 @@ public interface TableDataOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 * @return Returns true if a table was created, false if not.
 	 */
-	boolean createTable(boolean ifNotExists, Class<?> entityClass, ExecuteOptions optionsOrNull);
+	boolean createTable(boolean ifNotExists, String tableName, Class<?> entityClass, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Add columns to the given table from the given class. If parameter dropRemovedAttributColumns is true, then this
@@ -48,7 +50,8 @@ public interface TableDataOperations {
 	 *          corresponding fields in the class. If true, this effectively becomes a synchronziation operation.
 	 * @param optionsOrNull The Execute Options Object if exists
 	 */
-	void alterTable(Class<?> entityClass, boolean dropRemovedAttributeColumns, ExecuteOptions optionsOrNull);
+	void alterTable(String tableName, Class<?> entityClass, boolean dropRemovedAttributeColumns,
+			ExecuteOptions optionsOrNull);
 
 	/**
 	 * Validate columns in the given table from the given class.
@@ -56,7 +59,7 @@ public interface TableDataOperations {
 	 * @param entityClass The class whose fields determine the columns added.
 	 * @return Returns alter table statement or null
 	 */
-	String validateTable(Class<?> entityClass);
+	String validateTable(String tableName, Class<?> entityClass);
 
 	/**
 	 * Drops the named table.
@@ -64,6 +67,30 @@ public interface TableDataOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void dropTable(ExecuteOptions optionsOrNull);
+	void dropTable(String tableName, ExecuteOptions optionsOrNull);
+
+	/**
+	 * Create all indexed annotated in entityClass
+	 * 
+	 * @param entityClass The class whose fields determine the new table's columns.
+	 * @param optionsOrNull The Execute Options Object if exists.
+	 */
+	void createIndexes(String tableName, Class<?> entityClass, ExecuteOptions optionsOrNull);
+
+	/**
+	 * Create all indexed annotated in entityClass
+	 * 
+	 * @param entityClass The class whose fields determine the new table's columns.
+	 * @param optionsOrNull The Execute Options Object if exists.
+	 */
+	void alterIndexes(String tableName, Class<?> entityClass, ExecuteOptions optionsOrNull);
+
+	/**
+	 * Create all indexed annotated in entityClass
+	 * 
+	 * @param entityClass The class whose fields determine the new table's columns.
+	 * @return List of the cql statement to change indexes
+	 */
+	List<String> validateIndexes(String tableName, Class<?> entityClass);
 
 }

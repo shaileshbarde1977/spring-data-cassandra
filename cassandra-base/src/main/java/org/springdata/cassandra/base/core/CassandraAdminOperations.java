@@ -27,7 +27,7 @@ import com.datastax.driver.core.KeyspaceMetadata;
  * @author Matthew T. Adams
  * @author Alex Shvid
  */
-public interface KeyspaceOperations {
+public interface CassandraAdminOperations {
 
 	/**
 	 * Creates Keyspace with given options
@@ -35,7 +35,7 @@ public interface KeyspaceOperations {
 	 * @param keyspaceOptions Keyspace options.
 	 * @param optionsOrNull The Execute Options Object if exists
 	 */
-	void createKeyspace(KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull);
+	void createKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Alters Keyspace with given name and options
@@ -43,7 +43,7 @@ public interface KeyspaceOperations {
 	 * @param keyspaceOptions Keyspace options.
 	 * @param optionsOrNull The Execute Options Object if exists
 	 */
-	void alterKeyspace(KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull);
+	void alterKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Drop keyspace
@@ -51,7 +51,7 @@ public interface KeyspaceOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void dropKeyspace(ExecuteOptions optionsOrNull);
+	void dropKeyspace(String keyspace, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Use keyspace
@@ -59,7 +59,7 @@ public interface KeyspaceOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void useKeyspace(ExecuteOptions optionsOrNull);
+	void useKeyspace(String keyspace, ExecuteOptions optionsOrNull);
 
 	/**
 	 * Use system keyspace
@@ -72,6 +72,6 @@ public interface KeyspaceOperations {
 	/**
 	 * Gets the keyspace metadata.
 	 */
-	KeyspaceMetadata getKeyspaceMetadata();
+	KeyspaceMetadata getKeyspaceMetadata(String keyspace);
 
 }
