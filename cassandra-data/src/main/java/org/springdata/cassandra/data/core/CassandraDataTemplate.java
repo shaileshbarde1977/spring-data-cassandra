@@ -301,7 +301,8 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> void saveInBatch(boolean asychronously, Iterable<T> entities, String tableName, ExecuteOptions optionsOrNull) {
+	public <T> void saveInBatch(boolean asychronously, Iterable<T> entities, String tableName,
+			ExecuteOptions optionsOrNull) {
 		Assert.notNull(entities);
 		Assert.notNull(tableName);
 		doBatchUpdate(asychronously, tableName, entities, optionsOrNull);
@@ -349,7 +350,8 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param readRowCallback
 	 * @return
 	 */
-	protected <T> List<T> doSelect(final String cql, ReadRowCallback<T> readRowCallback, final ExecuteOptions optionsOrNull) {
+	protected <T> List<T> doSelect(final String cql, ReadRowCallback<T> readRowCallback,
+			final ExecuteOptions optionsOrNull) {
 
 		ResultSet resultSet = doExecute(new SessionCallback<ResultSet>() {
 
@@ -634,25 +636,6 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	/**
-	 * Execute a command at the Session Level
-	 * 
-	 * @param callback
-	 * @return
-	 */
-	protected <T> T doExecute(SessionCallback<T> callback) {
-
-		Assert.notNull(callback);
-
-		try {
-
-			return callback.doInSession(getSession());
-
-		} catch (RuntimeException e) {
-			throw translateIfPossible(e);
-		}
-	}
-
-	/**
 	 * Insert a row into a Cassandra CQL Table
 	 * 
 	 * @param tableName
@@ -814,7 +797,8 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	 * @param optionsByName
 	 * @return
 	 */
-	protected Query toDeleteQueryById(String tableName, final Object id, Class<?> entityClass, ExecuteOptions optionsOrNull) {
+	protected Query toDeleteQueryById(String tableName, final Object id, Class<?> entityClass,
+			ExecuteOptions optionsOrNull) {
 
 		CassandraPersistentEntity<?> entity = getEntity(entityClass);
 

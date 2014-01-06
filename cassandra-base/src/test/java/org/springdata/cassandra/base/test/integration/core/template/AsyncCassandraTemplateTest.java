@@ -38,8 +38,9 @@ public class AsyncCassandraTemplateTest extends AbstractCassandraOperations {
 		final String author = "David Webb";
 		final Integer pages = 1;
 
-		cassandraTemplate.updateAsync("insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title
-				+ "', '" + author + "', " + pages + ")", null);
+		cassandraTemplate.updateAsync(cassandraTemplate
+				.prepareQuery("insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title + "', '"
+						+ author + "', " + pages + ")"));
 
 		try {
 			Thread.sleep(2000);
@@ -58,8 +59,8 @@ public class AsyncCassandraTemplateTest extends AbstractCassandraOperations {
 
 		final String isbn = "999999999";
 
-		ResultSet frs = cassandraTemplate.selectAsync("select * from book where isbn='" + isbn + "'", null)
-				.getUninterruptibly();
+		ResultSet frs = cassandraTemplate.selectAsync(
+				cassandraTemplate.prepareQuery("select * from book where isbn='" + isbn + "'")).getUninterruptibly();
 
 		Row r = frs.one();
 		assertNotNull(r);
