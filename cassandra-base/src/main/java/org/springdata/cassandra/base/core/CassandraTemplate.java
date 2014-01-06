@@ -162,83 +162,51 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public Query toQuery(String cql) {
-		return doPrepareQuery(cql, null, null, null);
-	}
-
-	@Override
-	public Query toQuery(String cql, ConsistencyLevel consistency) {
-		return doPrepareQuery(cql, consistency, null, null);
-	}
-
-	@Override
-	public Query toQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy) {
-		return doPrepareQuery(cql, consistency, retryPolicy, null);
-	}
-
-	public Query toQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy, Boolean traceQuery) {
-		return doPrepareQuery(cql, consistency, retryPolicy, traceQuery);
-	}
-
-	public Query doPrepareQuery(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy, Boolean traceQuery) {
-		Assert.notNull(cql);
-		SimpleStatement statement = new SimpleStatement(cql);
-		if (consistency != null) {
-			statement.setConsistencyLevel(ConsistencyLevelResolver.resolve(consistency));
-		}
-		if (retryPolicy != null) {
-			statement.setRetryPolicy(RetryPolicyResolver.resolve(retryPolicy));
-		}
-		if (traceQuery != null) {
-			if (traceQuery.booleanValue()) {
-				statement.enableTracing();
-			} else {
-				statement.disableTracing();
-			}
-		}
-		return statement;
-	}
-
-	@Override
-	public void update(Query query) {
-		Assert.notNull(query);
+	public void update(QueryCreator qc) {
+		Assert.notNull(qc);
+		Query query = doCreateQuery(qc);
 		doExecute(query);
 	}
 
 	@Override
-	public void updateNonstop(Query query, int timeoutMls) throws TimeoutException {
-		Assert.notNull(query);
+	public void updateNonstop(QueryCreator qc, int timeoutMls) throws TimeoutException {
+		Assert.notNull(qc);
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
 		wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
-	public void updateAsync(Query query) {
-		Assert.notNull(query);
+	public void updateAsync(QueryCreator qc) {
+		Assert.notNull(qc);
+		Query query = doCreateQuery(qc);
 		doExecuteAsync(query);
 	}
 
 	@Override
-	public <T> T select(Query query, ResultSetCallback<T> rsc) {
-		Assert.notNull(query);
+	public <T> T select(QueryCreator qc, ResultSetCallback<T> rsc) {
+		Assert.notNull(qc);
 		Assert.notNull(rsc);
+		Query query = doCreateQuery(qc);
 		ResultSet resultSet = doExecute(query);
 		return doProcess(resultSet, rsc);
 	}
 
 	@Override
-	public CassandraFuture<ResultSet> selectAsync(Query query) {
-		Assert.notNull(query);
+	public CassandraFuture<ResultSet> selectAsync(QueryCreator qc) {
+		Assert.notNull(qc);
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 		return new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
 	}
 
 	@Override
-	public <T> T selectNonstop(Query query, ResultSetCallback<T> rsc, int timeoutMls) throws TimeoutException {
-		Assert.notNull(query);
+	public <T> T selectNonstop(QueryCreator qc, ResultSetCallback<T> rsc, int timeoutMls) throws TimeoutException {
+		Assert.notNull(qc);
 		Assert.notNull(rsc);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
 		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
@@ -246,16 +214,18 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void select(Query query, final RowCallbackHandler rch) {
-		Assert.notNull(query);
+	public void select(QueryCreator qc, final RowCallbackHandler rch) {
+		Assert.notNull(qc);
 		Assert.notNull(rch);
+		Query query = doCreateQuery(qc);
 		process(doExecute(query), rch);
 	}
 
 	@Override
-	public void selectNonstop(Query query, final RowCallbackHandler rch, int timeoutMls) throws TimeoutException {
-		Assert.notNull(query);
+	public void selectNonstop(QueryCreator qc, final RowCallbackHandler rch, int timeoutMls) throws TimeoutException {
+		Assert.notNull(qc);
 		Assert.notNull(rch);
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
 		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
@@ -263,11 +233,12 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void selectAsync(Query query, final RowCallbackHandler.Async rch, Executor executor) {
-		Assert.notNull(query);
+	public void selectAsync(QueryCreator qc, final RowCallbackHandler.Async rch, Executor executor) {
+		Assert.notNull(qc);
 		Assert.notNull(rch);
 		Assert.notNull(executor);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture future = doExecuteAsync(query);
 
 		Futures.addCallback(future, new FutureCallback<ResultSet>() {
@@ -289,17 +260,19 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> Iterator<T> select(Query query, RowMapper<T> rowMapper) {
-		Assert.notNull(query);
+	public <T> Iterator<T> select(QueryCreator qc, RowMapper<T> rowMapper) {
+		Assert.notNull(qc);
 		Assert.notNull(rowMapper);
+		Query query = doCreateQuery(qc);
 		return process(doExecute(query), rowMapper);
 	}
 
 	@Override
-	public <T> Iterator<T> selectNonstop(Query query, RowMapper<T> rowMapper, int timeoutMls) throws TimeoutException {
-		Assert.notNull(query);
+	public <T> Iterator<T> selectNonstop(QueryCreator qc, RowMapper<T> rowMapper, int timeoutMls) throws TimeoutException {
+		Assert.notNull(qc);
 		Assert.notNull(rowMapper);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
 		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
@@ -307,11 +280,12 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> CassandraFuture<Iterator<T>> selectAsync(Query query, final RowMapper<T> rowMapper) {
+	public <T> CassandraFuture<Iterator<T>> selectAsync(QueryCreator qc, final RowMapper<T> rowMapper) {
 
-		Assert.notNull(query);
+		Assert.notNull(qc);
 		Assert.notNull(rowMapper);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 
 		ListenableFuture<Iterator<T>> future = Futures.transform(resultSetFuture, new Function<ResultSet, Iterator<T>>() {
@@ -327,17 +301,19 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> T selectOne(Query query, RowMapper<T> rowMapper) {
-		Assert.notNull(query);
+	public <T> T selectOne(QueryCreator qc, RowMapper<T> rowMapper) {
+		Assert.notNull(qc);
 		Assert.notNull(rowMapper);
+		Query query = doCreateQuery(qc);
 		return processOne(doExecute(query), rowMapper);
 	}
 
 	@Override
-	public <T> T selectOneNonstop(Query query, RowMapper<T> rowMapper, int timeoutMls) throws TimeoutException {
-		Assert.notNull(query);
+	public <T> T selectOneNonstop(QueryCreator qc, RowMapper<T> rowMapper, int timeoutMls) throws TimeoutException {
+		Assert.notNull(qc);
 		Assert.notNull(rowMapper);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
 		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
@@ -345,9 +321,10 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> CassandraFuture<T> selectOneAsync(Query query, final RowMapper<T> rowMapper) {
-		Assert.notNull(query);
+	public <T> CassandraFuture<T> selectOneAsync(QueryCreator qc, final RowMapper<T> rowMapper) {
+		Assert.notNull(qc);
 		Assert.notNull(rowMapper);
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 
 		ListenableFuture<T> future = Futures.transform(resultSetFuture, new Function<ResultSet, T>() {
@@ -363,17 +340,20 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> T selectOneFirstColumn(Query query, Class<T> elementType) {
-		Assert.notNull(query);
+	public <T> T selectOneFirstColumn(QueryCreator qc, Class<T> elementType) {
+		Assert.notNull(qc);
 		Assert.notNull(elementType);
+		Query query = doCreateQuery(qc);
 		return processOneFirstColumn(doExecute(query), elementType);
 	}
 
 	@Override
-	public <T> T selectOneFirstColumnNonstop(Query query, Class<T> elementType, int timeoutMls) throws TimeoutException {
-		Assert.notNull(query);
+	public <T> T selectOneFirstColumnNonstop(QueryCreator qc, Class<T> elementType, int timeoutMls)
+			throws TimeoutException {
+		Assert.notNull(qc);
 		Assert.notNull(elementType);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
 		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
@@ -382,10 +362,11 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> CassandraFuture<T> selectOneFirstColumnAsync(Query query, final Class<T> elementType) {
-		Assert.notNull(query);
+	public <T> CassandraFuture<T> selectOneFirstColumnAsync(QueryCreator qc, final Class<T> elementType) {
+		Assert.notNull(qc);
 		Assert.notNull(elementType);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 
 		ListenableFuture<T> future = Futures.transform(resultSetFuture, new Function<ResultSet, T>() {
@@ -402,15 +383,17 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public Map<String, Object> selectOneAsMap(Query query) {
-		Assert.notNull(query);
+	public Map<String, Object> selectOneAsMap(QueryCreator qc) {
+		Assert.notNull(qc);
+		Query query = doCreateQuery(qc);
 		return processOneAsMap(doExecute(query));
 	}
 
 	@Override
-	public Map<String, Object> selectOneAsMapNonstop(Query query, int timeoutMls) throws TimeoutException {
-		Assert.notNull(query);
+	public Map<String, Object> selectOneAsMapNonstop(QueryCreator qc, int timeoutMls) throws TimeoutException {
+		Assert.notNull(qc);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
 		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
@@ -419,9 +402,10 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public CassandraFuture<Map<String, Object>> selectOneAsMapAsync(Query query) {
-		Assert.notNull(query);
+	public CassandraFuture<Map<String, Object>> selectOneAsMapAsync(QueryCreator qc) {
+		Assert.notNull(qc);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 
 		ListenableFuture<Map<String, Object>> future = Futures.transform(resultSetFuture,
@@ -438,18 +422,20 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> List<T> selectFirstColumnAsList(Query query, Class<T> elementType) {
-		Assert.notNull(query);
+	public <T> List<T> selectFirstColumnAsList(QueryCreator qc, Class<T> elementType) {
+		Assert.notNull(qc);
 		Assert.notNull(elementType);
+		Query query = doCreateQuery(qc);
 		return processFirstColumnAsList(doExecute(query), elementType);
 	}
 
 	@Override
-	public <T> List<T> selectFirstColumnAsListNonstop(Query query, Class<T> elementType, int timeoutMls)
+	public <T> List<T> selectFirstColumnAsListNonstop(QueryCreator qc, Class<T> elementType, int timeoutMls)
 			throws TimeoutException {
-		Assert.notNull(query);
+		Assert.notNull(qc);
 		Assert.notNull(elementType);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
 		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
@@ -458,10 +444,11 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> CassandraFuture<List<T>> selectFirstColumnAsListAsync(Query query, final Class<T> elementType) {
-		Assert.notNull(query);
+	public <T> CassandraFuture<List<T>> selectFirstColumnAsListAsync(QueryCreator qc, final Class<T> elementType) {
+		Assert.notNull(qc);
 		Assert.notNull(elementType);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 
 		ListenableFuture<List<T>> future = Futures.transform(resultSetFuture, new Function<ResultSet, List<T>>() {
@@ -478,15 +465,17 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public List<Map<String, Object>> selectAsListOfMap(Query query) {
-		Assert.notNull(query);
+	public List<Map<String, Object>> selectAsListOfMap(QueryCreator qc) {
+		Assert.notNull(qc);
+		Query query = doCreateQuery(qc);
 		return processAsListOfMap(doExecute(query));
 	}
 
 	@Override
-	public List<Map<String, Object>> selectAsListOfMapNonstop(Query query, int timeoutMls) throws TimeoutException {
-		Assert.notNull(query);
+	public List<Map<String, Object>> selectAsListOfMapNonstop(QueryCreator qc, int timeoutMls) throws TimeoutException {
+		Assert.notNull(qc);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
 		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
@@ -495,9 +484,10 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public CassandraFuture<List<Map<String, Object>>> selectAsListOfMapAsync(Query query) {
-		Assert.notNull(query);
+	public CassandraFuture<List<Map<String, Object>>> selectAsListOfMapAsync(QueryCreator qc) {
+		Assert.notNull(qc);
 
+		Query query = doCreateQuery(qc);
 		ResultSetFuture resultSetFuture = doExecuteAsync(query);
 
 		ListenableFuture<List<Map<String, Object>>> future = Futures.transform(resultSetFuture,
@@ -512,6 +502,23 @@ public class CassandraTemplate implements CassandraOperations {
 
 		return new CassandraFuture<List<Map<String, Object>>>(future, getExceptionTranslator());
 
+	}
+
+	/**
+	 * Execute a query creator
+	 * 
+	 * @param callback
+	 * @return
+	 */
+	public Query doCreateQuery(QueryCreator qc) {
+
+		try {
+
+			return qc.createQuery();
+
+		} catch (RuntimeException e) {
+			throw translateIfPossible(e);
+		}
 	}
 
 	/**
@@ -938,45 +945,14 @@ public class CassandraTemplate implements CassandraOperations {
 
 	@Override
 	public PreparedStatement prepareStatement(String cql) {
-		return doPrepareStatement(new SimplePreparedStatementCreator(cql), null, null, null);
-	}
-
-	@Override
-	public PreparedStatement prepareStatement(String cql, ConsistencyLevel consistency) {
-		return doPrepareStatement(new SimplePreparedStatementCreator(cql), consistency, null, null);
-	}
-
-	@Override
-	public PreparedStatement prepareStatement(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy) {
-		return doPrepareStatement(new SimplePreparedStatementCreator(cql), consistency, retryPolicy, null);
-	}
-
-	@Override
-	public PreparedStatement prepareStatement(String cql, ConsistencyLevel consistency, RetryPolicy retryPolicy,
-			Boolean traceQuery) {
-		return doPrepareStatement(new SimplePreparedStatementCreator(cql), consistency, retryPolicy, traceQuery);
+		Assert.notNull(cql);
+		return doPrepareStatement(new SimplePreparedStatementCreator(cql));
 	}
 
 	@Override
 	public PreparedStatement prepareStatement(PreparedStatementCreator psc) {
-		return doPrepareStatement(psc, null, null, null);
-	}
-
-	@Override
-	public PreparedStatement prepareStatement(PreparedStatementCreator psc, ConsistencyLevel consistency) {
-		return doPrepareStatement(psc, consistency, null, null);
-	}
-
-	@Override
-	public PreparedStatement prepareStatement(PreparedStatementCreator psc, ConsistencyLevel consistency,
-			RetryPolicy retryPolicy) {
-		return doPrepareStatement(psc, consistency, retryPolicy, null);
-	}
-
-	@Override
-	public PreparedStatement prepareStatement(PreparedStatementCreator psc, ConsistencyLevel consistency,
-			RetryPolicy retryPolicy, Boolean traceQuery) {
-		return doPrepareStatement(psc, consistency, retryPolicy, traceQuery);
+		Assert.notNull(psc);
+		return doPrepareStatement(psc);
 	}
 
 	/**
@@ -989,10 +965,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @return
 	 */
 
-	protected PreparedStatement doPrepareStatement(final PreparedStatementCreator psc,
-			final ConsistencyLevel consistency, final RetryPolicy retryPolicy, final Boolean traceQuery) {
-
-		Assert.notNull(psc);
+	protected PreparedStatement doPrepareStatement(final PreparedStatementCreator psc) {
 
 		return doExecute(new SessionCallback<PreparedStatement>() {
 
@@ -1000,21 +973,6 @@ public class CassandraTemplate implements CassandraOperations {
 			public PreparedStatement doInSession(Session session) {
 
 				PreparedStatement ps = psc.createPreparedStatement(session);
-
-				if (consistency != null) {
-					ps.setConsistencyLevel(ConsistencyLevelResolver.resolve(consistency));
-				}
-				if (retryPolicy != null) {
-					ps.setRetryPolicy(RetryPolicyResolver.resolve(retryPolicy));
-				}
-
-				if (traceQuery != null) {
-					if (traceQuery.booleanValue()) {
-						ps.enableTracing();
-					} else {
-						ps.disableTracing();
-					}
-				}
 
 				return ps;
 			}

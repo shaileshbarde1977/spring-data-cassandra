@@ -54,6 +54,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.base.core.CassandraOperations;
+import org.springdata.cassandra.base.core.SimpleQueryCreator;
 import org.springdata.cassandra.data.core.CassandraDataOperations;
 import org.springdata.cassandra.data.test.integration.config.JavaConfig;
 import org.springdata.cassandra.data.test.integration.table.BasicTypesEntity;
@@ -114,8 +115,7 @@ public class CassandraDataConversionTests {
 	@Test
 	public void basicNullsTest() {
 
-		cassandraOperations.update(cassandraOperations
-				.toQuery("insert into test.basic_types_table (id) values ('nulls')"));
+		cassandraOperations.update(new SimpleQueryCreator("insert into test.basic_types_table (id) values ('nulls')"));
 
 		BasicTypesEntity nullProps = cassandraDataTemplate.findById("nulls", BasicTypesEntity.class, null);
 		assertThat(nullProps, is(not(nullValue(BasicTypesEntity.class))));
@@ -143,7 +143,7 @@ public class CassandraDataConversionTests {
 		UUID uuid = UUID.fromString("f7a04220-6dda-11e3-981f-0800200c9a66");
 		long longValue = 555555555555L;
 
-		cassandraOperations.update(cassandraOperations.toQuery(String.format(
+		cassandraOperations.update(new SimpleQueryCreator(String.format(
 				"insert into test.basic_types_table (id, propascii, propbigint, propblob, propboolean, "
 						+ "propdecimal, propdouble, propfloat, propinet, propint, proptext, proptimestamp, propuuid, "
 						+ "proptimeuuid, propvarchar, propvarint) "
@@ -218,8 +218,7 @@ public class CassandraDataConversionTests {
 	@Test
 	public void collectionsNullsTest() {
 
-		cassandraOperations.update(cassandraOperations
-				.toQuery("insert into test.collection_types_table (id) values ('nulls')"));
+		cassandraOperations.update(new SimpleQueryCreator("insert into test.collection_types_table (id) values ('nulls')"));
 
 		CollectionTypesEntity nullProps = cassandraDataTemplate.findById("nulls", CollectionTypesEntity.class, null);
 		assertThat(nullProps, is(not(nullValue(CollectionTypesEntity.class))));
@@ -240,11 +239,10 @@ public class CassandraDataConversionTests {
 				UUID.fromString("149f0c81-6ddb-11e3-981f-0800200c9a66") };
 		UUID setUUID = UUID.fromString("149f0c82-6ddb-11e3-981f-0800200c9a66");
 
-		cassandraOperations.update(cassandraOperations.toQuery(String.format(
-				"insert into test.collection_types_table "
-						+ "(id, textlist, textmap, textset, textuuidmap, uuidlist, uuidset) "
-						+ "values ('values', ['text1', 'text2'], {'key1':'value1', 'key2':'value2'}, "
-						+ "{'settext1', 'settext2'}, {'uuid1':%s}, " + "[%s, %s], " + "{%s} )", mapUUID.toString(),
+		cassandraOperations.update(new SimpleQueryCreator(String.format("insert into test.collection_types_table "
+				+ "(id, textlist, textmap, textset, textuuidmap, uuidlist, uuidset) "
+				+ "values ('values', ['text1', 'text2'], {'key1':'value1', 'key2':'value2'}, "
+				+ "{'settext1', 'settext2'}, {'uuid1':%s}, " + "[%s, %s], " + "{%s} )", mapUUID.toString(),
 				listUUID[0].toString(), listUUID[1].toString(), setUUID.toString())));
 
 		CollectionTypesEntity entity = cassandraDataTemplate.findById("values", CollectionTypesEntity.class, null);
@@ -335,9 +333,8 @@ public class CassandraDataConversionTests {
 	@Test
 	public void embeddedIdReadTest() {
 
-		cassandraOperations.update(cassandraOperations
-				.toQuery("insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
-						+ " values (1, 'first', 'one')"));
+		cassandraOperations.update(new SimpleQueryCreator(
+				"insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) " + " values (1, 'first', 'one')"));
 
 		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(1, "first");
 		EmbeddedIdEntity entity = cassandraDataTemplate.findById(pk, EmbeddedIdEntity.class, null);
@@ -372,8 +369,8 @@ public class CassandraDataConversionTests {
 
 		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(2, "second");
 
-		cassandraOperations.update(cassandraOperations
-				.toQuery("insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
+		cassandraOperations
+				.update(new SimpleQueryCreator("insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
 						+ " values (2, 'second', 'two')"));
 
 		EmbeddedIdEntity entity = cassandraDataTemplate.findById(pk, EmbeddedIdEntity.class, null);
@@ -395,8 +392,8 @@ public class CassandraDataConversionTests {
 
 		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(2, "second");
 
-		cassandraOperations.update(cassandraOperations
-				.toQuery("insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
+		cassandraOperations
+				.update(new SimpleQueryCreator("insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) "
 						+ " values (2, 'second', 'two')"));
 
 		EmbeddedIdEntity entity = cassandraDataTemplate.findById(pk, EmbeddedIdEntity.class, null);

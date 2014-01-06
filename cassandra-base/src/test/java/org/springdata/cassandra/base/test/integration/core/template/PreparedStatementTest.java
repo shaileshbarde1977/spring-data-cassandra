@@ -27,9 +27,11 @@ import org.junit.Test;
 import org.springdata.cassandra.base.core.PreparedStatementBinder;
 import org.springdata.cassandra.base.core.PreparedStatementCallback;
 import org.springdata.cassandra.base.core.PreparedStatementCreator;
+import org.springdata.cassandra.base.core.PreparedStatementQueryCreator;
 import org.springdata.cassandra.base.core.ResultSetCallback;
 import org.springdata.cassandra.base.core.RowCallbackHandler;
 import org.springdata.cassandra.base.core.RowMapper;
+import org.springdata.cassandra.base.core.SimpleQueryCreator;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
@@ -49,7 +51,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 
 		String cql = "insert into book (isbn, title, author, pages) values (?, ?, ?, ?)";
 
-		PreparedStatement ps = cassandraTemplate.prepareStatement(cql, null);
+		PreparedStatement ps = cassandraTemplate.prepareStatement(cql);
 
 		BoundStatement statement = cassandraTemplate.execute(ps, new PreparedStatementCallback<BoundStatement>() {
 
@@ -75,7 +77,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
-		}, null);
+		});
 
 		BoundStatement statement = cassandraTemplate.execute(ps, new PreparedStatementCallback<BoundStatement>() {
 
@@ -106,7 +108,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			}
 		});
 
-		Book b1 = cassandraTemplate.select(bs, new ResultSetCallback<Book>() {
+		Book b1 = cassandraTemplate.select(new SimpleQueryCreator(bs), new ResultSetCallback<Book>() {
 
 			@Override
 			public Book doWithResultSet(ResultSet rs) {
@@ -130,17 +132,15 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 		final String cql = "select * from book where isbn = ?";
 		final String isbn = "999999999";
 
-		PreparedStatement ps = cassandraTemplate.prepareStatement(cql, null);
+		PreparedStatement ps = cassandraTemplate.prepareStatement(cql);
 
-		BoundStatement bs = cassandraTemplate.bind(ps, new PreparedStatementBinder() {
+		cassandraTemplate.select(new PreparedStatementQueryCreator(ps, new PreparedStatementBinder() {
 
 			@Override
 			public BoundStatement bindValues(PreparedStatement ps) {
 				return ps.bind(isbn);
 			}
-		});
-
-		cassandraTemplate.select(bs, new RowCallbackHandler() {
+		}), new RowCallbackHandler() {
 
 			@Override
 			public void processRow(Row row) {
@@ -162,17 +162,16 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 		final String cql = "select * from book where isbn = ?";
 		final String isbn = "999999999";
 
-		PreparedStatement ps = cassandraTemplate.prepareStatement(cql, null);
+		PreparedStatement ps = cassandraTemplate.prepareStatement(cql);
 
-		BoundStatement bs = cassandraTemplate.bind(ps, new PreparedStatementBinder() {
+		Iterator<Book> ibooks = cassandraTemplate.select(new PreparedStatementQueryCreator(ps,
+				new PreparedStatementBinder() {
 
-			@Override
-			public BoundStatement bindValues(PreparedStatement ps) {
-				return ps.bind(isbn);
-			}
-		});
-
-		Iterator<Book> ibooks = cassandraTemplate.select(bs, new RowMapper<Book>() {
+					@Override
+					public BoundStatement bindValues(PreparedStatement ps) {
+						return ps.bind(isbn);
+					}
+				}), new RowMapper<Book>() {
 
 			@Override
 			public Book mapRow(Row row, int rowNum) {
@@ -201,11 +200,11 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
-		}, null);
+		});
 
 		BoundStatement bs = cassandraTemplate.bind(ps);
 
-		List<Book> books = cassandraTemplate.select(bs, new ResultSetCallback<List<Book>>() {
+		List<Book> books = cassandraTemplate.select(new SimpleQueryCreator(bs), new ResultSetCallback<List<Book>>() {
 
 			@Override
 			public List<Book> doWithResultSet(ResultSet rs) {
@@ -238,11 +237,11 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
-		}, null);
+		});
 
 		BoundStatement bs = cassandraTemplate.bind(ps);
 
-		cassandraTemplate.select(bs, new RowCallbackHandler() {
+		cassandraTemplate.select(new SimpleQueryCreator(bs), new RowCallbackHandler() {
 
 			@Override
 			public void processRow(Row row) {
@@ -269,11 +268,11 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
-		}, null);
+		});
 
 		BoundStatement bs = cassandraTemplate.bind(ps);
 
-		Iterator<Book> ibooks = cassandraTemplate.select(bs, new RowMapper<Book>() {
+		Iterator<Book> ibooks = cassandraTemplate.select(new SimpleQueryCreator(bs), new RowMapper<Book>() {
 
 			@Override
 			public Book mapRow(Row row, int rowNum) {
@@ -300,7 +299,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
-		}, null);
+		});
 
 		BoundStatement bs = cassandraTemplate.bind(ps, new PreparedStatementBinder() {
 
@@ -310,7 +309,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			}
 		});
 
-		List<Book> books = cassandraTemplate.select(bs, new ResultSetCallback<List<Book>>() {
+		List<Book> books = cassandraTemplate.select(new SimpleQueryCreator(bs), new ResultSetCallback<List<Book>>() {
 
 			@Override
 			public List<Book> doWithResultSet(ResultSet rs) {
@@ -344,7 +343,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
-		}, null);
+		});
 
 		BoundStatement bs = cassandraTemplate.bind(ps, new PreparedStatementBinder() {
 
@@ -354,7 +353,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			}
 		});
 
-		cassandraTemplate.select(bs, new RowCallbackHandler() {
+		cassandraTemplate.select(new SimpleQueryCreator(bs), new RowCallbackHandler() {
 
 			@Override
 			public void processRow(Row row) {
@@ -378,7 +377,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			public PreparedStatement createPreparedStatement(Session session) {
 				return session.prepare(cql);
 			}
-		}, null);
+		});
 
 		BoundStatement bs = cassandraTemplate.bind(ps, new PreparedStatementBinder() {
 
@@ -388,7 +387,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			}
 		});
 
-		Iterator<Book> ibooks = cassandraTemplate.select(bs, new RowMapper<Book>() {
+		Iterator<Book> ibooks = cassandraTemplate.select(new SimpleQueryCreator(bs), new RowMapper<Book>() {
 
 			@Override
 			public Book mapRow(Row row, int rowNum) {

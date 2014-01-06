@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.base.core.CassandraOperations;
 import org.springdata.cassandra.base.core.CassandraTemplate;
 import org.springdata.cassandra.base.core.PreparedStatementBinder;
+import org.springdata.cassandra.base.core.PreparedStatementQueryCreator;
 import org.springdata.cassandra.base.core.ResultSetCallback;
 import org.springdata.cassandra.base.test.integration.AbstractEmbeddedCassandraIntegrationTest;
 
@@ -146,17 +147,15 @@ public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassan
 	 */
 	protected Book getBook(final String isbn) {
 
-		PreparedStatement ps = cassandraTemplate.prepareStatement("select * from book where isbn = ?", null);
+		PreparedStatement ps = cassandraTemplate.prepareStatement("select * from book where isbn = ?");
 
-		BoundStatement bs = cassandraTemplate.bind(ps, new PreparedStatementBinder() {
+		Book b = cassandraTemplate.select(new PreparedStatementQueryCreator(ps, new PreparedStatementBinder() {
 
 			@Override
 			public BoundStatement bindValues(PreparedStatement ps) {
 				return ps.bind(isbn);
 			}
-		});
-
-		Book b = cassandraTemplate.select(bs, new ResultSetCallback<Book>() {
+		}), new ResultSetCallback<Book>() {
 
 			@Override
 			public Book doWithResultSet(ResultSet rs) {

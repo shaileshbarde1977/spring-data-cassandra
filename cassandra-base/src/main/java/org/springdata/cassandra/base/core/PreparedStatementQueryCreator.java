@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2014 the original author or authors.
+ * Copyright 2014 the original author or authors.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,83 +19,85 @@ import org.springdata.cassandra.base.core.query.ConsistencyLevel;
 import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
 import org.springdata.cassandra.base.core.query.RetryPolicy;
 import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
-import org.springframework.util.Assert;
 
+import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.Session;
+import com.datastax.driver.core.Query;
 
 /**
- * @author David Webb
+ * Prepared Statement Query Creator
+ * 
  * @author Alex Shvid
  * 
  */
-public class SimplePreparedStatementCreator implements PreparedStatementCreator {
+public class PreparedStatementQueryCreator implements QueryCreator {
 
-	private final String cql;
+	private final PreparedStatement ps;
+	private PreparedStatementBinder psbOrNull;
 
 	private ConsistencyLevel consistency;
 	private RetryPolicy retryPolicy;
 	private Boolean queryTracing;
 
-	/**
-	 * Create a PreparedStatementCreator from the provided CQL.
-	 * 
-	 * @param cql
-	 */
-	public SimplePreparedStatementCreator(String cql) {
-		Assert.notNull(cql, "CQL is required to create a PreparedStatement");
-		this.cql = cql;
+	public PreparedStatementQueryCreator(PreparedStatement ps) {
+		this.ps = ps;
 	}
 
-	public SimplePreparedStatementCreator withConsistencyLevel(ConsistencyLevel consistency) {
+	public PreparedStatementQueryCreator(PreparedStatement ps, PreparedStatementBinder psb) {
+		this.ps = ps;
+		this.psbOrNull = psb;
+	}
+
+	public PreparedStatementQueryCreator withConsistencyLevel(ConsistencyLevel consistency) {
 		this.consistency = consistency;
 		return this;
 	}
 
-	public SimplePreparedStatementCreator withRetryPolicy(RetryPolicy retryPolicy) {
+	public PreparedStatementQueryCreator withRetryPolicy(RetryPolicy retryPolicy) {
 		this.retryPolicy = retryPolicy;
 		return this;
 	}
 
-	public SimplePreparedStatementCreator enableTracing() {
+	public PreparedStatementQueryCreator enableTracing() {
 		this.queryTracing = Boolean.TRUE;
 		return this;
 	}
 
-	public SimplePreparedStatementCreator disableTracing() {
+	public PreparedStatementQueryCreator disableTracing() {
 		this.queryTracing = Boolean.FALSE;
 		return this;
 	}
 
-	public SimplePreparedStatementCreator withQueryTracing(Boolean queryTracing) {
+	public PreparedStatementQueryCreator withQueryTracing(Boolean queryTracing) {
 		this.queryTracing = queryTracing;
 		return this;
 	}
 
-	public String getCql() {
-		return this.cql;
-	}
-
 	@Override
-	public PreparedStatement createPreparedStatement(Session session) {
+	public Query createQuery() {
 
-		PreparedStatement ps = session.prepare(this.cql);
+		BoundStatement bs = null;
+		if (psbOrNull != null) {
+			bs = psbOrNull.bindValues(ps);
+		} else {
+			bs = ps.bind();
+		}
 
 		if (consistency != null) {
-			ps.setConsistencyLevel(ConsistencyLevelResolver.resolve(consistency));
+			bs.setConsistencyLevel(ConsistencyLevelResolver.resolve(consistency));
 		}
 		if (retryPolicy != null) {
-			ps.setRetryPolicy(RetryPolicyResolver.resolve(retryPolicy));
+			bs.setRetryPolicy(RetryPolicyResolver.resolve(retryPolicy));
 		}
 		if (queryTracing != null) {
 			if (queryTracing.booleanValue()) {
-				ps.enableTracing();
+				bs.enableTracing();
 			} else {
-				ps.disableTracing();
+				bs.disableTracing();
 			}
 		}
 
-		return ps;
+		return bs;
 	}
 
 }

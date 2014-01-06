@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.UUID;
 
 import org.junit.Test;
+import org.springdata.cassandra.base.core.SimpleQueryCreator;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
@@ -38,9 +39,8 @@ public class AsyncCassandraTemplateTest extends AbstractCassandraOperations {
 		final String author = "David Webb";
 		final Integer pages = 1;
 
-		cassandraTemplate.updateAsync(cassandraTemplate
-				.toQuery("insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title + "', '"
-						+ author + "', " + pages + ")"));
+		cassandraTemplate.updateAsync(new SimpleQueryCreator("insert into book (isbn, title, author, pages) values ('"
+				+ isbn + "', '" + title + "', '" + author + "', " + pages + ")"));
 
 		try {
 			Thread.sleep(2000);
@@ -60,7 +60,7 @@ public class AsyncCassandraTemplateTest extends AbstractCassandraOperations {
 		final String isbn = "999999999";
 
 		ResultSet frs = cassandraTemplate.selectAsync(
-				cassandraTemplate.toQuery("select * from book where isbn='" + isbn + "'")).getUninterruptibly();
+				new SimpleQueryCreator("select * from book where isbn='" + isbn + "'")).getUninterruptibly();
 
 		Row r = frs.one();
 		assertNotNull(r);
