@@ -30,7 +30,7 @@ import com.datastax.driver.core.Query;
  * @author Alex Shvid
  * 
  */
-public class PreparedStatementQueryCreator implements QueryCreator {
+public class SimplePreparedStatementQueryCreator implements QueryCreator {
 
 	private final PreparedStatement ps;
 	private PreparedStatementBinder psbOrNull;
@@ -39,36 +39,36 @@ public class PreparedStatementQueryCreator implements QueryCreator {
 	private RetryPolicy retryPolicy;
 	private Boolean queryTracing;
 
-	public PreparedStatementQueryCreator(PreparedStatement ps) {
+	public SimplePreparedStatementQueryCreator(PreparedStatement ps) {
 		this.ps = ps;
 	}
 
-	public PreparedStatementQueryCreator(PreparedStatement ps, PreparedStatementBinder psb) {
+	public SimplePreparedStatementQueryCreator(PreparedStatement ps, PreparedStatementBinder psb) {
 		this.ps = ps;
 		this.psbOrNull = psb;
 	}
 
-	public PreparedStatementQueryCreator withConsistencyLevel(ConsistencyLevel consistency) {
+	public SimplePreparedStatementQueryCreator withConsistencyLevel(ConsistencyLevel consistency) {
 		this.consistency = consistency;
 		return this;
 	}
 
-	public PreparedStatementQueryCreator withRetryPolicy(RetryPolicy retryPolicy) {
+	public SimplePreparedStatementQueryCreator withRetryPolicy(RetryPolicy retryPolicy) {
 		this.retryPolicy = retryPolicy;
 		return this;
 	}
 
-	public PreparedStatementQueryCreator enableTracing() {
+	public SimplePreparedStatementQueryCreator enableTracing() {
 		this.queryTracing = Boolean.TRUE;
 		return this;
 	}
 
-	public PreparedStatementQueryCreator disableTracing() {
+	public SimplePreparedStatementQueryCreator disableTracing() {
 		this.queryTracing = Boolean.FALSE;
 		return this;
 	}
 
-	public PreparedStatementQueryCreator withQueryTracing(Boolean queryTracing) {
+	public SimplePreparedStatementQueryCreator withQueryTracing(Boolean queryTracing) {
 		this.queryTracing = queryTracing;
 		return this;
 	}

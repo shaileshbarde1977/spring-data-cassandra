@@ -22,9 +22,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
-import org.springdata.cassandra.base.core.query.ConsistencyLevel;
 import org.springdata.cassandra.base.core.query.ExecuteOptions;
-import org.springdata.cassandra.base.core.query.RetryPolicy;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;

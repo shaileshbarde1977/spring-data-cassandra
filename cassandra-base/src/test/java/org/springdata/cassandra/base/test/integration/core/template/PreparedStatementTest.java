@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.springdata.cassandra.base.core.PreparedStatementBinder;
 import org.springdata.cassandra.base.core.PreparedStatementCallback;
 import org.springdata.cassandra.base.core.PreparedStatementCreator;
-import org.springdata.cassandra.base.core.PreparedStatementQueryCreator;
+import org.springdata.cassandra.base.core.SimplePreparedStatementQueryCreator;
 import org.springdata.cassandra.base.core.ResultSetCallback;
 import org.springdata.cassandra.base.core.RowCallbackHandler;
 import org.springdata.cassandra.base.core.RowMapper;
@@ -134,7 +134,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 
 		PreparedStatement ps = cassandraTemplate.prepareStatement(cql);
 
-		cassandraTemplate.select(new PreparedStatementQueryCreator(ps, new PreparedStatementBinder() {
+		cassandraTemplate.select(new SimplePreparedStatementQueryCreator(ps, new PreparedStatementBinder() {
 
 			@Override
 			public BoundStatement bindValues(PreparedStatement ps) {
@@ -164,7 +164,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 
 		PreparedStatement ps = cassandraTemplate.prepareStatement(cql);
 
-		Iterator<Book> ibooks = cassandraTemplate.select(new PreparedStatementQueryCreator(ps,
+		Iterator<Book> ibooks = cassandraTemplate.select(new SimplePreparedStatementQueryCreator(ps,
 				new PreparedStatementBinder() {
 
 					@Override
