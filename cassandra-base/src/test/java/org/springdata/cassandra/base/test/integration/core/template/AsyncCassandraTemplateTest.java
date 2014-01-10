@@ -39,8 +39,9 @@ public class AsyncCassandraTemplateTest extends AbstractCassandraOperations {
 		final String author = "David Webb";
 		final Integer pages = 1;
 
-		cassandraTemplate.updateAsync(new SimpleQueryCreator("insert into book (isbn, title, author, pages) values ('"
-				+ isbn + "', '" + title + "', '" + author + "', " + pages + ")"));
+		cassandraTemplate.update(
+				new SimpleQueryCreator("insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title
+						+ "', '" + author + "', " + pages + ")")).executeAsync();
 
 		try {
 			Thread.sleep(2000);

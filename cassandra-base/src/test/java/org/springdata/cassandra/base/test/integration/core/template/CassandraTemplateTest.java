@@ -136,8 +136,9 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		final String author = "David Webb";
 		final Integer pages = 1;
 
-		cassandraTemplate.update(new SimpleQueryCreator("insert into book (isbn, title, author, pages) values ('" + isbn
-				+ "', '" + title + "', '" + author + "', " + pages + ")"));
+		cassandraTemplate.update(
+				"insert into book (isbn, title, author, pages) values ('" + isbn + "', '" + title + "', '" + author + "', "
+						+ pages + ")").execute();
 
 		Book b = getBook(isbn);
 

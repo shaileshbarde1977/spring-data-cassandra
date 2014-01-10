@@ -22,19 +22,18 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
-import org.springdata.cassandra.base.core.query.StatementOptions;
-
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.Statement;
 
 /**
  * Operations for interacting with Cassandra at the lowest level. This interface provides Exception Translation.
  * 
+ * @author Alex Shvid
  * @author David Webb
  * @author Matthew Adams
- * @author Alex Shvid
  */
 public interface CassandraOperations {
 
@@ -50,24 +49,38 @@ public interface CassandraOperations {
 	/**
 	 * Executes the supplied CQL Query and returns nothing.
 	 * 
-	 * @param qc The QueryCreator
+	 * @param cql The CQL String
 	 */
-	void update(QueryCreator qc);
+	UpdateOperation update(String cql);
+
+	/**
+	 * Executes the supplied PreparedStatement with custom binder.
+	 * 
+	 * @param ps PreparedStatement
+	 * @param psb PreparedStatementBinder if exists
+	 */
+	UpdateOperation update(PreparedStatement ps, PreparedStatementBinder psb);
 
 	/**
 	 * Executes the supplied CQL Query and returns nothing.
 	 * 
 	 * @param qc The QueryCreator
-	 * @param timeoutMls Nonstop timeout in milliseconds
 	 */
-	void updateNonstop(QueryCreator qc, int timeoutMls) throws TimeoutException;
+	UpdateOperation update(QueryCreator qc);
 
 	/**
-	 * Executes the supplied CQL Query and returns nothing.
+	 * Executes the supplied CQL Query batch and returns nothing.
 	 * 
-	 * @param qc The QueryCreator
+	 * @param sqls The CQL queries
 	 */
-	void updateAsync(QueryCreator qc);
+	UpdateOperation batchUpdate(String[] cqls);
+
+	/**
+	 * Executes the supplied CQL Query batch and returns nothing.
+	 * 
+	 * @param is The Statement iterator
+	 */
+	UpdateOperation batchUpdate(Iterable<Statement> is);
 
 	/**
 	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback.
@@ -158,7 +171,6 @@ public interface CassandraOperations {
 	 * @param rowMapper The implementation for mapping all rows
 	 * @return CassandraFuture<Iterator<T>> The future of the Iterator of <T> processed by the RowMapper
 	 */
-
 	<T> CassandraFuture<Iterator<T>> selectAsync(QueryCreator qc, RowMapper<T> rowMapper);
 
 	/**
@@ -459,10 +471,11 @@ public interface CassandraOperations {
 	 * The Object[] length returned by the next() implementation must match the number of bind variables in the CQL.
 	 * </p>
 	 * 
+	 * @param asynchronously Do asynchronously or not
 	 * @param ps The PreparedStatement
 	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
 	 */
-	void ingest(PreparedStatement ps, Iterable<Object[]> rowIterator);
+	void ingest(boolean asynchronously, PreparedStatement ps, Iterable<Object[]> rowIterator);
 
 	/**
 	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
@@ -472,39 +485,23 @@ public interface CassandraOperations {
 	 * The Object[] length of the nested array must match the number of bind variables in the CQL.
 	 * </p>
 	 * 
+	 * @param asynchronously Do asynchronously or not
 	 * @param ps The PreparedStatement
 	 * @param rows Object array of Object array of values to bind to the CQL.
 	 */
-	void ingest(PreparedStatement ps, Object[][] rows);
+	void ingest(boolean asynchronously, PreparedStatement ps, Object[][] rows);
 
 	/**
 	 * Delete all rows in the table
 	 * 
 	 * @param tableName
-	 * @param optionsOrNull
 	 */
-	void truncate(String tableName, StatementOptions optionsOrNull);
+	UpdateOperation truncate(String tableName);
 
 	/**
-	 * Delete all rows in the table
+	 * Support admin operations
 	 * 
-	 * @param tableName
-	 * @param optionsOrNull
-	 */
-	void truncateNonstop(String tableName, int timeoutMls, StatementOptions optionsOrNull) throws TimeoutException;
-
-	/**
-	 * Delete all rows in the table
-	 * 
-	 * @param tableName
-	 * @param optionsOrNull
-	 */
-	void truncateAsync(String tableName, StatementOptions optionsOrNull);
-
-	/**
-	 * Support keyspace operations
-	 * 
-	 * @return KeyspaceOperations
+	 * @return CassandraAdminOperations
 	 */
 
 	CassandraAdminOperations adminOps();
@@ -512,7 +509,7 @@ public interface CassandraOperations {
 	/**
 	 * Support schema operations
 	 * 
-	 * @return
+	 * @return CassandraSchemaOperations
 	 */
 
 	CassandraSchemaOperations schemaOps();

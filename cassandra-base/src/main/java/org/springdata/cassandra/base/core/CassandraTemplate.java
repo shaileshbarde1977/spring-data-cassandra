@@ -30,8 +30,8 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
-import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
+import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springdata.cassandra.base.support.CassandraExceptionTranslator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.Assert;
@@ -49,12 +49,14 @@ import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SimpleStatement;
+import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.querybuilder.Batch;
 import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Truncate;
 import com.datastax.driver.core.querybuilder.Update;
 import com.google.common.base.Function;
+import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -165,26 +167,84 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void update(QueryCreator qc) {
-		Assert.notNull(qc);
-		Query query = doCreateQuery(qc);
-		doExecute(query);
+	public UpdateOperation update(final String cql) {
+		Assert.notNull(cql);
+		return new DefaultUpdateOperation(this, new SimpleStatement(cql));
 	}
 
 	@Override
-	public void updateNonstop(QueryCreator qc, int timeoutMls) throws TimeoutException {
-		Assert.notNull(qc);
-		Query query = doCreateQuery(qc);
-		ResultSetFuture resultSetFuture = doExecuteAsync(query);
-		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
-		wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+	public UpdateOperation update(PreparedStatement ps, PreparedStatementBinder psb) {
+		Assert.notNull(ps);
+		final BoundStatement bs = doBind(ps, psb);
+		return new DefaultUpdateOperation(this, bs);
 	}
 
 	@Override
-	public void updateAsync(QueryCreator qc) {
+	public UpdateOperation update(final QueryCreator qc) {
 		Assert.notNull(qc);
-		Query query = doCreateQuery(qc);
-		doExecuteAsync(query);
+		return new DefaultUpdateOperation(this, doCreateQuery(qc));
+	}
+
+	/**
+	 * Service method that creates batch statement
+	 * 
+	 * @param statements
+	 * @param optionsOrNull
+	 * @return
+	 */
+
+	protected Batch doCreateBatch(Iterator<Statement> statements) {
+
+		try {
+
+			/*
+			 * Return variable is a Batch statement
+			 */
+			final Batch batch = QueryBuilder.batch();
+
+			boolean emptyBatch = true;
+			while (statements.hasNext()) {
+
+				Statement statement = statements.next();
+				Assert.notNull(statement);
+
+				batch.add(statement);
+				emptyBatch = false;
+			}
+
+			if (emptyBatch) {
+				throw new IllegalArgumentException("statements are empty");
+			}
+
+			return batch;
+
+		} catch (RuntimeException e) {
+			throw translateIfPossible(e);
+		}
+
+	}
+
+	@Override
+	public UpdateOperation batchUpdate(final String[] cqls) {
+		Assert.notNull(cqls);
+
+		Iterator<Statement> statements = Iterators.transform(new ArrayIterator<String>(cqls),
+				new Function<String, Statement>() {
+
+					@Override
+					public Statement apply(String cql) {
+						return new SimpleStatement(cql);
+					}
+
+				});
+
+		return new DefaultUpdateOperation(this, doCreateBatch(statements));
+	}
+
+	@Override
+	public UpdateOperation batchUpdate(final Iterable<Statement> statements) {
+		Assert.notNull(statements);
+		return new DefaultUpdateOperation(this, doCreateBatch(statements.iterator()));
 	}
 
 	@Override
@@ -1057,7 +1117,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void ingest(PreparedStatement ps, Iterable<Object[]> rowIterator) {
+	public void ingest(boolean asynchronously, PreparedStatement ps, Iterable<Object[]> rowIterator) {
 
 		Assert.notNull(ps);
 		Assert.notNull(rowIterator);
@@ -1072,20 +1132,24 @@ public class CassandraTemplate implements CassandraOperations {
 				}
 			});
 
-			doExecute(bs);
+			if (asynchronously) {
+				doExecuteAsync(bs);
+			} else {
+				doExecute(bs);
+			}
 
 		}
 
 	}
 
 	@Override
-	public void ingest(PreparedStatement ps, final Object[][] rows) {
+	public void ingest(boolean asynchronously, PreparedStatement ps, final Object[][] rows) {
 
 		Assert.notNull(ps);
 		Assert.notNull(rows);
 		Assert.notEmpty(rows);
 
-		ingest(ps, new Iterable<Object[]>() {
+		ingest(asynchronously, ps, new Iterable<Object[]>() {
 
 			public Iterator<Object[]> iterator() {
 				return new ArrayIterator<Object[]>(rows);
@@ -1125,24 +1189,9 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void truncate(String tableName, StatementOptions optionsOrNull) {
-		Truncate truncate = QueryBuilder.truncate(tableName);
-		doExecute(truncate.getQueryString(), optionsOrNull);
-	}
-
-	@Override
-	public void truncateNonstop(String tableName, int timeoutMls, StatementOptions optionsOrNull) throws TimeoutException {
-		Truncate truncate = QueryBuilder.truncate(tableName);
-
-		ResultSetFuture resultSetFuture = doExecuteAsync(truncate.getQueryString(), optionsOrNull);
-		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture, getExceptionTranslator());
-		wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
-	}
-
-	@Override
-	public void truncateAsync(String tableName, StatementOptions optionsOrNull) {
-		Truncate truncate = QueryBuilder.truncate(tableName);
-		doExecuteAsync(truncate.getQueryString(), optionsOrNull);
+	public UpdateOperation truncate(final String tableName) {
+		Assert.notNull(tableName);
+		return new DefaultUpdateOperation(this, QueryBuilder.truncate(tableName));
 	}
 
 	@Override
