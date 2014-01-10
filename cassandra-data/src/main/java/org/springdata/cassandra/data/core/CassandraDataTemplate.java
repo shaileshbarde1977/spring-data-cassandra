@@ -76,6 +76,8 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	private CassandraConverter cassandraConverter;
 	private MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
 
+	private CassandraSchemaDataOperations schemaDataOperations;
+
 	/**
 	 * Constructor used for a basic template configuration
 	 * 
@@ -87,6 +89,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		Assert.notNull(converter);
 		this.cassandraConverter = converter;
 		this.mappingContext = this.cassandraConverter.getMappingContext();
+		this.schemaDataOperations = new DefaultSchemaDataOperations(this);
 	}
 
 	@Override
@@ -325,7 +328,7 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 
 	@Override
 	public CassandraSchemaDataOperations schemaDataOps() {
-		return new DefaultSchemaDataOperations(this);
+		return schemaDataOperations;
 	}
 
 	/**
