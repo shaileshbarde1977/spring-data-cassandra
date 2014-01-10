@@ -21,7 +21,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 import org.springdata.cassandra.base.core.ResultSetCallback;
-import org.springdata.cassandra.base.core.SimpleQueryCreator;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
@@ -36,8 +35,8 @@ public class NonstopCassandraTemplateTest extends AbstractCassandraOperations {
 
 		final String isbn = "999999999";
 
-		Book b1 = cassandraTemplate.selectNonstop(new SimpleQueryCreator("select * from book where isbn='" + isbn + "'"),
-				new ResultSetCallback<Book>() {
+		Book b1 = cassandraTemplate.select("select * from book where isbn='" + isbn + "'")
+				.transform(new ResultSetCallback<Book>() {
 
 					@Override
 					public Book doWithResultSet(ResultSet rs) {
@@ -48,7 +47,7 @@ public class NonstopCassandraTemplateTest extends AbstractCassandraOperations {
 
 						return b;
 					}
-				}, 1000);
+				}).executeNonstop(10000);
 
 		Book b2 = getBook(isbn);
 

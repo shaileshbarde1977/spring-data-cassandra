@@ -15,17 +15,15 @@
  */
 package org.springdata.cassandra.base.core;
 
-import com.datastax.driver.core.Row;
-
 /**
- * Row Callback Handler interface
+ * Fallback handler is used in asynchronous communication to transfer Error state
  * 
  * @author Alex Shvid
  * 
  */
 
-public interface RowCallbackHandler {
+public interface FallbackHandler {
 
-	void processRow(Row row);
+	void onFailure(Throwable t);
 
 }

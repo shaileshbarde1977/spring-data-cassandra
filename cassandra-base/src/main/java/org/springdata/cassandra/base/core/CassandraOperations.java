@@ -19,8 +19,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeoutException;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
@@ -62,6 +60,13 @@ public interface CassandraOperations {
 	UpdateOperation update(PreparedStatement ps, PreparedStatementBinder psb);
 
 	/**
+	 * Executes the supplied PreparedStatement with custom binder.
+	 * 
+	 * @param bs BoundStatement
+	 */
+	UpdateOperation update(BoundStatement bs);
+
+	/**
 	 * Executes the supplied CQL Query and returns nothing.
 	 * 
 	 * @param qc The QueryCreator
@@ -85,56 +90,39 @@ public interface CassandraOperations {
 	/**
 	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback.
 	 * 
-	 * @param qc The QueryCreator
-	 * @param rsc The implementation for extracting data from the ResultSet
+	 * @param cql The CQL Query String
 	 * 
-	 * @return
+	 * @return SelectOperation of ResultSet
 	 */
-	<T> T select(QueryCreator qc, ResultSetCallback<T> rsc);
+	SelectOperation<ResultSet> select(String cql);
 
 	/**
-	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback with given timeout.
+	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback.
 	 * 
-	 * @param qc The QueryCreator
-	 * @param rsc The implementation for extracting data from the ResultSet
-	 * @param timeoutMls Nonstop timeout in milliseconds
-	 * @return extracted value T or TimeoutException
+	 * @param ps PreparedStatement
+	 * @param psb PreparedStatementBinder if exists
+	 * 
+	 * @return SelectOperation of ResultSet
 	 */
-	<T> T selectNonstop(QueryCreator qc, ResultSetCallback<T> rsc, int timeoutMls) throws TimeoutException;
+	SelectOperation<ResultSet> select(PreparedStatement ps, PreparedStatementBinder psb);
 
 	/**
-	 * Executes the provided CQL Query asynchronously, and extracts the results with the ResultSetFutureExtractor
+	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback.
 	 * 
-	 * @param qc The QueryCreator
-	 * @return CassandraFuture<ResultSet>
+	 * @param bs BoundStatement
+	 * 
+	 * @return SelectOperation of ResultSet
 	 */
-	CassandraFuture<ResultSet> selectAsync(QueryCreator qc);
+	SelectOperation<ResultSet> select(BoundStatement bs);
 
 	/**
-	 * Executes the provided CQL Query, and then processes the results with the <code>RowCallbackHandler</code>.
+	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback.
 	 * 
 	 * @param qc The QueryCreator
-	 * @param rch The implementation for processing the rows returned.
-	 */
-	void select(QueryCreator qc, RowCallbackHandler rch);
-
-	/**
-	 * Executes the provided CQL Query, and then processes the results with the <code>RowCallbackHandler</code>.
 	 * 
-	 * @param qc The QueryCreator
-	 * @param rch The implementation for processing the rows returned.
-	 * @param timeoutMls Nonstop timeout in milliseconds
+	 * @return SelectOperation of ResultSet
 	 */
-	void selectNonstop(QueryCreator qc, RowCallbackHandler rch, int timeoutMls) throws TimeoutException;
-
-	/**
-	 * Executes the provided CQL Query, and then processes the results with the <code>AsyncRowCallbackHandler</code>.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param rch The implementation for processing the rows returned.
-	 * @param executor Thread executor for asynchronous request
-	 */
-	void selectAsync(QueryCreator qc, RowCallbackHandler.Async rch, Executor executor);
+	SelectOperation<ResultSet> select(QueryCreator qc);
 
 	/**
 	 * Processes the ResultSet through the RowCallbackHandler and return nothing. This is used internal to the Template
@@ -145,33 +133,6 @@ public interface CassandraOperations {
 	 * @param rch RowCallbackHandler with the processing implementation
 	 */
 	void process(ResultSet resultSet, RowCallbackHandler rch);
-
-	/**
-	 * Executes the provided CQL Query, and maps all Rows returned with the supplied RowMapper.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param rowMapper The implementation for mapping all rows
-	 * @return Iterator of <T> processed by the RowMapper
-	 */
-	<T> Iterator<T> select(QueryCreator qc, RowMapper<T> rowMapper);
-
-	/**
-	 * Executes the provided CQL Query, and maps all Rows returned with the supplied RowMapper.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param rowMapper The implementation for mapping all rows
-	 * @param timeoutMls Nonstop timeout in milliseconds
-	 * @return Iterator of <T> processed by the RowMapper
-	 */
-	<T> Iterator<T> selectNonstop(QueryCreator qc, RowMapper<T> rowMapper, int timoutMls) throws TimeoutException;
-
-	/**
-	 * 
-	 * @param qc The QueryCreator
-	 * @param rowMapper The implementation for mapping all rows
-	 * @return CassandraFuture<Iterator<T>> The future of the Iterator of <T> processed by the RowMapper
-	 */
-	<T> CassandraFuture<Iterator<T>> selectAsync(QueryCreator qc, RowMapper<T> rowMapper);
 
 	/**
 	 * Processes the ResultSet through the RowMapper and returns the List of mapped Rows. This is used internal to the
@@ -185,46 +146,6 @@ public interface CassandraOperations {
 	<T> Iterator<T> process(ResultSet resultSet, RowMapper<T> rowMapper);
 
 	/**
-	 * Executes the provided CQL Query, and maps <b>ONE</b> Row returned with the supplied RowMapper.
-	 * 
-	 * <p>
-	 * This expects only ONE row to be returned. More than one Row will cause an Exception to be thrown.
-	 * </p>
-	 * 
-	 * @param qc The QueryCreator
-	 * @param rowMapper The implementation for convert the Row to <T>
-	 * @return Object<T>
-	 */
-	<T> T selectOne(QueryCreator qc, RowMapper<T> rowMapper);
-
-	/**
-	 * Executes the provided CQL Query, and maps <b>ONE</b> Row returned with the supplied RowMapper.
-	 * 
-	 * <p>
-	 * This expects only ONE row to be returned. More than one Row will cause an Exception to be thrown.
-	 * </p>
-	 * 
-	 * @param qc The QueryCreator
-	 * @param rowMapper The implementation for convert the Row to <T>
-	 * @param timeoutMls Nonstop timeout in milliseconds
-	 * @return Object<T>
-	 */
-	<T> T selectOneNonstop(QueryCreator qc, RowMapper<T> rowMapper, int timeoutMls) throws TimeoutException;
-
-	/**
-	 * Executes the provided CQL Query, and maps <b>ONE</b> Row returned with the supplied RowMapper.
-	 * 
-	 * <p>
-	 * This expects only ONE row to be returned. More than one Row will cause an Exception to be thrown.
-	 * </p>
-	 * 
-	 * @param qc The QueryCreator
-	 * @param rowMapper The implementation for convert the Row to <T>
-	 * @return CassandraFuture<T>
-	 */
-	<T> CassandraFuture<T> selectOneAsync(QueryCreator qc, RowMapper<T> rowMapper);
-
-	/**
 	 * Process a ResultSet through a RowMapper. This is used internal to the Template for core operations, but is made
 	 * available through Operations in the event you have a ResultSet to process. The ResultsSet could come from a
 	 * ResultSetFuture after an asynchronous query.
@@ -234,34 +155,6 @@ public interface CassandraOperations {
 	 * @return
 	 */
 	<T> T processOne(ResultSet resultSet, RowMapper<T> rowMapper);
-
-	/**
-	 * Executes the provided query and tries to return the first column of the first Row as a Class<T>.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param elementType Valid Class that Cassandra Data Types can be converted to.
-	 * @return The Object<T> - item [0,0] in the result table of the query.
-	 */
-	<T> T selectOneFirstColumn(QueryCreator qc, Class<T> elementType);
-
-	/**
-	 * Executes the provided query and tries to return the first column of the first Row as a Class<T>.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param elementType Valid Class that Cassandra Data Types can be converted to.
-	 * @param timeoutMls Nonstop timeout in milliseconds
-	 * @return The Object<T> - item [0,0] in the result table of the query.
-	 */
-	<T> T selectOneFirstColumnNonstop(QueryCreator qc, Class<T> elementType, int timeoutMls) throws TimeoutException;
-
-	/**
-	 * Executes the provided query and tries to return the first column of the first Row as a Class<T>.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param elementType Valid Class that Cassandra Data Types can be converted to.
-	 * @return The Object<T> - item [0,0] in the result table of the query.
-	 */
-	<T> CassandraFuture<T> selectOneFirstColumnAsync(QueryCreator qc, Class<T> elementType);
 
 	/**
 	 * Process a ResultSet, trying to convert the first columns of the first Row to Class<T>. This is used internal to the
@@ -275,34 +168,6 @@ public interface CassandraOperations {
 	<T> T processOneFirstColumn(ResultSet resultSet, Class<T> elementType);
 
 	/**
-	 * Executes the provided CQL Query and maps <b>ONE</b> Row to a basic Map of Strings and Objects. If more than one Row
-	 * is returned from the Query, an exception will be thrown.
-	 * 
-	 * @param qc The QueryCreator
-	 * @return Map representing the results of the Query
-	 */
-	Map<String, Object> selectOneAsMap(QueryCreator qc);
-
-	/**
-	 * Executes the provided CQL Query and maps <b>ONE</b> Row to a basic Map of Strings and Objects. If more than one Row
-	 * is returned from the Query, an exception will be thrown.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param timeoutMls Nonstop timeout in milliseconds
-	 * @return Map representing the results of the Query
-	 */
-	Map<String, Object> selectOneAsMapNonstop(QueryCreator qc, int timeoutMls) throws TimeoutException;
-
-	/**
-	 * Executes the provided CQL Query and maps <b>ONE</b> Row to a basic Map of Strings and Objects. If more than one Row
-	 * is returned from the Query, an exception will be thrown.
-	 * 
-	 * @param qc The QueryCreator
-	 * @return Map representing the results of the Query
-	 */
-	CassandraFuture<Map<String, Object>> selectOneAsMapAsync(QueryCreator qc);
-
-	/**
 	 * Process a ResultSet with <b>ONE</b> Row and convert to a Map. This is used internal to the Template for core
 	 * operations, but is made available through Operations in the event you have a ResultSet to process. The ResultsSet
 	 * could come from a ResultSetFuture after an asynchronous query.
@@ -311,38 +176,6 @@ public interface CassandraOperations {
 	 * @return
 	 */
 	Map<String, Object> processOneAsMap(ResultSet resultSet);
-
-	/**
-	 * Executes the provided CQL and returns all values in the first column of the Results as a List of the Type in the
-	 * second argument.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param elementType Type to cast the data values to
-	 * @return List of elementType
-	 */
-	<T> List<T> selectFirstColumnAsList(QueryCreator qc, Class<T> elementType);
-
-	/**
-	 * Executes the provided CQL and returns all values in the first column of the Results as a List of the Type in the
-	 * second argument.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param elementType Type to cast the data values to
-	 * @param timeoutMls Nonstop timeout in milliseconds
-	 * @return List of elementType
-	 */
-	<T> List<T> selectFirstColumnAsListNonstop(QueryCreator qc, Class<T> elementType, int timeoutMls)
-			throws TimeoutException;
-
-	/**
-	 * Executes the provided CQL and returns all values in the first column of the Results as a List of the Type in the
-	 * second argument.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param elementType Type to cast the data values to
-	 * @return List of elementType
-	 */
-	<T> CassandraFuture<List<T>> selectFirstColumnAsListAsync(QueryCreator qc, Class<T> elementType);
 
 	/**
 	 * Process a ResultSet and convert the first column of the results to a List. This is used internal to the Template
@@ -354,34 +187,6 @@ public interface CassandraOperations {
 	 * @return
 	 */
 	<T> List<T> processFirstColumnAsList(ResultSet resultSet, Class<T> elementType);
-
-	/**
-	 * Executes the provided CQL and converts the results to a basic List of Maps. Each element in the List represents a
-	 * Row returned from the Query. Each Row's columns are put into the map as column/value.
-	 * 
-	 * @param qc The QueryCreator
-	 * @return List of Maps with the query results
-	 */
-	List<Map<String, Object>> selectAsListOfMap(QueryCreator qc);
-
-	/**
-	 * Executes the provided CQL and converts the results to a basic List of Maps. Each element in the List represents a
-	 * Row returned from the Query. Each Row's columns are put into the map as column/value.
-	 * 
-	 * @param qc The QueryCreator
-	 * @param timeoutMls Nonstop timeout in milliseconds
-	 * @return List of Maps with the query results
-	 */
-	List<Map<String, Object>> selectAsListOfMapNonstop(QueryCreator qc, int timeoutMls) throws TimeoutException;
-
-	/**
-	 * Executes the provided CQL and converts the results to a basic List of Maps. Each element in the List represents a
-	 * Row returned from the Query. Each Row's columns are put into the map as column/value.
-	 * 
-	 * @param qc The QueryCreator
-	 * @return List of Maps with the query results
-	 */
-	CassandraFuture<List<Map<String, Object>>> selectAsListOfMapAsync(QueryCreator qc);
 
 	/**
 	 * Process a ResultSet and convert it to a List of Maps with column/value. This is used internal to the Template for

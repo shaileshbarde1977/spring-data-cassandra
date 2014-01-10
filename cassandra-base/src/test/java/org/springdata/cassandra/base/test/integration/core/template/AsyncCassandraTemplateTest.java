@@ -60,8 +60,8 @@ public class AsyncCassandraTemplateTest extends AbstractCassandraOperations {
 
 		final String isbn = "999999999";
 
-		ResultSet frs = cassandraTemplate.selectAsync(
-				new SimpleQueryCreator("select * from book where isbn='" + isbn + "'")).getUninterruptibly();
+		ResultSet frs = cassandraTemplate.select("select * from book where isbn='" + isbn + "'").executeAsync()
+				.getUninterruptibly();
 
 		Row r = frs.one();
 		assertNotNull(r);

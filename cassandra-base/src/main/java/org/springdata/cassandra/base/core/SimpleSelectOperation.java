@@ -20,27 +20,23 @@ import java.util.concurrent.TimeoutException;
 import org.springdata.cassandra.base.core.query.ConsistencyLevel;
 import org.springdata.cassandra.base.core.query.RetryPolicy;
 
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
-
 /**
  * 
  * @author Alex Shvid
  * 
  */
 
-public interface UpdateOperation {
+public interface SimpleSelectOperation<T> {
 
-	UpdateOperation withConsistencyLevel(ConsistencyLevel consistencyLevel);
+	SimpleSelectOperation<T> withConsistencyLevel(ConsistencyLevel consistencyLevel);
 
-	UpdateOperation withRetryPolicy(RetryPolicy retryPolicy);
+	SimpleSelectOperation<T> withRetryPolicy(RetryPolicy retryPolicy);
 
-	UpdateOperation withQueryTracing(Boolean queryTracing);
+	SimpleSelectOperation<T> withQueryTracing(Boolean queryTracing);
 
-	ResultSet execute();
+	T execute();
 
-	ResultSetFuture executeAsync();
+	CassandraFuture<T> executeAsync();
 
-	ResultSet executeNonstop(int timeoutMls) throws TimeoutException;
-
+	T executeNonstop(int timeoutMls) throws TimeoutException;
 }
