@@ -22,7 +22,7 @@ package org.springdata.cassandra.base.core.query;
  * 
  */
 
-public interface ExecuteOptionsAccessor {
+public interface StatementOptionsAccessor {
 
 	/**
 	 * Returns ConsistencyLevel for the query operation. By default Cassandra uses ConsistencyLevel.QUORUM. Useful for all
@@ -41,6 +41,14 @@ public interface ExecuteOptionsAccessor {
 	 */
 
 	RetryPolicy getRetryPolicy();
+
+	/**
+	 * Returns QueryTracing for the query operation.
+	 * 
+	 * @return QueryTracing boolean
+	 */
+
+	Boolean getQueryTracing();
 
 	/**
 	 * Returns TTL time in seconds for insert and update operations. It is an expiration time for the stored value in

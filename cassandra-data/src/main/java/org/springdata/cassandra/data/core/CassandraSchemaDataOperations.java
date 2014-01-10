@@ -17,7 +17,7 @@ package org.springdata.cassandra.data.core;
 
 import java.util.List;
 
-import org.springdata.cassandra.base.core.query.ExecuteOptions;
+import org.springdata.cassandra.base.core.query.StatementOptions;
 
 /**
  * TableDataOperations interface
@@ -39,7 +39,7 @@ public interface CassandraSchemaDataOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 * @return Returns true if a table was created, false if not.
 	 */
-	boolean createTable(boolean ifNotExists, String tableName, Class<?> entityClass, ExecuteOptions optionsOrNull);
+	boolean createTable(boolean ifNotExists, String tableName, Class<?> entityClass, StatementOptions optionsOrNull);
 
 	/**
 	 * Add columns to the given table from the given class. If parameter dropRemovedAttributColumns is true, then this
@@ -51,7 +51,7 @@ public interface CassandraSchemaDataOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 */
 	void alterTable(String tableName, Class<?> entityClass, boolean dropRemovedAttributeColumns,
-			ExecuteOptions optionsOrNull);
+			StatementOptions optionsOrNull);
 
 	/**
 	 * Validate columns in the given table from the given class.
@@ -67,7 +67,7 @@ public interface CassandraSchemaDataOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void dropTable(String tableName, ExecuteOptions optionsOrNull);
+	void dropTable(String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Create all indexed annotated in entityClass
@@ -75,7 +75,7 @@ public interface CassandraSchemaDataOperations {
 	 * @param entityClass The class whose fields determine the new table's columns.
 	 * @param optionsOrNull The Execute Options Object if exists.
 	 */
-	void createIndexes(String tableName, Class<?> entityClass, ExecuteOptions optionsOrNull);
+	void createIndexes(String tableName, Class<?> entityClass, StatementOptions optionsOrNull);
 
 	/**
 	 * Create all indexed annotated in entityClass
@@ -83,7 +83,7 @@ public interface CassandraSchemaDataOperations {
 	 * @param entityClass The class whose fields determine the new table's columns.
 	 * @param optionsOrNull The Execute Options Object if exists.
 	 */
-	void alterIndexes(String tableName, Class<?> entityClass, ExecuteOptions optionsOrNull);
+	void alterIndexes(String tableName, Class<?> entityClass, StatementOptions optionsOrNull);
 
 	/**
 	 * Create all indexed annotated in entityClass

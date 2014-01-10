@@ -30,7 +30,7 @@ import org.springdata.cassandra.base.core.cql.spec.CreateTableSpecification;
 import org.springdata.cassandra.base.core.cql.spec.DropIndexSpecification;
 import org.springdata.cassandra.base.core.cql.spec.DropTableSpecification;
 import org.springdata.cassandra.base.core.cql.spec.WithNameSpecification;
-import org.springdata.cassandra.base.core.query.ExecuteOptions;
+import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springdata.cassandra.base.support.exception.CassandraTableExistsException;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
 import org.springframework.data.mapping.model.MappingException;
@@ -55,7 +55,7 @@ public class DefaultSchemaDataOperations implements CassandraSchemaDataOperation
 	}
 
 	@Override
-	public boolean createTable(boolean ifNotExists, String tableName, Class<?> entityClass, ExecuteOptions optionsOrNull) {
+	public boolean createTable(boolean ifNotExists, String tableName, Class<?> entityClass, StatementOptions optionsOrNull) {
 
 		Assert.notNull(entityClass);
 
@@ -82,7 +82,7 @@ public class DefaultSchemaDataOperations implements CassandraSchemaDataOperation
 
 	@Override
 	public void alterTable(String tableName, Class<?> entityClass, boolean dropRemovedAttributeColumns,
-			ExecuteOptions optionsOrNull) {
+			StatementOptions optionsOrNull) {
 
 		Assert.notNull(entityClass);
 
@@ -132,7 +132,7 @@ public class DefaultSchemaDataOperations implements CassandraSchemaDataOperation
 	}
 
 	@Override
-	public void dropTable(String tableName, ExecuteOptions optionsOrNull) {
+	public void dropTable(String tableName, StatementOptions optionsOrNull) {
 
 		DropTableSpecification spec = new DropTableSpecification().name(tableName);
 		String cql = new DropTableCqlGenerator(spec).toCql();
@@ -142,7 +142,7 @@ public class DefaultSchemaDataOperations implements CassandraSchemaDataOperation
 	}
 
 	@Override
-	public void createIndexes(String tableName, Class<?> entityClass, ExecuteOptions optionsOrNull) {
+	public void createIndexes(String tableName, Class<?> entityClass, StatementOptions optionsOrNull) {
 
 		Assert.notNull(entityClass);
 
@@ -159,7 +159,7 @@ public class DefaultSchemaDataOperations implements CassandraSchemaDataOperation
 	}
 
 	@Override
-	public void alterIndexes(String tableName, Class<?> entityClass, ExecuteOptions optionsOrNull) {
+	public void alterIndexes(String tableName, Class<?> entityClass, StatementOptions optionsOrNull) {
 
 		Assert.notNull(entityClass);
 

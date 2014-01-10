@@ -16,7 +16,7 @@
 package org.springdata.cassandra.base.core;
 
 import org.springdata.cassandra.base.core.cql.options.KeyspaceOptions;
-import org.springdata.cassandra.base.core.query.ExecuteOptions;
+import org.springdata.cassandra.base.core.query.StatementOptions;
 
 import com.datastax.driver.core.KeyspaceMetadata;
 
@@ -35,7 +35,7 @@ public interface CassandraAdminOperations {
 	 * @param keyspaceOptions Keyspace options.
 	 * @param optionsOrNull The Execute Options Object if exists
 	 */
-	void createKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull);
+	void createKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, StatementOptions optionsOrNull);
 
 	/**
 	 * Alters Keyspace with given name and options
@@ -43,7 +43,7 @@ public interface CassandraAdminOperations {
 	 * @param keyspaceOptions Keyspace options.
 	 * @param optionsOrNull The Execute Options Object if exists
 	 */
-	void alterKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull);
+	void alterKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, StatementOptions optionsOrNull);
 
 	/**
 	 * Drop keyspace
@@ -51,7 +51,7 @@ public interface CassandraAdminOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void dropKeyspace(String keyspace, ExecuteOptions optionsOrNull);
+	void dropKeyspace(String keyspace, StatementOptions optionsOrNull);
 
 	/**
 	 * Use keyspace
@@ -59,7 +59,7 @@ public interface CassandraAdminOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void useKeyspace(String keyspace, ExecuteOptions optionsOrNull);
+	void useKeyspace(String keyspace, StatementOptions optionsOrNull);
 
 	/**
 	 * Use system keyspace
@@ -67,7 +67,7 @@ public interface CassandraAdminOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void useSystemKeyspace(ExecuteOptions optionsOrNull);
+	void useSystemKeyspace(StatementOptions optionsOrNull);
 
 	/**
 	 * Gets the keyspace metadata.

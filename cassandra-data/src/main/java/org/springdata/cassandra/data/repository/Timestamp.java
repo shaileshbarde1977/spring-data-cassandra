@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used for define QueryOptions Timestamp parameter.
+ * Annotation to be used for define StatementOptions Timestamp parameter.
  * 
  * @author Alex Shvid
  */

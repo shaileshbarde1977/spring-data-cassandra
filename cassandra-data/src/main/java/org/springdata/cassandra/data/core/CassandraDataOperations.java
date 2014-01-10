@@ -17,7 +17,7 @@ package org.springdata.cassandra.data.core;
 
 import java.util.List;
 
-import org.springdata.cassandra.base.core.query.ExecuteOptions;
+import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 
 /**
@@ -47,7 +47,7 @@ public interface CassandraDataOperations {
 	 * @return
 	 */
 
-	<T> T findById(Object id, Class<T> entityClass, ExecuteOptions optionsOrNull);
+	<T> T findById(Object id, Class<T> entityClass, StatementOptions optionsOrNull);
 
 	/**
 	 * 
@@ -58,7 +58,7 @@ public interface CassandraDataOperations {
 	 * @return
 	 */
 
-	<T> T findById(Object id, Class<T> entityClass, String tableName, ExecuteOptions optionsOrNull);
+	<T> T findById(Object id, Class<T> entityClass, String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Finds a list of instances with the specified partition part of the primary key
@@ -69,7 +69,7 @@ public interface CassandraDataOperations {
 	 * @param <T>
 	 * @return
 	 */
-	<T> List<T> findByPartitionKey(Object id, Class<T> entityClass, ExecuteOptions optionsOrNull);
+	<T> List<T> findByPartitionKey(Object id, Class<T> entityClass, StatementOptions optionsOrNull);
 
 	/**
 	 * Finds a list of instances with the specified partition part of the primary key
@@ -81,7 +81,7 @@ public interface CassandraDataOperations {
 	 * @param <T>
 	 * @return
 	 */
-	<T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, ExecuteOptions optionsOrNull);
+	<T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Execute query and convert ResultSet to the list of entities
@@ -91,7 +91,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> List<T> find(String query, Class<T> entityClass, ExecuteOptions optionsOrNull);
+	<T> List<T> find(String query, Class<T> entityClass, StatementOptions optionsOrNull);
 
 	/**
 	 * Execute query and convert ResultSet to the list of entities
@@ -101,7 +101,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> T findOne(String query, Class<T> entityClass, ExecuteOptions optionsOrNull);
+	<T> T findOne(String query, Class<T> entityClass, StatementOptions optionsOrNull);
 
 	/**
 	 * Counts all rows for given table
@@ -111,7 +111,7 @@ public interface CassandraDataOperations {
 	 * @return
 	 */
 
-	Long countAll(String tableName, ExecuteOptions optionsOrNull);
+	Long countAll(String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Counts rows for given query
@@ -120,7 +120,7 @@ public interface CassandraDataOperations {
 	 * @return
 	 */
 
-	Long count(String query, ExecuteOptions optionsOrNull);
+	Long count(String query, StatementOptions optionsOrNull);
 
 	/**
 	 * Insert the given object to the table.
@@ -128,7 +128,7 @@ public interface CassandraDataOperations {
 	 * @param entity
 	 * @param optionsOrNull
 	 */
-	<T> void saveNew(boolean asychronously, T entity, ExecuteOptions optionsOrNull);
+	<T> void saveNew(boolean asychronously, T entity, StatementOptions optionsOrNull);
 
 	/**
 	 * Insert the given object to the table.
@@ -138,7 +138,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveNew(boolean asychronously, T entity, String tableName, ExecuteOptions optionsOrNull);
+	<T> void saveNew(boolean asychronously, T entity, String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Insert the given list of objects to the table.
@@ -147,7 +147,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, ExecuteOptions optionsOrNull);
+	<T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, StatementOptions optionsOrNull);
 
 	/**
 	 * Insert the given list of objects to the table.
@@ -157,7 +157,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, String tableName, ExecuteOptions optionsOrNull);
+	<T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Updates the given object in the table.
@@ -167,7 +167,7 @@ public interface CassandraDataOperations {
 	 * @param options
 	 * @return
 	 */
-	<T> void save(boolean asychronously, T entity, ExecuteOptions optionsOrNull);
+	<T> void save(boolean asychronously, T entity, StatementOptions optionsOrNull);
 
 	/**
 	 * Updates the given object in the table.
@@ -177,7 +177,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void save(boolean asychronously, T entity, String tableName, ExecuteOptions optionsOrNull);
+	<T> void save(boolean asychronously, T entity, String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Updates list of objects in the table.
@@ -187,7 +187,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveInBatch(boolean asychronously, Iterable<T> entities, ExecuteOptions optionsOrNull);
+	<T> void saveInBatch(boolean asychronously, Iterable<T> entities, StatementOptions optionsOrNull);
 
 	/**
 	 * Updates list of objects in the table.
@@ -197,7 +197,7 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveInBatch(boolean asychronously, Iterable<T> entities, String tableName, ExecuteOptions optionsOrNull);
+	<T> void saveInBatch(boolean asychronously, Iterable<T> entities, String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Removes the given object by id from the given table.
@@ -206,7 +206,7 @@ public interface CassandraDataOperations {
 	 * @param entityClass
 	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, ExecuteOptions optionsOrNull);
+	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, StatementOptions optionsOrNull);
 
 	/**
 	 * Removes the given object by id from the given table.
@@ -216,7 +216,7 @@ public interface CassandraDataOperations {
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName, ExecuteOptions optionsOrNull);
+	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Remove list of objects from the table by given ids.
@@ -225,7 +225,7 @@ public interface CassandraDataOperations {
 	 * @param entityClass
 	 * @param optionsOrNull
 	 */
-	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, ExecuteOptions optionsOrNull);
+	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, StatementOptions optionsOrNull);
 
 	/**
 	 * Remove list of objects from the table by given ids.
@@ -236,35 +236,35 @@ public interface CassandraDataOperations {
 	 * @param optionsOrNull
 	 */
 	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, String tableName,
-			ExecuteOptions optionsOrNull);
+			StatementOptions optionsOrNull);
 
 	/**
 	 * @param entity
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, T entity, ExecuteOptions optionsOrNull);
+	<T> void delete(boolean asychronously, T entity, StatementOptions optionsOrNull);
 
 	/**
 	 * @param entity
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, T entity, String tableName, ExecuteOptions optionsOrNull);
+	<T> void delete(boolean asychronously, T entity, String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * @param entities
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, ExecuteOptions optionsOrNull);
+	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, StatementOptions optionsOrNull);
 
 	/**
 	 * @param entities
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, String tableName, ExecuteOptions optionsOrNull);
+	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Returns the underlying {@link CassandraConverter}.

@@ -30,7 +30,7 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
-import org.springdata.cassandra.base.core.query.ExecuteOptions;
+import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
 import org.springdata.cassandra.base.support.CassandraExceptionTranslator;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -70,9 +70,9 @@ import com.google.common.util.concurrent.ListenableFuture;
  * For working with POJOs, use the CassandraDataTemplate.
  * </p>
  * 
+ * @author Alex Shvid
  * @author David Webb
  * @author Matthew Adams
- * @author Alex Shvid
  */
 public class CassandraTemplate implements CassandraOperations {
 
@@ -587,7 +587,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param callback
 	 * @return
 	 */
-	public ResultSet doExecute(final String cql, final ExecuteOptions optionsOrNull) {
+	public ResultSet doExecute(final String cql, final StatementOptions optionsOrNull) {
 
 		logger.info(cql);
 
@@ -611,7 +611,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param callback
 	 * @return
 	 */
-	public ResultSetFuture doExecuteAsync(final String cql, final ExecuteOptions optionsOrNull) {
+	public ResultSetFuture doExecuteAsync(final String cql, final StatementOptions optionsOrNull) {
 
 		logger.info(cql);
 
@@ -635,7 +635,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param callback
 	 * @return
 	 */
-	protected ResultSet doExecute(final BoundStatement bs, final ExecuteOptions optionsOrNull) {
+	protected ResultSet doExecute(final BoundStatement bs, final StatementOptions optionsOrNull) {
 
 		return doExecute(new SessionCallback<ResultSet>() {
 
@@ -1125,13 +1125,13 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void truncate(String tableName, ExecuteOptions optionsOrNull) {
+	public void truncate(String tableName, StatementOptions optionsOrNull) {
 		Truncate truncate = QueryBuilder.truncate(tableName);
 		doExecute(truncate.getQueryString(), optionsOrNull);
 	}
 
 	@Override
-	public void truncateNonstop(String tableName, int timeoutMls, ExecuteOptions optionsOrNull) throws TimeoutException {
+	public void truncateNonstop(String tableName, int timeoutMls, StatementOptions optionsOrNull) throws TimeoutException {
 		Truncate truncate = QueryBuilder.truncate(tableName);
 
 		ResultSetFuture resultSetFuture = doExecuteAsync(truncate.getQueryString(), optionsOrNull);
@@ -1140,7 +1140,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void truncateAsync(String tableName, ExecuteOptions optionsOrNull) {
+	public void truncateAsync(String tableName, StatementOptions optionsOrNull) {
 		Truncate truncate = QueryBuilder.truncate(tableName);
 		doExecuteAsync(truncate.getQueryString(), optionsOrNull);
 	}
@@ -1162,7 +1162,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param optionsOrNull
 	 */
 
-	public static void addQueryOptions(Query q, ExecuteOptions optionsOrNull) {
+	public static void addQueryOptions(Query q, StatementOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;
@@ -1187,7 +1187,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param optionsByName
 	 */
 
-	public static void addInsertOptions(Insert query, ExecuteOptions optionsOrNull) {
+	public static void addInsertOptions(Insert query, StatementOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;
@@ -1212,7 +1212,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param optionsByName
 	 */
 
-	public static void addUpdateOptions(Update query, ExecuteOptions optionsOrNull) {
+	public static void addUpdateOptions(Update query, StatementOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;
@@ -1237,7 +1237,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param optionsByName
 	 */
 
-	public static void addDeleteOptions(Delete query, ExecuteOptions optionsOrNull) {
+	public static void addDeleteOptions(Delete query, StatementOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;
@@ -1258,7 +1258,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param q
 	 * @param optionsByName
 	 */
-	public static void addPreparedStatementOptions(PreparedStatement ps, ExecuteOptions optionsOrNull) {
+	public static void addPreparedStatementOptions(PreparedStatement ps, StatementOptions optionsOrNull) {
 
 		if (optionsOrNull == null) {
 			return;

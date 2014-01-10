@@ -53,6 +53,22 @@ public class CassandraParametersParameterAccessor extends ParametersParameterAcc
 	}
 
 	@Override
+	public Boolean getQueryTracing() {
+		int index = method.getParameters().getQueryTracingIndex();
+		if (index == -1) {
+			return null;
+		}
+		Object value = getValue(index);
+		if (value == null) {
+			return null;
+		}
+		if (!(value instanceof Boolean)) {
+			throw new IllegalArgumentException("value in index " + index + " must be Boolean");
+		}
+		return (Boolean) value;
+	}
+
+	@Override
 	public Integer getTtl() {
 		int index = method.getParameters().getTtlIndex();
 		if (index == -1) {

@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
-import org.springdata.cassandra.base.core.query.ExecuteOptions;
+import org.springdata.cassandra.base.core.query.StatementOptions;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
@@ -51,12 +51,22 @@ public interface CassandraOperations {
 	 * Executes the supplied CQL Query and returns nothing.
 	 * 
 	 * @param qc The QueryCreator
-	 * @param timeoutMls Nonstop timeout in milliseconds
 	 */
 	void update(QueryCreator qc);
 
+	/**
+	 * Executes the supplied CQL Query and returns nothing.
+	 * 
+	 * @param qc The QueryCreator
+	 * @param timeoutMls Nonstop timeout in milliseconds
+	 */
 	void updateNonstop(QueryCreator qc, int timeoutMls) throws TimeoutException;
 
+	/**
+	 * Executes the supplied CQL Query and returns nothing.
+	 * 
+	 * @param qc The QueryCreator
+	 */
 	void updateAsync(QueryCreator qc);
 
 	/**
@@ -403,11 +413,17 @@ public interface CassandraOperations {
 	 * Binds prepared statement
 	 * 
 	 * @param ps The PreparedStatement
-	 * @param psb The implementation to bind variables to values if exists
 	 * @return
 	 */
 	BoundStatement bind(PreparedStatement ps);
 
+	/**
+	 * Binds prepared statement
+	 * 
+	 * @param ps The PreparedStatement
+	 * @param psb The implementation to bind variables to values if exists
+	 * @return
+	 */
 	BoundStatement bind(PreparedStatement ps, PreparedStatementBinder psb);
 
 	/**
@@ -467,7 +483,7 @@ public interface CassandraOperations {
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	void truncate(String tableName, ExecuteOptions optionsOrNull);
+	void truncate(String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Delete all rows in the table
@@ -475,7 +491,7 @@ public interface CassandraOperations {
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	void truncateNonstop(String tableName, int timeoutMls, ExecuteOptions optionsOrNull) throws TimeoutException;
+	void truncateNonstop(String tableName, int timeoutMls, StatementOptions optionsOrNull) throws TimeoutException;
 
 	/**
 	 * Delete all rows in the table
@@ -483,7 +499,7 @@ public interface CassandraOperations {
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	void truncateAsync(String tableName, ExecuteOptions optionsOrNull);
+	void truncateAsync(String tableName, StatementOptions optionsOrNull);
 
 	/**
 	 * Support keyspace operations

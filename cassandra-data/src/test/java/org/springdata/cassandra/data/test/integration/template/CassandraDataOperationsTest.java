@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.base.core.query.ConsistencyLevel;
-import org.springdata.cassandra.base.core.query.ExecuteOptions;
+import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springdata.cassandra.base.core.query.RetryPolicy;
 import org.springdata.cassandra.data.core.CassandraDataOperations;
 import org.springdata.cassandra.data.test.integration.config.JavaConfig;
@@ -121,7 +121,7 @@ public class CassandraDataOperationsTest {
 		b3.setAuthor("Cassandra Guru");
 		b3.setPages(265);
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -171,7 +171,7 @@ public class CassandraDataOperationsTest {
 		b3.setAuthor("Cassandra Guru");
 		b3.setPages(265);
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -193,7 +193,7 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void insertBatchTest() {
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -220,7 +220,7 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void insertBatchAsynchronouslyTest() {
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -269,7 +269,7 @@ public class CassandraDataOperationsTest {
 
 		insertTest();
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -321,7 +321,7 @@ public class CassandraDataOperationsTest {
 
 		insertTest();
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -371,7 +371,7 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void updateBatchTest() {
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -414,7 +414,7 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void updateBatchAsynchronouslyTest() {
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -471,7 +471,7 @@ public class CassandraDataOperationsTest {
 
 		insertTest();
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -511,7 +511,7 @@ public class CassandraDataOperationsTest {
 
 		insertTest();
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -548,7 +548,7 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void deleteBatchTest() {
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -583,7 +583,7 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void deleteBatchAsynchronouslyTest() {
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -620,7 +620,7 @@ public class CassandraDataOperationsTest {
 
 		insertTest();
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -660,7 +660,7 @@ public class CassandraDataOperationsTest {
 
 		insertTest();
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -698,7 +698,7 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void deleteByIdBatchTest() {
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
@@ -741,7 +741,7 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void deleteByIdBatchAsynchronouslyTest() {
 
-		ExecuteOptions options = new ExecuteOptions();
+		StatementOptions options = new StatementOptions();
 		options.withConsistencyLevel(ConsistencyLevel.ONE);
 		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 

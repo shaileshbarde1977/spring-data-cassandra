@@ -24,7 +24,7 @@ import org.springdata.cassandra.base.core.cql.spec.AlterKeyspaceSpecification;
 import org.springdata.cassandra.base.core.cql.spec.CreateKeyspaceSpecification;
 import org.springdata.cassandra.base.core.cql.spec.DropKeyspaceSpecification;
 import org.springdata.cassandra.base.core.cql.spec.UseKeyspaceSpecification;
-import org.springdata.cassandra.base.core.query.ExecuteOptions;
+import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.KeyspaceMetadata;
@@ -48,7 +48,7 @@ public class DefaultAdminOperations implements CassandraAdminOperations {
 	}
 
 	@Override
-	public void createKeyspace(String keyspace, final KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull) {
+	public void createKeyspace(String keyspace, final KeyspaceOptions keyspaceOptions, StatementOptions optionsOrNull) {
 
 		Assert.notNull(keyspace);
 		Assert.notNull(keyspaceOptions);
@@ -65,7 +65,7 @@ public class DefaultAdminOperations implements CassandraAdminOperations {
 	}
 
 	@Override
-	public void alterKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, ExecuteOptions optionsOrNull) {
+	public void alterKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, StatementOptions optionsOrNull) {
 
 		Assert.notNull(keyspace);
 		Assert.notNull(keyspaceOptions);
@@ -82,7 +82,7 @@ public class DefaultAdminOperations implements CassandraAdminOperations {
 	}
 
 	@Override
-	public void dropKeyspace(String keyspace, ExecuteOptions optionsOrNull) {
+	public void dropKeyspace(String keyspace, StatementOptions optionsOrNull) {
 
 		Assert.notNull(keyspace);
 
@@ -96,7 +96,7 @@ public class DefaultAdminOperations implements CassandraAdminOperations {
 	}
 
 	@Override
-	public void useKeyspace(String keyspace, ExecuteOptions optionsOrNull) {
+	public void useKeyspace(String keyspace, StatementOptions optionsOrNull) {
 
 		Assert.notNull(keyspace);
 
@@ -110,7 +110,7 @@ public class DefaultAdminOperations implements CassandraAdminOperations {
 	}
 
 	@Override
-	public void useSystemKeyspace(ExecuteOptions optionsOrNull) {
+	public void useSystemKeyspace(StatementOptions optionsOrNull) {
 
 		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(SYSTEM_KEYSPACE);
 		UseKeyspaceCqlGenerator generator = new UseKeyspaceCqlGenerator(spec);

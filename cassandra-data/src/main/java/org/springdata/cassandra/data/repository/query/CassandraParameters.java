@@ -33,6 +33,7 @@ public class CassandraParameters extends Parameters<CassandraParameters, Cassand
 
 	private final int consistencyLevelIndex;
 	private final int retryPolicyIndex;
+	private int queryTracingIndex = 1;
 	private int ttlIndex = -1;
 	private int timestampIndex = -1;
 
@@ -53,6 +54,7 @@ public class CassandraParameters extends Parameters<CassandraParameters, Cassand
 		super(parameters);
 		this.consistencyLevelIndex = other.consistencyLevelIndex;
 		this.retryPolicyIndex = other.retryPolicyIndex;
+		this.queryTracingIndex = other.queryTracingIndex;
 		this.ttlIndex = other.ttlIndex;
 		this.timestampIndex = other.timestampIndex;
 	}
@@ -65,6 +67,14 @@ public class CassandraParameters extends Parameters<CassandraParameters, Cassand
 	protected CassandraParameter createParameter(MethodParameter parameter) {
 
 		CassandraParameter cassandraParameter = new CassandraParameter(parameter);
+
+		// Detect manually annotated @QueryTracing parameter and reject multiple annotated ones
+		if (this.queryTracingIndex == -1 && cassandraParameter.isQueryTracing()) {
+			this.queryTracingIndex = cassandraParameter.getIndex();
+		} else if (cassandraParameter.isQueryTracing()) {
+			throw new IllegalStateException(String.format(
+					"Found multiple @QueryTracing annotations on method %s! Only one allowed!", parameter.getMethod().toString()));
+		}
 
 		// Detect manually annotated @Ttl parameter and reject multiple annotated ones
 		if (this.ttlIndex == -1 && cassandraParameter.isTtl()) {
@@ -100,6 +110,10 @@ public class CassandraParameters extends Parameters<CassandraParameters, Cassand
 
 	public int getRetryPolicyIndex() {
 		return retryPolicyIndex;
+	}
+
+	public int getQueryTracingIndex() {
+		return queryTracingIndex;
 	}
 
 	public int getTtlIndex() {

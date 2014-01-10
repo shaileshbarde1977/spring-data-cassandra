@@ -15,7 +15,7 @@
  */
 package org.springdata.cassandra.data.repository.query;
 
-import org.springdata.cassandra.base.core.query.ExecuteOptionsAccessor;
+import org.springdata.cassandra.base.core.query.StatementOptionsAccessor;
 import org.springframework.data.repository.query.ParameterAccessor;
 
 /**
@@ -24,6 +24,6 @@ import org.springframework.data.repository.query.ParameterAccessor;
  * @author Alex Shvid
  */
 
-public interface CassandraParameterAccessor extends ParameterAccessor, ExecuteOptionsAccessor {
+public interface CassandraParameterAccessor extends ParameterAccessor, StatementOptionsAccessor {
 
 }

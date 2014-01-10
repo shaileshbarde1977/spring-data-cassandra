@@ -16,17 +16,18 @@
 package org.springdata.cassandra.base.core.query;
 
 /**
- * Contains Execute Options for Cassandra command execution. This controls the Consistency Tuning and Retry Policy for a
- * Statement.
+ * Contains Statement Options for Cassandra command execution. This controls the Consistency Tuning and Retry Policy for
+ * a Statement.
  * 
  * @author David Webb
  * @author Alex Shvid
  * 
  */
-public class ExecuteOptions implements ExecuteOptionsAccessor {
+public class StatementOptions implements StatementOptionsAccessor {
 
 	private ConsistencyLevel consistencyLevel;
 	private RetryPolicy retryPolicy;
+	private Boolean queryTracing;
 	private Integer ttl;
 	private Long timestamp;
 
@@ -36,8 +37,8 @@ public class ExecuteOptions implements ExecuteOptionsAccessor {
 	 * @return QueryOptions new instance
 	 */
 
-	public static ExecuteOptions builder() {
-		return new ExecuteOptions();
+	public static StatementOptions builder() {
+		return new StatementOptions();
 	}
 
 	/**
@@ -50,7 +51,7 @@ public class ExecuteOptions implements ExecuteOptionsAccessor {
 	/**
 	 * @param consistencyLevel The consistencyLevel to set.
 	 */
-	public ExecuteOptions withConsistencyLevel(ConsistencyLevel consistencyLevel) {
+	public StatementOptions withConsistencyLevel(ConsistencyLevel consistencyLevel) {
 		this.consistencyLevel = consistencyLevel;
 		return this;
 	}
@@ -65,8 +66,23 @@ public class ExecuteOptions implements ExecuteOptionsAccessor {
 	/**
 	 * @param retryPolicy The retryPolicy to set.
 	 */
-	public ExecuteOptions withRetryPolicy(RetryPolicy retryPolicy) {
+	public StatementOptions withRetryPolicy(RetryPolicy retryPolicy) {
 		this.retryPolicy = retryPolicy;
+		return this;
+	}
+
+	/**
+	 * @return Returns the queryTracing.
+	 */
+	public Boolean getQueryTracing() {
+		return queryTracing;
+	}
+
+	/**
+	 * @param queryTracing The queryTracing to set.
+	 */
+	public StatementOptions withQueryTracing(Boolean queryTracing) {
+		this.queryTracing = queryTracing;
 		return this;
 	}
 
@@ -80,7 +96,7 @@ public class ExecuteOptions implements ExecuteOptionsAccessor {
 	/**
 	 * @param ttl The ttl of the entry to set.
 	 */
-	public ExecuteOptions withTtl(Integer ttl) {
+	public StatementOptions withTtl(Integer ttl) {
 		this.ttl = ttl;
 		return this;
 	}
@@ -95,7 +111,7 @@ public class ExecuteOptions implements ExecuteOptionsAccessor {
 	/**
 	 * @param timestamp The timestamp of the entry to set.
 	 */
-	public ExecuteOptions withTimestamp(Long timestamp) {
+	public StatementOptions withTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 		return this;
 	}

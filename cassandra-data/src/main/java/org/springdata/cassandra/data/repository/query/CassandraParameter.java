@@ -17,6 +17,7 @@ package org.springdata.cassandra.data.repository.query;
 
 import org.springdata.cassandra.base.core.query.ConsistencyLevel;
 import org.springdata.cassandra.base.core.query.RetryPolicy;
+import org.springdata.cassandra.data.repository.QueryTracing;
 import org.springdata.cassandra.data.repository.Timestamp;
 import org.springdata.cassandra.data.repository.Ttl;
 import org.springframework.core.MethodParameter;
@@ -51,7 +52,7 @@ public class CassandraParameter extends Parameter {
 	}
 
 	boolean isManuallyAnnotatedParameter() {
-		return hasTtlAnnotation() || hasTimestampAnnotation();
+		return hasQueryTracingAnnotation() || hasTtlAnnotation() || hasTimestampAnnotation();
 	}
 
 	boolean isConsistencyLevel() {
@@ -62,12 +63,20 @@ public class CassandraParameter extends Parameter {
 		return getType().equals(RetryPolicy.class);
 	}
 
+	boolean isQueryTracing() {
+		return (getType().equals(Boolean.class) || getType().equals(boolean.class)) && hasQueryTracingAnnotation();
+	}
+
 	boolean isTtl() {
 		return (getType().equals(Integer.class) || getType().equals(int.class)) && hasTtlAnnotation();
 	}
 
 	boolean isTimestamp() {
 		return (getType().equals(Long.class) || getType().equals(long.class)) && hasTimestampAnnotation();
+	}
+
+	boolean hasQueryTracingAnnotation() {
+		return parameter.getParameterAnnotation(QueryTracing.class) != null;
 	}
 
 	boolean hasTtlAnnotation() {
