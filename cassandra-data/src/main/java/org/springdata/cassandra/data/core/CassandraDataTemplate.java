@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.springdata.cassandra.base.core.CassandraTemplate;
 import org.springdata.cassandra.base.core.SessionCallback;
+import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
+import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
 import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
@@ -114,7 +116,8 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 	}
 
 	@Override
-	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, StatementOptions optionsOrNull) {
+	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName,
+			StatementOptions optionsOrNull) {
 		Assert.notNull(id);
 		Assert.notNull(entityClass);
 		Assert.notNull(tableName);
@@ -993,4 +996,124 @@ public class CassandraDataTemplate extends CassandraTemplate implements Cassandr
 		return entity;
 	}
 
+	/**
+	 * Add common delete options for all types of queries.
+	 * 
+	 * @param q
+	 * @param optionsByName
+	 */
+
+	protected static void addDeleteOptions(Delete query, StatementOptions optionsOrNull) {
+
+		if (optionsOrNull == null) {
+			return;
+		}
+
+		/*
+		 * Add TTL to Insert object
+		 */
+		if (optionsOrNull.getTimestamp() != null) {
+			query.using(QueryBuilder.timestamp(optionsOrNull.getTimestamp()));
+		}
+
+	}
+
+	/**
+	 * Add common update options for all types of queries.
+	 * 
+	 * @param q
+	 * @param optionsByName
+	 */
+
+	protected static void addUpdateOptions(Update query, StatementOptions optionsOrNull) {
+
+		if (optionsOrNull == null) {
+			return;
+		}
+
+		/*
+		 * Add TTL to Insert object
+		 */
+		if (optionsOrNull.getTtl() != null) {
+			query.using(QueryBuilder.ttl(optionsOrNull.getTtl()));
+		}
+		if (optionsOrNull.getTimestamp() != null) {
+			query.using(QueryBuilder.timestamp(optionsOrNull.getTimestamp()));
+		}
+
+	}
+
+	/**
+	 * Add common insert options for all types of queries.
+	 * 
+	 * @param q
+	 * @param optionsByName
+	 */
+
+	protected static void addInsertOptions(Insert query, StatementOptions optionsOrNull) {
+
+		if (optionsOrNull == null) {
+			return;
+		}
+
+		/*
+		 * Add TTL to Insert object
+		 */
+		if (optionsOrNull.getTtl() != null) {
+			query.using(QueryBuilder.ttl(optionsOrNull.getTtl()));
+		}
+		if (optionsOrNull.getTimestamp() != null) {
+			query.using(QueryBuilder.timestamp(optionsOrNull.getTimestamp()));
+		}
+
+	}
+
+	/**
+	 * Add common Query options for all types of queries.
+	 * 
+	 * @param q
+	 * @param optionsOrNull
+	 */
+
+	protected static void addQueryOptions(Query q, StatementOptions optionsOrNull) {
+
+		if (optionsOrNull == null) {
+			return;
+		}
+
+		/*
+		 * Add Query Options
+		 */
+		if (optionsOrNull.getConsistencyLevel() != null) {
+			q.setConsistencyLevel(ConsistencyLevelResolver.resolve(optionsOrNull.getConsistencyLevel()));
+		}
+		if (optionsOrNull.getRetryPolicy() != null) {
+			q.setRetryPolicy(RetryPolicyResolver.resolve(optionsOrNull.getRetryPolicy()));
+		}
+
+	}
+
+	/**
+	 * Execute as a command at the Session Level
+	 * 
+	 * @param callback
+	 * @return
+	 */
+	protected ResultSet doExecute(final String cql, final StatementOptions optionsOrNull) {
+
+		logger.info(cql);
+
+		return doExecute(new SessionCallback<ResultSet>() {
+
+			@Override
+			public ResultSet doInSession(Session s) {
+
+				SimpleStatement statement = new SimpleStatement(cql);
+
+				addQueryOptions(statement, optionsOrNull);
+
+				return s.execute(statement);
+			}
+		});
+	}
 }

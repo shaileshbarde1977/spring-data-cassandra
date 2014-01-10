@@ -26,9 +26,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
-import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
-import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springdata.cassandra.base.support.CassandraExceptionTranslator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.Assert;
@@ -48,10 +45,7 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SimpleStatement;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Batch;
-import com.datastax.driver.core.querybuilder.Delete;
-import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Update;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 
@@ -308,72 +302,6 @@ public class CassandraTemplate implements CassandraOperations {
 			public ResultSetFuture doInSession(Session s) {
 
 				return s.executeAsync(query);
-			}
-		});
-	}
-
-	/**
-	 * Execute as a command at the Session Level
-	 * 
-	 * @param callback
-	 * @return
-	 */
-	public ResultSet doExecute(final String cql, final StatementOptions optionsOrNull) {
-
-		logger.info(cql);
-
-		return doExecute(new SessionCallback<ResultSet>() {
-
-			@Override
-			public ResultSet doInSession(Session s) {
-
-				SimpleStatement statement = new SimpleStatement(cql);
-
-				addQueryOptions(statement, optionsOrNull);
-
-				return s.execute(statement);
-			}
-		});
-	}
-
-	/**
-	 * Execute asynchronously a command at the Session Level
-	 * 
-	 * @param callback
-	 * @return
-	 */
-	public ResultSetFuture doExecuteAsync(final String cql, final StatementOptions optionsOrNull) {
-
-		logger.info(cql);
-
-		return doExecute(new SessionCallback<ResultSetFuture>() {
-
-			@Override
-			public ResultSetFuture doInSession(Session s) {
-
-				SimpleStatement statement = new SimpleStatement(cql);
-
-				addQueryOptions(statement, optionsOrNull);
-
-				return s.executeAsync(statement);
-			}
-		});
-	}
-
-	/**
-	 * Execute a command at the Session Level
-	 * 
-	 * @param callback
-	 * @return
-	 */
-	protected ResultSet doExecute(final BoundStatement bs, final StatementOptions optionsOrNull) {
-
-		return doExecute(new SessionCallback<ResultSet>() {
-
-			@Override
-			public ResultSet doInSession(Session s) {
-				addQueryOptions(bs, optionsOrNull);
-				return s.execute(bs);
 			}
 		});
 	}
@@ -908,128 +836,6 @@ public class CassandraTemplate implements CassandraOperations {
 	@Override
 	public CassandraSchemaOperations schemaOps() {
 		return schemaOperations;
-	}
-
-	/**
-	 * Add common Query options for all types of queries.
-	 * 
-	 * @param q
-	 * @param optionsOrNull
-	 */
-
-	public static void addQueryOptions(Query q, StatementOptions optionsOrNull) {
-
-		if (optionsOrNull == null) {
-			return;
-		}
-
-		/*
-		 * Add Query Options
-		 */
-		if (optionsOrNull.getConsistencyLevel() != null) {
-			q.setConsistencyLevel(ConsistencyLevelResolver.resolve(optionsOrNull.getConsistencyLevel()));
-		}
-		if (optionsOrNull.getRetryPolicy() != null) {
-			q.setRetryPolicy(RetryPolicyResolver.resolve(optionsOrNull.getRetryPolicy()));
-		}
-
-	}
-
-	/**
-	 * Add common insert options for all types of queries.
-	 * 
-	 * @param q
-	 * @param optionsByName
-	 */
-
-	public static void addInsertOptions(Insert query, StatementOptions optionsOrNull) {
-
-		if (optionsOrNull == null) {
-			return;
-		}
-
-		/*
-		 * Add TTL to Insert object
-		 */
-		if (optionsOrNull.getTtl() != null) {
-			query.using(QueryBuilder.ttl(optionsOrNull.getTtl()));
-		}
-		if (optionsOrNull.getTimestamp() != null) {
-			query.using(QueryBuilder.timestamp(optionsOrNull.getTimestamp()));
-		}
-
-	}
-
-	/**
-	 * Add common update options for all types of queries.
-	 * 
-	 * @param q
-	 * @param optionsByName
-	 */
-
-	public static void addUpdateOptions(Update query, StatementOptions optionsOrNull) {
-
-		if (optionsOrNull == null) {
-			return;
-		}
-
-		/*
-		 * Add TTL to Insert object
-		 */
-		if (optionsOrNull.getTtl() != null) {
-			query.using(QueryBuilder.ttl(optionsOrNull.getTtl()));
-		}
-		if (optionsOrNull.getTimestamp() != null) {
-			query.using(QueryBuilder.timestamp(optionsOrNull.getTimestamp()));
-		}
-
-	}
-
-	/**
-	 * Add common delete options for all types of queries.
-	 * 
-	 * @param q
-	 * @param optionsByName
-	 */
-
-	public static void addDeleteOptions(Delete query, StatementOptions optionsOrNull) {
-
-		if (optionsOrNull == null) {
-			return;
-		}
-
-		/*
-		 * Add TTL to Insert object
-		 */
-		if (optionsOrNull.getTimestamp() != null) {
-			query.using(QueryBuilder.timestamp(optionsOrNull.getTimestamp()));
-		}
-
-	}
-
-	/**
-	 * Add common Query options for all types of queries.
-	 * 
-	 * @param q
-	 * @param optionsByName
-	 */
-	public static void addPreparedStatementOptions(PreparedStatement ps, StatementOptions optionsOrNull) {
-
-		if (optionsOrNull == null) {
-			return;
-		}
-
-		/*
-		 * Add Query Options if exists
-		 */
-
-		if (optionsOrNull.getConsistencyLevel() != null) {
-			ps.setConsistencyLevel(ConsistencyLevelResolver.resolve(optionsOrNull.getConsistencyLevel()));
-		}
-		if (optionsOrNull.getRetryPolicy() != null) {
-			ps.setRetryPolicy(RetryPolicyResolver.resolve(optionsOrNull.getRetryPolicy()));
-		}
-
 	}
 
 	/**

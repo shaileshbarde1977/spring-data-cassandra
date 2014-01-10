@@ -146,7 +146,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 			if (keyspaceExists && (keyspaceAttributes.isCreate() || keyspaceAttributes.isCreateDrop())) {
 
 				log.info("Drop keyspace " + keyspace + " on afterPropertiesSet");
-				adminOps.dropKeyspace(keyspace, null);
+				adminOps.dropKeyspace(keyspace).execute();
 				keyspaceExists = false;
 
 			}
@@ -157,7 +157,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 				log.info("Create keyspace " + keyspace + " on afterPropertiesSet");
 
-				adminOps.createKeyspace(keyspace, createKeyspaceOptions(), null);
+				adminOps.createKeyspace(keyspace, createKeyspaceOptions()).execute();
 				keyspaceCreated = true;
 			}
 
@@ -168,7 +168,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 					log.info("Update keyspace " + keyspace + " on afterPropertiesSet");
 
-					adminOps.alterKeyspace(keyspace, createKeyspaceOptions(), null);
+					adminOps.alterKeyspace(keyspace, createKeyspaceOptions()).execute();
 
 				}
 
@@ -189,7 +189,7 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 
 			}
 
-			adminOps.useKeyspace(keyspace, null);
+			adminOps.useKeyspace(keyspace).execute();
 
 			if (!CollectionUtils.isEmpty(keyspaceAttributes.getTables())) {
 
@@ -276,8 +276,8 @@ public class CassandraSessionFactoryBean implements FactoryBean<Session>, Initia
 			CassandraTemplate casandraTemplate = new CassandraTemplate(session, keyspace);
 			CassandraAdminOperations keyspaceOps = casandraTemplate.adminOps();
 
-			keyspaceOps.useSystemKeyspace(null);
-			keyspaceOps.dropKeyspace(keyspace, null);
+			keyspaceOps.useSystemKeyspace().execute();
+			keyspaceOps.dropKeyspace(keyspace).execute();
 
 		}
 		this.session.shutdown();

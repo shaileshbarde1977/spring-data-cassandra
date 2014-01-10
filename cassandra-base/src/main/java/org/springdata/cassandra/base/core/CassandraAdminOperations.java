@@ -16,50 +16,49 @@
 package org.springdata.cassandra.base.core;
 
 import org.springdata.cassandra.base.core.cql.options.KeyspaceOptions;
-import org.springdata.cassandra.base.core.query.StatementOptions;
 
 import com.datastax.driver.core.KeyspaceMetadata;
 
 /**
  * Operations for managing a Cassandra keyspace.
  * 
+ * @author Alex Shvid
  * @author David Webb
  * @author Matthew T. Adams
- * @author Alex Shvid
  */
 public interface CassandraAdminOperations {
 
 	/**
 	 * Creates Keyspace with given options
 	 * 
+	 * @param keyspace The keyspace name
 	 * @param keyspaceOptions Keyspace options.
-	 * @param optionsOrNull The Execute Options Object if exists
 	 */
-	void createKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, StatementOptions optionsOrNull);
+	UpdateOperation createKeyspace(String keyspace, KeyspaceOptions keyspaceOptions);
 
 	/**
 	 * Alters Keyspace with given name and options
 	 * 
+	 * @param keyspace The keyspace name
 	 * @param keyspaceOptions Keyspace options.
-	 * @param optionsOrNull The Execute Options Object if exists
 	 */
-	void alterKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, StatementOptions optionsOrNull);
+	UpdateOperation alterKeyspace(String keyspace, KeyspaceOptions keyspaceOptions);
 
 	/**
 	 * Drop keyspace
 	 * 
-	 * @param optionsOrNull The Execute Options Object if exists
+	 * @param keyspace The keyspace name
 	 * 
 	 */
-	void dropKeyspace(String keyspace, StatementOptions optionsOrNull);
+	UpdateOperation dropKeyspace(String keyspace);
 
 	/**
 	 * Use keyspace
 	 * 
-	 * @param optionsOrNull The Execute Options Object if exists
+	 * @param keyspace The keyspace name
 	 * 
 	 */
-	void useKeyspace(String keyspace, StatementOptions optionsOrNull);
+	UpdateOperation useKeyspace(String keyspace);
 
 	/**
 	 * Use system keyspace
@@ -67,7 +66,7 @@ public interface CassandraAdminOperations {
 	 * @param optionsOrNull The Execute Options Object if exists
 	 * 
 	 */
-	void useSystemKeyspace(StatementOptions optionsOrNull);
+	UpdateOperation useSystemKeyspace();
 
 	/**
 	 * Gets the keyspace metadata.

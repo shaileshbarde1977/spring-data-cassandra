@@ -24,7 +24,6 @@ import org.springdata.cassandra.base.core.cql.spec.AlterKeyspaceSpecification;
 import org.springdata.cassandra.base.core.cql.spec.CreateKeyspaceSpecification;
 import org.springdata.cassandra.base.core.cql.spec.DropKeyspaceSpecification;
 import org.springdata.cassandra.base.core.cql.spec.UseKeyspaceSpecification;
-import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.KeyspaceMetadata;
@@ -48,7 +47,7 @@ public class DefaultAdminOperations implements CassandraAdminOperations {
 	}
 
 	@Override
-	public void createKeyspace(String keyspace, final KeyspaceOptions keyspaceOptions, StatementOptions optionsOrNull) {
+	public UpdateOperation createKeyspace(String keyspace, final KeyspaceOptions keyspaceOptions) {
 
 		Assert.notNull(keyspace);
 		Assert.notNull(keyspaceOptions);
@@ -58,14 +57,12 @@ public class DefaultAdminOperations implements CassandraAdminOperations {
 
 		CreateKeyspaceCqlGenerator generator = new CreateKeyspaceCqlGenerator(spec);
 
-		final String cql = generator.toCql();
-
-		cassandraTemplate.doExecute(cql, optionsOrNull);
+		return new DefaultUpdateOperation(cassandraTemplate, generator.toCql());
 
 	}
 
 	@Override
-	public void alterKeyspace(String keyspace, KeyspaceOptions keyspaceOptions, StatementOptions optionsOrNull) {
+	public UpdateOperation alterKeyspace(String keyspace, KeyspaceOptions keyspaceOptions) {
 
 		Assert.notNull(keyspace);
 		Assert.notNull(keyspaceOptions);
@@ -75,49 +72,41 @@ public class DefaultAdminOperations implements CassandraAdminOperations {
 
 		AlterKeyspaceCqlGenerator generator = new AlterKeyspaceCqlGenerator(spec);
 
-		final String cql = generator.toCql();
-
-		cassandraTemplate.doExecute(cql, optionsOrNull);
+		return new DefaultUpdateOperation(cassandraTemplate, generator.toCql());
 
 	}
 
 	@Override
-	public void dropKeyspace(String keyspace, StatementOptions optionsOrNull) {
+	public UpdateOperation dropKeyspace(String keyspace) {
 
 		Assert.notNull(keyspace);
 
 		DropKeyspaceSpecification spec = new DropKeyspaceSpecification().name(keyspace);
 		DropKeyspaceCqlGenerator generator = new DropKeyspaceCqlGenerator(spec);
 
-		final String cql = generator.toCql();
-
-		cassandraTemplate.doExecute(cql, optionsOrNull);
+		return new DefaultUpdateOperation(cassandraTemplate, generator.toCql());
 
 	}
 
 	@Override
-	public void useKeyspace(String keyspace, StatementOptions optionsOrNull) {
+	public UpdateOperation useKeyspace(String keyspace) {
 
 		Assert.notNull(keyspace);
 
 		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(keyspace);
 		UseKeyspaceCqlGenerator generator = new UseKeyspaceCqlGenerator(spec);
 
-		final String cql = generator.toCql();
-
-		cassandraTemplate.doExecute(cql, optionsOrNull);
+		return new DefaultUpdateOperation(cassandraTemplate, generator.toCql());
 
 	}
 
 	@Override
-	public void useSystemKeyspace(StatementOptions optionsOrNull) {
+	public UpdateOperation useSystemKeyspace() {
 
 		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(SYSTEM_KEYSPACE);
 		UseKeyspaceCqlGenerator generator = new UseKeyspaceCqlGenerator(spec);
 
-		final String cql = generator.toCql();
-
-		cassandraTemplate.doExecute(cql, optionsOrNull);
+		return new DefaultUpdateOperation(cassandraTemplate, generator.toCql());
 
 	}
 

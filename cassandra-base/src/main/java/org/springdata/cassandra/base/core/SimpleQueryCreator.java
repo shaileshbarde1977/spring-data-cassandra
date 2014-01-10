@@ -19,7 +19,6 @@ import org.springdata.cassandra.base.core.query.ConsistencyLevel;
 import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
 import org.springdata.cassandra.base.core.query.RetryPolicy;
 import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
-import org.springdata.cassandra.base.core.query.StatementOptions;
 
 import com.datastax.driver.core.Query;
 import com.datastax.driver.core.SimpleStatement;
@@ -37,21 +36,6 @@ public class SimpleQueryCreator implements QueryCreator {
 
 	public SimpleQueryCreator(String cql) {
 		statement = new SimpleStatement(cql);
-	}
-
-	public SimpleQueryCreator(String cql, StatementOptions optionsOrNull) {
-		statement = new SimpleStatement(cql);
-		if (optionsOrNull != null) {
-			if (optionsOrNull.getConsistencyLevel() != null) {
-				withConsistencyLevel(optionsOrNull.getConsistencyLevel());
-			}
-			if (optionsOrNull.getRetryPolicy() != null) {
-				withRetryPolicy(optionsOrNull.getRetryPolicy());
-			}
-			if (optionsOrNull.getQueryTracing() != null) {
-				withQueryTracing(optionsOrNull.getQueryTracing());
-			}
-		}
 	}
 
 	public SimpleQueryCreator(Query query) {

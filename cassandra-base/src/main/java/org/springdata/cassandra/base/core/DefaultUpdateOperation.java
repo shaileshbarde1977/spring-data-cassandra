@@ -26,6 +26,7 @@ import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
 import com.datastax.driver.core.Query;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
+import com.datastax.driver.core.SimpleStatement;
 
 /**
  * 
@@ -37,6 +38,10 @@ public class DefaultUpdateOperation implements UpdateOperation {
 
 	private final CassandraTemplate cassandraTemplate;
 	private final Query query;
+
+	protected DefaultUpdateOperation(CassandraTemplate cassandraTemplate, String cql) {
+		this(cassandraTemplate, new SimpleStatement(cql));
+	}
 
 	protected DefaultUpdateOperation(CassandraTemplate cassandraTemplate, Query query) {
 		this.cassandraTemplate = cassandraTemplate;
