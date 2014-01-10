@@ -30,7 +30,6 @@ import com.datastax.driver.core.Query;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.google.common.base.Function;
-import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -45,7 +44,6 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 
 	private final CassandraTemplate cassandraTemplate;
 	private final Query query;
-	private RowCallbackHandler rch;
 	private FallbackHandler fh;
 	private Executor executor;
 
@@ -176,9 +174,17 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	}
 
 	@Override
-	public SelectOperation<ResultSet> each(RowCallbackHandler rch) {
-		this.rch = rch;
-		return this;
+	public SimpleSelectOperation<Object> each(final RowCallbackHandler rch) {
+
+		return new ProcessingSelectOperation<Object>(this, new Processor<Object>() {
+
+			@Override
+			public Object process(ResultSet resultSet) {
+				cassandraTemplate.process(resultSet, rch);
+				return null;
+			}
+
+		});
 	}
 
 	@Override
@@ -196,39 +202,12 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	@Override
 	public ResultSet execute() {
 		ResultSet resultSet = cassandraTemplate.doExecute(query);
-		if (rch != null) {
-			cassandraTemplate.process(resultSet, rch);
-		}
 		return resultSet;
 	}
 
 	@Override
 	public CassandraFuture<ResultSet> executeAsync() {
-
 		ResultSetFuture resultSetFuture = cassandraTemplate.doExecuteAsync(query);
-
-		if (rch != null) {
-
-			Futures.addCallback(resultSetFuture, new FutureCallback<ResultSet>() {
-
-				@Override
-				public void onFailure(Throwable t) {
-					if (fh != null) {
-						if (t instanceof RuntimeException) {
-							t = cassandraTemplate.translateIfPossible((RuntimeException) t);
-						}
-						fh.onFailure(t);
-					}
-				}
-
-				public void onSuccess(ResultSet rs) {
-					cassandraTemplate.process(rs, rch);
-				}
-
-			}, executor != null ? executor : MoreExecutors.sameThreadExecutor());
-
-		}
-
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture,
 				cassandraTemplate.getExceptionTranslator());
 		return wrappedFuture;
@@ -240,11 +219,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture,
 				cassandraTemplate.getExceptionTranslator());
 		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
-		if (rch != null) {
-			cassandraTemplate.process(resultSet, rch);
-		}
 		return resultSet;
-
 	}
 
 	abstract class ForwardingSelectOperation<T> implements SimpleSelectOperation<T> {
@@ -303,10 +278,17 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 
 				@Override
 				public T apply(ResultSet resultSet) {
-					return processor.process(resultSet);
+					try {
+						return processor.process(resultSet);
+					} catch (RuntimeException e) {
+						if (fh != null) {
+							fh.onFailure(e);
+						}
+						throw e;
+					}
 				}
 
-			});
+			}, executor != null ? executor : MoreExecutors.sameThreadExecutor());
 
 			return new CassandraFuture<T>(future, cassandraTemplate.getExceptionTranslator());
 		}

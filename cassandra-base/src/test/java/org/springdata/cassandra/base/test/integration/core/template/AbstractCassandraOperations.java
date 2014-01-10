@@ -183,7 +183,7 @@ public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassan
 		values[1] = o2;
 		values[2] = o3;
 
-		cassandraTemplate.ingest(false, cassandraTemplate.prepareStatement(cql), values);
+		cassandraTemplate.ingest(cassandraTemplate.prepareStatement(cql), values).execute();
 
 	}
 

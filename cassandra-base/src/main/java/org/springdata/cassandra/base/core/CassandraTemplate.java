@@ -525,12 +525,7 @@ public class CassandraTemplate implements CassandraOperations {
 			@Override
 			public Object doWithResultSet(ResultSet resultSet) {
 
-				List<Row> rows = resultSet.all();
-				if (rows == null || rows.isEmpty()) {
-					return null;
-				}
-
-				for (Row row : rows) {
+				for (Row row : resultSet) {
 					rch.processRow(row);
 				}
 
@@ -827,39 +822,40 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public void ingest(boolean asynchronously, PreparedStatement ps, Iterable<Object[]> rowIterator) {
+	public IngestOperation ingest(final PreparedStatement ps, Iterable<Object[]> rows) {
 
 		Assert.notNull(ps);
-		Assert.notNull(rowIterator);
+		Assert.notNull(rows);
 
-		for (final Object[] values : rowIterator) {
+		Iterator<Query> queryIterator = Iterators.transform(rows.iterator(), new Function<Object[], Query>() {
 
-			BoundStatement bs = doBind(ps, new PreparedStatementBinder() {
+			@Override
+			public Query apply(final Object[] values) {
 
-				@Override
-				public BoundStatement bindValues(PreparedStatement ps) {
-					return ps.bind(values);
-				}
-			});
+				BoundStatement bs = doBind(ps, new PreparedStatementBinder() {
 
-			if (asynchronously) {
-				doExecuteAsync(bs);
-			} else {
-				doExecute(bs);
+					@Override
+					public BoundStatement bindValues(PreparedStatement ps) {
+						return ps.bind(values);
+					}
+				});
+
+				return bs;
 			}
+		});
 
-		}
+		return new DefaultIngestOperation(this, queryIterator);
 
 	}
 
 	@Override
-	public void ingest(boolean asynchronously, PreparedStatement ps, final Object[][] rows) {
+	public IngestOperation ingest(PreparedStatement ps, final Object[][] rows) {
 
 		Assert.notNull(ps);
 		Assert.notNull(rows);
 		Assert.notEmpty(rows);
 
-		ingest(asynchronously, ps, new Iterable<Object[]>() {
+		return ingest(ps, new Iterable<Object[]>() {
 
 			public Iterator<Object[]> iterator() {
 				return new ArrayIterator<Object[]>(rows);

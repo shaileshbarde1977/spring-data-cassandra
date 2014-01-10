@@ -51,7 +51,7 @@ public interface SelectOperation<T> {
 
 	<O> SimpleSelectOperation<O> transform(ResultSetCallback<O> rsc);
 
-	SelectOperation<T> each(RowCallbackHandler rch);
+	SimpleSelectOperation<Object> each(RowCallbackHandler rch);
 
 	SelectOperation<T> withFallbackHandler(FallbackHandler fh);
 

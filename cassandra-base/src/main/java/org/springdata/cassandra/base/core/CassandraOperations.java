@@ -280,7 +280,7 @@ public interface CassandraOperations {
 	 * @param ps The PreparedStatement
 	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
 	 */
-	void ingest(boolean asynchronously, PreparedStatement ps, Iterable<Object[]> rowIterator);
+	IngestOperation ingest(PreparedStatement ps, Iterable<Object[]> rows);
 
 	/**
 	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then
@@ -294,7 +294,7 @@ public interface CassandraOperations {
 	 * @param ps The PreparedStatement
 	 * @param rows Object array of Object array of values to bind to the CQL.
 	 */
-	void ingest(boolean asynchronously, PreparedStatement ps, Object[][] rows);
+	IngestOperation ingest(PreparedStatement ps, Object[][] rows);
 
 	/**
 	 * Delete all rows in the table

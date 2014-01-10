@@ -15,6 +15,7 @@
  */
 package org.springdata.cassandra.base.core;
 
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -33,60 +34,72 @@ import com.datastax.driver.core.ResultSetFuture;
  * 
  */
 
-public abstract class AbstractUpdateOperation implements UpdateOperation {
+public class DefaultIngestOperation implements IngestOperation {
 
 	private final CassandraTemplate cassandraTemplate;
+	private final Iterator<Query> queryIterator;
 
 	private ConsistencyLevel consistencyLevel;
 	private RetryPolicy retryPolicy;
 	private Boolean queryTracing;
 
-	public AbstractUpdateOperation(CassandraTemplate cassandraTemplate) {
+	public DefaultIngestOperation(CassandraTemplate cassandraTemplate, Iterator<Query> iterator) {
 		this.cassandraTemplate = cassandraTemplate;
+		this.queryIterator = iterator;
 	}
 
-	abstract Query getQuery();
-
 	@Override
-	public UpdateOperation withConsistencyLevel(ConsistencyLevel consistencyLevel) {
+	public IngestOperation withConsistencyLevel(ConsistencyLevel consistencyLevel) {
 		this.consistencyLevel = consistencyLevel;
 		return this;
 	}
 
 	@Override
-	public UpdateOperation withRetryPolicy(RetryPolicy retryPolicy) {
+	public IngestOperation withRetryPolicy(RetryPolicy retryPolicy) {
 		this.retryPolicy = retryPolicy;
 		return this;
 	}
 
 	@Override
-	public UpdateOperation withQueryTracing(Boolean queryTracing) {
+	public IngestOperation withQueryTracing(Boolean queryTracing) {
 		this.queryTracing = queryTracing;
 		return this;
 	}
 
 	@Override
-	public ResultSet execute() {
-		Query query = getQuery();
-		addQueryOptions(query);
-		return cassandraTemplate.doExecute(query);
+	public void execute() {
+
+		while (queryIterator.hasNext()) {
+			Query query = queryIterator.next();
+			addQueryOptions(query);
+			cassandraTemplate.doExecute(query);
+		}
+
 	}
 
 	@Override
-	public ResultSetFuture executeAsync() {
-		Query query = getQuery();
-		addQueryOptions(query);
-		return cassandraTemplate.doExecuteAsync(query);
+	public void executeAsync() {
+
+		while (queryIterator.hasNext()) {
+			Query query = queryIterator.next();
+			addQueryOptions(query);
+			cassandraTemplate.doExecuteAsync(query);
+		}
+
 	}
 
 	@Override
-	public ResultSet executeNonstop(int timeoutMls) throws TimeoutException {
-		Query query = getQuery();
-		addQueryOptions(query);
-		ResultSetFuture resultSetFuture = cassandraTemplate.doExecuteAsync(query);
-		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture,
-				cassandraTemplate.getExceptionTranslator());
-		return wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+	public void executeNonstop(int timeoutMls) throws TimeoutException {
+
+		while (queryIterator.hasNext()) {
+			Query query = queryIterator.next();
+			addQueryOptions(query);
+			ResultSetFuture resultSetFuture = cassandraTemplate.doExecuteAsync(query);
+			CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture,
+					cassandraTemplate.getExceptionTranslator());
+			wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+		}
+
 	}
 
 	private void addQueryOptions(Query query) {
