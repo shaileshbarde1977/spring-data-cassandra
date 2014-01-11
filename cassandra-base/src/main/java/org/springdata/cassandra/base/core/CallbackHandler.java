@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the original author or authors.
+ * Copyright 2013 the original author or authors.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,15 @@
  */
 package org.springdata.cassandra.base.core;
 
-import java.util.concurrent.TimeoutException;
-
-import org.springdata.cassandra.base.core.query.ConsistencyLevel;
-import org.springdata.cassandra.base.core.query.RetryPolicy;
-
 /**
+ * Callback handler is used in asynchronous communication to transfer Result object
  * 
  * @author Alex Shvid
  * 
  */
 
-public interface SimpleSelectOperation<T> {
+public interface CallbackHandler<T> {
 
-	SimpleSelectOperation<T> withConsistencyLevel(ConsistencyLevel consistencyLevel);
+	void onComplete(T result);
 
-	SimpleSelectOperation<T> withRetryPolicy(RetryPolicy retryPolicy);
-
-	SimpleSelectOperation<T> withQueryTracing(Boolean queryTracing);
-
-	T execute();
-
-	CassandraFuture<T> executeAsync();
-
-	T executeNonstop(int timeoutMls) throws TimeoutException;
 }

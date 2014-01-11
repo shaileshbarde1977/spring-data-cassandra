@@ -24,6 +24,7 @@ import org.springdata.cassandra.base.core.query.ConsistencyLevel;
 import org.springdata.cassandra.base.core.query.RetryPolicy;
 
 /**
+ * General class for select operations. Support transformation and mappring of the ResultSet
  * 
  * @author Alex Shvid
  * 
@@ -31,36 +32,132 @@ import org.springdata.cassandra.base.core.query.RetryPolicy;
 
 public interface SelectOperation<T> {
 
+	/**
+	 * Adds consistency level to the select operation.
+	 * 
+	 * @param consistencyLevel ConsistencyLevel
+	 * @return this
+	 */
 	SelectOperation<T> withConsistencyLevel(ConsistencyLevel consistencyLevel);
 
+	/**
+	 * Adds retry policy to the select operation
+	 * 
+	 * @param retryPolicy RetryPolicy
+	 * @return this
+	 */
 	SelectOperation<T> withRetryPolicy(RetryPolicy retryPolicy);
 
+	/**
+	 * Adds query tracing option to the select operation.
+	 * 
+	 * @param queryTracing Boolean to enable/disable query tracing
+	 * @return this
+	 */
 	SelectOperation<T> withQueryTracing(Boolean queryTracing);
 
-	<R> SimpleSelectOperation<Iterator<R>> map(RowMapper<R> rowMapper);
+	/**
+	 * Maps each row in ResultSet by RowMapper.
+	 * 
+	 * @param rowMapper
+	 * @return new mapped select operation
+	 */
+	<R> BaseSelectOperation<Iterator<R>> map(RowMapper<R> rowMapper);
 
-	<R> SimpleSelectOperation<R> mapOne(RowMapper<R> rowMapper);
+	/**
+	 * Maps first row in ResultSet by RowMapper.
+	 * 
+	 * @param rowMapper
+	 * @return new mapped select operation
+	 */
+	<R> BaseSelectOperation<R> mapOne(RowMapper<R> rowMapper);
 
-	<E> SimpleSelectOperation<E> firstColumnOne(Class<E> elementType);
+	/**
+	 * Retrieves first row in the first column, expected type is elementType class.
+	 * 
+	 * @param elementType
+	 * @return new mapped select operation
+	 */
+	<E> BaseSelectOperation<E> firstColumnOne(Class<E> elementType);
 
-	<E> SimpleSelectOperation<Iterator<E>> firstColumn(Class<E> elementType);
+	/**
+	 * Retrieves only the first column from ResultSet, expected type is elementType class.
+	 * 
+	 * @param elementType
+	 * @return new mapped select operation
+	 */
+	<E> BaseSelectOperation<Iterator<E>> firstColumn(Class<E> elementType);
 
-	SimpleSelectOperation<Iterator<Map<String, Object>>> map();
+	/**
+	 * Maps all rows from ResultSet to Map<String, Object>.
+	 * 
+	 * @return new mapped select operation
+	 */
+	BaseSelectOperation<Iterator<Map<String, Object>>> map();
 
-	SimpleSelectOperation<Map<String, Object>> mapOne();
+	/**
+	 * Maps only first row from ResultSet to Map<String, Object>.
+	 * 
+	 * @return new mapped select operation
+	 */
+	BaseSelectOperation<Map<String, Object>> mapOne();
 
-	<O> SimpleSelectOperation<O> transform(ResultSetCallback<O> rsc);
+	/**
+	 * Uses ResultSetCallback to transform ResultSet to object with type T.
+	 * 
+	 * @param rsc
+	 * @return new mapped select operation
+	 */
+	<O> BaseSelectOperation<O> transform(ResultSetCallback<O> rsc);
 
-	SimpleSelectOperation<Object> each(RowCallbackHandler rch);
+	/**
+	 * Calls RowCallbackHandler for each row in ResultSet.
+	 * 
+	 * @param rch
+	 * @return new mapped select operation
+	 */
+	BaseSelectOperation<Object> each(RowCallbackHandler rch);
 
+	/**
+	 * Uses fallback handler to send errors in asynchronous execution.
+	 * 
+	 * @param fh
+	 * @return this
+	 */
 	SelectOperation<T> withFallbackHandler(FallbackHandler fh);
 
+	/**
+	 * Specifies Executor that will be used for asynchronous execution. By default will be used SameThreadExecutor that
+	 * will be the thread that calls ResultSetFuture.set() and it will be Datastax Driver internal thread. It is
+	 * recommended to specify application thread pool executor for asynchronous calls.
+	 * 
+	 * @param executor Executor service
+	 * @return this
+	 */
 	SelectOperation<T> withExecutor(Executor executor);
 
+	/**
+	 * Synchronously executes select operation and returns object with type T
+	 * 
+	 * @return object with type T
+	 */
 	T execute();
 
+	/**
+	 * Asynchronously executes select operation and returns Future of the object with type T
+	 * 
+	 * @return Future of the object with type T
+	 */
 	CassandraFuture<T> executeAsync();
 
+	/**
+	 * Synchronously executes select operation for the given time interval in milliseconds and returns object with type T.
+	 * Useful for SLA services that guarantees response time.
+	 * 
+	 * @return object with type T or throws TimeoutException if execution time is grater than expected. Actually does not
+	 *         cancel operation on Cassandra servers due to unsupported feature in Cassandra itself.
+	 * 
+	 */
 	T executeNonstop(int timeoutMls) throws TimeoutException;
 
 }

@@ -81,7 +81,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	}
 
 	@Override
-	public <R> SimpleSelectOperation<Iterator<R>> map(final RowMapper<R> rowMapper) {
+	public <R> BaseSelectOperation<Iterator<R>> map(final RowMapper<R> rowMapper) {
 
 		return new ProcessingSelectOperation<Iterator<R>>(this, new Processor<Iterator<R>>() {
 
@@ -94,7 +94,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	}
 
 	@Override
-	public <R> SimpleSelectOperation<R> mapOne(final RowMapper<R> rowMapper) {
+	public <R> BaseSelectOperation<R> mapOne(final RowMapper<R> rowMapper) {
 
 		return new ProcessingSelectOperation<R>(this, new Processor<R>() {
 
@@ -107,7 +107,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	}
 
 	@Override
-	public <E> SimpleSelectOperation<E> firstColumnOne(final Class<E> elementType) {
+	public <E> BaseSelectOperation<E> firstColumnOne(final Class<E> elementType) {
 
 		return new ProcessingSelectOperation<E>(this, new Processor<E>() {
 
@@ -120,7 +120,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	}
 
 	@Override
-	public <E> SimpleSelectOperation<Iterator<E>> firstColumn(final Class<E> elementType) {
+	public <E> BaseSelectOperation<Iterator<E>> firstColumn(final Class<E> elementType) {
 
 		return new ProcessingSelectOperation<Iterator<E>>(this, new Processor<Iterator<E>>() {
 
@@ -133,7 +133,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	}
 
 	@Override
-	public SimpleSelectOperation<Iterator<Map<String, Object>>> map() {
+	public BaseSelectOperation<Iterator<Map<String, Object>>> map() {
 
 		return new ProcessingSelectOperation<Iterator<Map<String, Object>>>(this,
 				new Processor<Iterator<Map<String, Object>>>() {
@@ -148,7 +148,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	}
 
 	@Override
-	public SimpleSelectOperation<Map<String, Object>> mapOne() {
+	public BaseSelectOperation<Map<String, Object>> mapOne() {
 
 		return new ProcessingSelectOperation<Map<String, Object>>(this, new Processor<Map<String, Object>>() {
 
@@ -161,7 +161,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	}
 
 	@Override
-	public <O> SimpleSelectOperation<O> transform(final ResultSetCallback<O> rsc) {
+	public <O> BaseSelectOperation<O> transform(final ResultSetCallback<O> rsc) {
 
 		return new ProcessingSelectOperation<O>(this, new Processor<O>() {
 
@@ -174,7 +174,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	}
 
 	@Override
-	public SimpleSelectOperation<Object> each(final RowCallbackHandler rch) {
+	public BaseSelectOperation<Object> each(final RowCallbackHandler rch) {
 
 		return new ProcessingSelectOperation<Object>(this, new Processor<Object>() {
 
@@ -222,7 +222,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 		return resultSet;
 	}
 
-	abstract class ForwardingSelectOperation<T> implements SimpleSelectOperation<T> {
+	abstract class ForwardingSelectOperation<T> implements BaseSelectOperation<T> {
 
 		protected final SelectOperation<ResultSet> delegate;
 
@@ -231,19 +231,19 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 		}
 
 		@Override
-		public SimpleSelectOperation<T> withConsistencyLevel(ConsistencyLevel consistencyLevel) {
+		public BaseSelectOperation<T> withConsistencyLevel(ConsistencyLevel consistencyLevel) {
 			delegate.withConsistencyLevel(consistencyLevel);
 			return this;
 		}
 
 		@Override
-		public SimpleSelectOperation<T> withRetryPolicy(RetryPolicy retryPolicy) {
+		public BaseSelectOperation<T> withRetryPolicy(RetryPolicy retryPolicy) {
 			delegate.withRetryPolicy(retryPolicy);
 			return this;
 		}
 
 		@Override
-		public SimpleSelectOperation<T> withQueryTracing(Boolean queryTracing) {
+		public BaseSelectOperation<T> withQueryTracing(Boolean queryTracing) {
 			delegate.withQueryTracing(queryTracing);
 			return this;
 		}

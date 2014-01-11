@@ -15,18 +15,17 @@
  */
 package org.springdata.cassandra.base.core;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
-
-import org.springdata.cassandra.base.core.query.ConsistencyLevel;
-import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
-import org.springdata.cassandra.base.core.query.RetryPolicy;
-import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
 
 import com.datastax.driver.core.Query;
 import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterators;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 /**
  * 
@@ -34,95 +33,78 @@ import com.datastax.driver.core.ResultSetFuture;
  * 
  */
 
-public class DefaultIngestOperation implements IngestOperation {
+public class DefaultIngestOperation extends AbstractQueryOperation<List<ResultSet>, IngestOperation> implements
+		IngestOperation {
 
-	private final CassandraTemplate cassandraTemplate;
 	private final Iterator<Query> queryIterator;
 
-	private ConsistencyLevel consistencyLevel;
-	private RetryPolicy retryPolicy;
-	private Boolean queryTracing;
-
 	public DefaultIngestOperation(CassandraTemplate cassandraTemplate, Iterator<Query> iterator) {
-		this.cassandraTemplate = cassandraTemplate;
+		super(cassandraTemplate);
 		this.queryIterator = iterator;
 	}
 
 	@Override
-	public IngestOperation withConsistencyLevel(ConsistencyLevel consistencyLevel) {
-		this.consistencyLevel = consistencyLevel;
-		return this;
-	}
+	public List<ResultSet> execute() {
 
-	@Override
-	public IngestOperation withRetryPolicy(RetryPolicy retryPolicy) {
-		this.retryPolicy = retryPolicy;
-		return this;
-	}
-
-	@Override
-	public IngestOperation withQueryTracing(Boolean queryTracing) {
-		this.queryTracing = queryTracing;
-		return this;
-	}
-
-	@Override
-	public void execute() {
+		List<ResultSet> list = new ArrayList<ResultSet>();
 
 		while (queryIterator.hasNext()) {
 			Query query = queryIterator.next();
-			addQueryOptions(query);
-			cassandraTemplate.doExecute(query);
+			ResultSet resultSet = doExecute(query);
+			list.add(resultSet);
 		}
+
+		return list;
 
 	}
 
 	@Override
-	public void executeAsync() {
+	public CassandraFuture<List<ResultSet>> executeAsync() {
 
-		while (queryIterator.hasNext()) {
-			Query query = queryIterator.next();
-			addQueryOptions(query);
-			cassandraTemplate.doExecuteAsync(query);
-		}
+		final Iterator<ListenableFuture<ResultSet>> resultSetFutures = Iterators.transform(queryIterator,
+				new Function<Query, ListenableFuture<ResultSet>>() {
 
+					@Override
+					public ListenableFuture<ResultSet> apply(Query query) {
+						return doExecuteAsync(query);
+					}
+
+				});
+
+		ListenableFuture<List<ResultSet>> allResultSetFuture = Futures
+				.successfulAsList(new Iterable<ListenableFuture<ResultSet>>() {
+
+					@Override
+					public Iterator<ListenableFuture<ResultSet>> iterator() {
+						return resultSetFutures;
+					}
+
+				});
+
+		CassandraFuture<List<ResultSet>> wrappedFuture = new CassandraFuture<List<ResultSet>>(allResultSetFuture,
+				cassandraTemplate.getExceptionTranslator());
+
+		return wrappedFuture;
 	}
 
 	@Override
-	public void executeNonstop(int timeoutMls) throws TimeoutException {
+	public void executeAsync(CallbackHandler<List<ResultSet>> cb) {
+		CassandraFuture<List<ResultSet>> allResultSetFuture = executeAsync();
+		doFutureCallback(allResultSetFuture, cb);
+	}
+
+	@Override
+	public List<ResultSet> executeNonstop(int timeoutMls) throws TimeoutException {
+
+		List<ResultSet> list = new ArrayList<ResultSet>();
 
 		while (queryIterator.hasNext()) {
 			Query query = queryIterator.next();
-			addQueryOptions(query);
-			ResultSetFuture resultSetFuture = cassandraTemplate.doExecuteAsync(query);
-			CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture,
-					cassandraTemplate.getExceptionTranslator());
-			wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
+			ResultSet resultSet = doExecuteNonstop(query, timeoutMls);
+			list.add(resultSet);
 		}
 
-	}
-
-	private void addQueryOptions(Query query) {
-
-		/*
-		 * Add Query Options
-		 */
-
-		if (consistencyLevel != null) {
-			query.setConsistencyLevel(ConsistencyLevelResolver.resolve(consistencyLevel));
-		}
-
-		if (retryPolicy != null) {
-			query.setRetryPolicy(RetryPolicyResolver.resolve(retryPolicy));
-		}
-
-		if (queryTracing != null) {
-			if (queryTracing.booleanValue()) {
-				query.enableTracing();
-			} else {
-				query.disableTracing();
-			}
-		}
+		return list;
 	}
 
 }
