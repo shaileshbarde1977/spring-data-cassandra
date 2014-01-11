@@ -18,17 +18,13 @@ package org.springdata.cassandra.base.core;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.springdata.cassandra.base.core.query.ConsistencyLevel;
-import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
 import org.springdata.cassandra.base.core.query.RetryPolicy;
-import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
 
 import com.datastax.driver.core.Query;
 import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -40,44 +36,14 @@ import com.google.common.util.concurrent.MoreExecutors;
  * 
  */
 
-public class DefaultSelectOperation implements SelectOperation<ResultSet> {
+public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, SelectOperation<ResultSet>> implements
+		SelectOperation<ResultSet> {
 
-	private final CassandraTemplate cassandraTemplate;
 	private final Query query;
-	private FallbackHandler fh;
-	private Executor executor;
 
 	protected DefaultSelectOperation(CassandraTemplate cassandraTemplate, Query query) {
-		this.cassandraTemplate = cassandraTemplate;
+		super(cassandraTemplate);
 		this.query = query;
-	}
-
-	@Override
-	public SelectOperation<ResultSet> withConsistencyLevel(ConsistencyLevel consistencyLevel) {
-		if (consistencyLevel != null) {
-			query.setConsistencyLevel(ConsistencyLevelResolver.resolve(consistencyLevel));
-		}
-		return this;
-	}
-
-	@Override
-	public SelectOperation<ResultSet> withRetryPolicy(RetryPolicy retryPolicy) {
-		if (retryPolicy != null) {
-			query.setRetryPolicy(RetryPolicyResolver.resolve(retryPolicy));
-		}
-		return this;
-	}
-
-	@Override
-	public SelectOperation<ResultSet> withQueryTracing(Boolean queryTracing) {
-		if (queryTracing != null) {
-			if (queryTracing.booleanValue()) {
-				query.enableTracing();
-			} else {
-				query.disableTracing();
-			}
-		}
-		return this;
 	}
 
 	@Override
@@ -188,38 +154,23 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 	}
 
 	@Override
-	public SelectOperation<ResultSet> withFallbackHandler(FallbackHandler fh) {
-		this.fh = fh;
-		return this;
-	}
-
-	@Override
-	public SelectOperation<ResultSet> withExecutor(Executor executor) {
-		this.executor = executor;
-		return this;
-	}
-
-	@Override
 	public ResultSet execute() {
-		ResultSet resultSet = cassandraTemplate.doExecute(query);
-		return resultSet;
+		return doExecute(query);
 	}
 
 	@Override
 	public CassandraFuture<ResultSet> executeAsync() {
-		ResultSetFuture resultSetFuture = cassandraTemplate.doExecuteAsync(query);
-		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture,
-				cassandraTemplate.getExceptionTranslator());
-		return wrappedFuture;
+		return doExecuteAsync(query);
+	}
+
+	@Override
+	public void executeAsync(CallbackHandler<ResultSet> cb) {
+		doExecuteAsync(query, cb);
 	}
 
 	@Override
 	public ResultSet executeNonstop(int timeoutMls) throws TimeoutException {
-		ResultSetFuture resultSetFuture = cassandraTemplate.doExecuteAsync(query);
-		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture,
-				cassandraTemplate.getExceptionTranslator());
-		ResultSet resultSet = wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
-		return resultSet;
+		return doExecuteNonstop(query, timeoutMls);
 	}
 
 	abstract class ForwardingSelectOperation<T> implements BaseSelectOperation<T> {
@@ -245,6 +196,18 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 		@Override
 		public BaseSelectOperation<T> withQueryTracing(Boolean queryTracing) {
 			delegate.withQueryTracing(queryTracing);
+			return this;
+		}
+
+		@Override
+		public BaseSelectOperation<T> withFallbackHandler(FallbackHandler fh) {
+			delegate.withFallbackHandler(fh);
+			return this;
+		}
+
+		@Override
+		public BaseSelectOperation<T> withExecutor(Executor executor) {
+			delegate.withExecutor(executor);
 			return this;
 		}
 
@@ -278,14 +241,7 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 
 				@Override
 				public T apply(ResultSet resultSet) {
-					try {
-						return processor.process(resultSet);
-					} catch (RuntimeException e) {
-						if (fh != null) {
-							fh.onFailure(e);
-						}
-						throw e;
-					}
+					return processWithFallback(resultSet);
 				}
 
 			}, executor != null ? executor : MoreExecutors.sameThreadExecutor());
@@ -294,10 +250,34 @@ public class DefaultSelectOperation implements SelectOperation<ResultSet> {
 		}
 
 		@Override
+		public void executeAsync(final CallbackHandler<T> cb) {
+			delegate.executeAsync(new CallbackHandler<ResultSet>() {
+
+				@Override
+				public void onComplete(ResultSet resultSet) {
+					T result = processWithFallback(resultSet);
+					cb.onComplete(result);
+				}
+
+			});
+		}
+
+		@Override
 		public T executeNonstop(int timeoutMls) throws TimeoutException {
 			ResultSet resultSet = delegate.executeNonstop(timeoutMls);
 			return processor.process(resultSet);
 
+		}
+
+		protected T processWithFallback(ResultSet resultSet) {
+			try {
+				return processor.process(resultSet);
+			} catch (RuntimeException e) {
+				if (fh != null) {
+					fh.onFailure(e);
+				}
+				throw e;
+			}
 		}
 
 	}

@@ -15,11 +15,6 @@
  */
 package org.springdata.cassandra.base.core;
 
-import java.util.concurrent.TimeoutException;
-
-import org.springdata.cassandra.base.core.query.ConsistencyLevel;
-import org.springdata.cassandra.base.core.query.RetryPolicy;
-
 /**
  * Base methods for Cassandra select operation
  * 
@@ -27,53 +22,6 @@ import org.springdata.cassandra.base.core.query.RetryPolicy;
  * 
  */
 
-public interface BaseSelectOperation<T> {
+public interface BaseSelectOperation<T> extends QueryOperation<T, BaseSelectOperation<T>> {
 
-	/**
-	 * Adds consistency level to the select operation
-	 * 
-	 * @param consistencyLevel ConsistencyLevel
-	 * @return this
-	 */
-	BaseSelectOperation<T> withConsistencyLevel(ConsistencyLevel consistencyLevel);
-
-	/**
-	 * Adds retry policy to the select operation
-	 * 
-	 * @param retryPolicy RetryPolicy
-	 * @return this
-	 */
-	BaseSelectOperation<T> withRetryPolicy(RetryPolicy retryPolicy);
-
-	/**
-	 * Adds query tracing option to the select operation
-	 * 
-	 * @param queryTracing Boolean to enable/disable query tracing
-	 * @return this
-	 */
-	BaseSelectOperation<T> withQueryTracing(Boolean queryTracing);
-
-	/**
-	 * Synchronously executes select operation and returns object with type T
-	 * 
-	 * @return object with type T
-	 */
-	T execute();
-
-	/**
-	 * Asynchronously executes select operation and returns Future of the object with type T
-	 * 
-	 * @return Future of the object with type T
-	 */
-	CassandraFuture<T> executeAsync();
-
-	/**
-	 * Synchronously executes select operation for the given time interval in milliseconds and returns object with type T.
-	 * Useful for SLA services that guarantees response time.
-	 * 
-	 * @return object with type T or throws TimeoutException if execution time is grater than expected. Actually does not
-	 *         cancel operation on Cassandra servers due to unsupported feature in Cassandra itself.
-	 * 
-	 */
-	T executeNonstop(int timeoutMls) throws TimeoutException;
 }
