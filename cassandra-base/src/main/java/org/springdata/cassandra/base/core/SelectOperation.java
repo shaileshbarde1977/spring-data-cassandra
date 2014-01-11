@@ -33,7 +33,7 @@ public interface SelectOperation<T> extends QueryOperation<T, SelectOperation<T>
 	 * @param rowMapper
 	 * @return new mapped select operation
 	 */
-	<R> BaseSelectOperation<Iterator<R>> map(RowMapper<R> rowMapper);
+	<R> ProcessOperation<Iterator<R>> map(RowMapper<R> rowMapper);
 
 	/**
 	 * Maps first row in ResultSet by RowMapper.
@@ -41,7 +41,7 @@ public interface SelectOperation<T> extends QueryOperation<T, SelectOperation<T>
 	 * @param rowMapper
 	 * @return new mapped select operation
 	 */
-	<R> BaseSelectOperation<R> mapOne(RowMapper<R> rowMapper);
+	<R> ProcessOperation<R> mapOne(RowMapper<R> rowMapper);
 
 	/**
 	 * Retrieves first row in the first column, expected type is elementType class.
@@ -49,7 +49,7 @@ public interface SelectOperation<T> extends QueryOperation<T, SelectOperation<T>
 	 * @param elementType
 	 * @return new mapped select operation
 	 */
-	<E> BaseSelectOperation<E> firstColumnOne(Class<E> elementType);
+	<E> ProcessOperation<E> firstColumnOne(Class<E> elementType);
 
 	/**
 	 * Retrieves only the first column from ResultSet, expected type is elementType class.
@@ -57,21 +57,21 @@ public interface SelectOperation<T> extends QueryOperation<T, SelectOperation<T>
 	 * @param elementType
 	 * @return new mapped select operation
 	 */
-	<E> BaseSelectOperation<Iterator<E>> firstColumn(Class<E> elementType);
+	<E> ProcessOperation<Iterator<E>> firstColumn(Class<E> elementType);
 
 	/**
 	 * Maps all rows from ResultSet to Map<String, Object>.
 	 * 
 	 * @return new mapped select operation
 	 */
-	BaseSelectOperation<Iterator<Map<String, Object>>> map();
+	ProcessOperation<Iterator<Map<String, Object>>> map();
 
 	/**
 	 * Maps only first row from ResultSet to Map<String, Object>.
 	 * 
 	 * @return new mapped select operation
 	 */
-	BaseSelectOperation<Map<String, Object>> mapOne();
+	ProcessOperation<Map<String, Object>> mapOne();
 
 	/**
 	 * Uses ResultSetCallback to transform ResultSet to object with type T.
@@ -79,7 +79,7 @@ public interface SelectOperation<T> extends QueryOperation<T, SelectOperation<T>
 	 * @param rsc
 	 * @return new mapped select operation
 	 */
-	<O> BaseSelectOperation<O> transform(ResultSetCallback<O> rsc);
+	<O> ProcessOperation<O> transform(ResultSetCallback<O> rsc);
 
 	/**
 	 * Calls RowCallbackHandler for each row in ResultSet.
@@ -87,6 +87,6 @@ public interface SelectOperation<T> extends QueryOperation<T, SelectOperation<T>
 	 * @param rch
 	 * @return new mapped select operation
 	 */
-	BaseSelectOperation<Object> each(RowCallbackHandler rch);
+	ProcessOperation<Object> each(RowCallbackHandler rch);
 
 }

@@ -16,12 +16,12 @@
 package org.springdata.cassandra.base.core;
 
 /**
- * Base methods for Cassandra select operation
+ * Operation that processes ResultSet after select operation
  * 
  * @author Alex Shvid
  * 
  */
 
-public interface BaseSelectOperation<T> extends QueryOperation<T, BaseSelectOperation<T>> {
+public interface ProcessOperation<T> extends QueryOperation<T, ProcessOperation<T>> {
 
 }

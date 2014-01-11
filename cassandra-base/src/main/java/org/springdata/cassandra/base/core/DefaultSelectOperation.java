@@ -47,7 +47,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public <R> BaseSelectOperation<Iterator<R>> map(final RowMapper<R> rowMapper) {
+	public <R> ProcessOperation<Iterator<R>> map(final RowMapper<R> rowMapper) {
 
 		return new ProcessingSelectOperation<Iterator<R>>(this, new Processor<Iterator<R>>() {
 
@@ -60,7 +60,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public <R> BaseSelectOperation<R> mapOne(final RowMapper<R> rowMapper) {
+	public <R> ProcessOperation<R> mapOne(final RowMapper<R> rowMapper) {
 
 		return new ProcessingSelectOperation<R>(this, new Processor<R>() {
 
@@ -73,7 +73,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public <E> BaseSelectOperation<E> firstColumnOne(final Class<E> elementType) {
+	public <E> ProcessOperation<E> firstColumnOne(final Class<E> elementType) {
 
 		return new ProcessingSelectOperation<E>(this, new Processor<E>() {
 
@@ -86,7 +86,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public <E> BaseSelectOperation<Iterator<E>> firstColumn(final Class<E> elementType) {
+	public <E> ProcessOperation<Iterator<E>> firstColumn(final Class<E> elementType) {
 
 		return new ProcessingSelectOperation<Iterator<E>>(this, new Processor<Iterator<E>>() {
 
@@ -99,7 +99,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public BaseSelectOperation<Iterator<Map<String, Object>>> map() {
+	public ProcessOperation<Iterator<Map<String, Object>>> map() {
 
 		return new ProcessingSelectOperation<Iterator<Map<String, Object>>>(this,
 				new Processor<Iterator<Map<String, Object>>>() {
@@ -114,7 +114,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public BaseSelectOperation<Map<String, Object>> mapOne() {
+	public ProcessOperation<Map<String, Object>> mapOne() {
 
 		return new ProcessingSelectOperation<Map<String, Object>>(this, new Processor<Map<String, Object>>() {
 
@@ -127,7 +127,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public <O> BaseSelectOperation<O> transform(final ResultSetCallback<O> rsc) {
+	public <O> ProcessOperation<O> transform(final ResultSetCallback<O> rsc) {
 
 		return new ProcessingSelectOperation<O>(this, new Processor<O>() {
 
@@ -140,7 +140,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public BaseSelectOperation<Object> each(final RowCallbackHandler rch) {
+	public ProcessOperation<Object> each(final RowCallbackHandler rch) {
 
 		return new ProcessingSelectOperation<Object>(this, new Processor<Object>() {
 
@@ -173,7 +173,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 		return doExecuteNonstop(query, timeoutMls);
 	}
 
-	abstract class ForwardingSelectOperation<T> implements BaseSelectOperation<T> {
+	abstract class ForwardingSelectOperation<T> implements ProcessOperation<T> {
 
 		protected final SelectOperation<ResultSet> delegate;
 
@@ -182,31 +182,31 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 		}
 
 		@Override
-		public BaseSelectOperation<T> withConsistencyLevel(ConsistencyLevel consistencyLevel) {
+		public ProcessOperation<T> withConsistencyLevel(ConsistencyLevel consistencyLevel) {
 			delegate.withConsistencyLevel(consistencyLevel);
 			return this;
 		}
 
 		@Override
-		public BaseSelectOperation<T> withRetryPolicy(RetryPolicy retryPolicy) {
+		public ProcessOperation<T> withRetryPolicy(RetryPolicy retryPolicy) {
 			delegate.withRetryPolicy(retryPolicy);
 			return this;
 		}
 
 		@Override
-		public BaseSelectOperation<T> withQueryTracing(Boolean queryTracing) {
+		public ProcessOperation<T> withQueryTracing(Boolean queryTracing) {
 			delegate.withQueryTracing(queryTracing);
 			return this;
 		}
 
 		@Override
-		public BaseSelectOperation<T> withFallbackHandler(FallbackHandler fh) {
+		public ProcessOperation<T> withFallbackHandler(FallbackHandler fh) {
 			delegate.withFallbackHandler(fh);
 			return this;
 		}
 
 		@Override
-		public BaseSelectOperation<T> withExecutor(Executor executor) {
+		public ProcessOperation<T> withExecutor(Executor executor) {
 			delegate.withExecutor(executor);
 			return this;
 		}
