@@ -15,7 +15,6 @@
  */
 package org.springdata.cassandra.data.core;
 
-import org.springdata.cassandra.base.core.RowCallback;
 import org.springframework.data.convert.EntityReader;
 import org.springframework.util.Assert;
 

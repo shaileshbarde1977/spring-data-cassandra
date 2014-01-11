@@ -15,31 +15,15 @@
  */
 package org.springdata.cassandra.data.core;
 
-import java.nio.ByteBuffer;
-
-import com.datastax.driver.core.DataType;
+import com.datastax.driver.core.Row;
 
 /**
- * Simple Cassandra value of the ByteBuffer with DataType
+ * Simple internal callback to allow operations on a {@link Row}.
  * 
  * @author Alex Shvid
  */
-public class CassandraValue {
 
-	private final ByteBuffer value;
-	private final DataType type;
+public interface RowCallback<T> {
 
-	public CassandraValue(ByteBuffer value, DataType type) {
-		this.value = value;
-		this.type = type;
-	}
-
-	public ByteBuffer getValue() {
-		return value;
-	}
-
-	public DataType getType() {
-		return type;
-	}
-
+	T doWith(Row object);
 }
