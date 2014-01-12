@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.springdata.cassandra.cql.core.KeyPart;
 import org.springdata.cassandra.cql.core.Ordering;
+import org.springdata.cassandra.cql.option.TableOption;
 
 import com.datastax.driver.core.DataType;
 

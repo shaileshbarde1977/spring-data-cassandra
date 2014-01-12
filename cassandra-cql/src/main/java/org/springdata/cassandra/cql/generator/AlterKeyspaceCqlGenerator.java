@@ -17,8 +17,8 @@ package org.springdata.cassandra.cql.generator;
 
 import static org.springdata.cassandra.cql.util.CqlStringUtils.noNull;
 
+import org.springdata.cassandra.cql.option.KeyspaceOption;
 import org.springdata.cassandra.cql.spec.AlterKeyspaceSpecification;
-import org.springdata.cassandra.cql.spec.KeyspaceOption;
 
 /**
  * CQL generator for generating a <code>ALTER KEYSPACE</code> statement.

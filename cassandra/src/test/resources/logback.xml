@@ -9,7 +9,7 @@
 		</encoder>
 	</appender>
 
-    <logger name="org.springdata.cassandra.data" level="info" />
+    <logger name="org.springdata.cassandra" level="info" />
 
 	<root level="warn">
 		<appender-ref ref="console" />

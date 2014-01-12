@@ -17,12 +17,12 @@ package org.springdata.cassandra.cql.generator;
 
 import static org.springdata.cassandra.cql.util.CqlStringUtils.noNull;
 
+import org.springdata.cassandra.cql.option.TableOption;
 import org.springdata.cassandra.cql.spec.AddColumnSpecification;
 import org.springdata.cassandra.cql.spec.AlterColumnSpecification;
 import org.springdata.cassandra.cql.spec.AlterTableSpecification;
 import org.springdata.cassandra.cql.spec.ColumnChangeSpecification;
 import org.springdata.cassandra.cql.spec.DropColumnSpecification;
-import org.springdata.cassandra.cql.spec.TableOption;
 
 /**
  * CQL generator for generating <code>ALTER TABLE</code> statements.

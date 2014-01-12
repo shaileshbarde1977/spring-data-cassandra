@@ -15,11 +15,8 @@
  */
 package org.springdata.cassandra.cql.option;
 
-import org.springdata.cassandra.cql.spec.KeyspaceOption;
-import org.springdata.cassandra.cql.spec.OptionsCreator;
-
 /**
- * Keyspace Options Builder
+ * Keyspace Options Creator
  * 
  * @author Alex Shvid
  * 

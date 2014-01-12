@@ -15,6 +15,8 @@
  */
 package org.springdata.cassandra.cql.spec;
 
+import org.springdata.cassandra.cql.option.KeyspaceOption;
+
 /**
  * Builder class to construct a <code>CREATE KEYSPACE</code> specification.
  * 

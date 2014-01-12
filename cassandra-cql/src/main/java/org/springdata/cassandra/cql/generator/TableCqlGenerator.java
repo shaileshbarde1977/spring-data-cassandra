@@ -15,7 +15,7 @@
  */
 package org.springdata.cassandra.cql.generator;
 
-import org.springdata.cassandra.cql.spec.TableOption;
+import org.springdata.cassandra.cql.option.TableOption;
 import org.springdata.cassandra.cql.spec.TableSpecification;
 
 /**

@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.springdata.cassandra.cql.option.TableOption;
+
 import com.datastax.driver.core.DataType;
 
 /**

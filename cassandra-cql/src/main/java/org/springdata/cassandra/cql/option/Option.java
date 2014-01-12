@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.cql.spec;
+package org.springdata.cassandra.cql.option;
 
 /**
  * Interface to represent option types.

@@ -20,7 +20,7 @@ import static org.springdata.cassandra.cql.util.CqlStringUtils.singleQuote;
 
 import java.util.Map;
 
-import org.springdata.cassandra.cql.spec.Option;
+import org.springdata.cassandra.cql.option.Option;
 import org.springdata.cassandra.cql.spec.WithOptionsSpecification;
 
 /**

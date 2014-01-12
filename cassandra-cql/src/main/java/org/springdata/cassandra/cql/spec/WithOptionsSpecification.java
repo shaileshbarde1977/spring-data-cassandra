@@ -19,6 +19,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springdata.cassandra.cql.option.Option;
+import org.springdata.cassandra.cql.option.OptionsCreator;
+import org.springdata.cassandra.cql.option.TableOption;
 import org.springdata.cassandra.cql.util.CqlStringUtils;
 
 /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.cql.spec;
+package org.springdata.cassandra.cql.option;
 
 import static org.springdata.cassandra.cql.util.CqlStringUtils.escapeSingle;
 import static org.springdata.cassandra.cql.util.CqlStringUtils.singleQuote;

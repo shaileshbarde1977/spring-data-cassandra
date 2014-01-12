@@ -20,8 +20,8 @@ import static org.junit.Assert.*;
 import java.lang.annotation.RetentionPolicy;
 
 import org.junit.Test;
-import org.springdata.cassandra.cql.spec.DefaultOption;
-import org.springdata.cassandra.cql.spec.Option;
+import org.springdata.cassandra.cql.option.DefaultOption;
+import org.springdata.cassandra.cql.option.Option;
 
 public class OptionTest {
 
