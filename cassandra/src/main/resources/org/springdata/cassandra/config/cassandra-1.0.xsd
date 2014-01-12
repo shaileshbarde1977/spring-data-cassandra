@@ -163,7 +163,7 @@ RetryPolicy implementation.
 	<xsd:element name="session" type="sessionType">
 		<xsd:annotation>
 			<xsd:documentation
-				source="org.springdata.cassandra.data.core.CassandraSessionFactoryBean"><![CDATA[
+				source="org.springdata.cassandra.core.CassandraSessionFactoryBean"><![CDATA[
 Defines a Cassandra Session instance.
 			]]></xsd:documentation>
 			<xsd:appinfo>
@@ -258,12 +258,12 @@ The reference to a Cassandra Session instance. Will default to 'cassandra-sessio
 	<xsd:element name="mapping-converter" type="mappingConverterType">
 		<xsd:annotation>
 			<xsd:documentation
-				source="org.springdata.cassandra.data.core.CassandraMappingConveterFactoryBean"><![CDATA[
+				source="org.springdata.cassandra.core.CassandraMappingConveterFactoryBean"><![CDATA[
 Defines a Cassandra Mapping Converter instance.
 			]]></xsd:documentation>
 			<xsd:appinfo>
 				<tool:annotation>
-					<tool:exports type="org.springdata.cassandra.data.core.CassandraConverter" />
+					<tool:exports type="org.springdata.cassandra.core.CassandraConverter" />
 				</tool:annotation>
 			</xsd:appinfo>
 		</xsd:annotation>
@@ -284,12 +284,12 @@ Defines a Cassandra Mapping Converter instance.
 	<xsd:element name="template" type="templateType">
 		<xsd:annotation>
 			<xsd:documentation
-				source="org.springdata.cassandra.data.core.CassandraTemplateFactoryBean"><![CDATA[
+				source="org.springdata.cassandra.core.CassandraTemplateFactoryBean"><![CDATA[
 Defines a Cassandra Template instance.
 			]]></xsd:documentation>
 			<xsd:appinfo>
 				<tool:annotation>
-					<tool:exports type="org.springdata.cassandra.data.core.CassandraTemplate" />
+					<tool:exports type="org.springdata.cassandra.core.CassandraTemplate" />
 				</tool:annotation>
 			</xsd:appinfo>
 		</xsd:annotation>
@@ -358,7 +358,7 @@ The reference to a CassandraConverter instance. Will default to 'cassandra-conve
 			<xsd:appinfo>
 				<tool:annotation kind="ref">
 					<tool:assignable-to
-						type="org.springdata.cassandra.data.convert.CassandraConverter" />
+						type="org.springdata.cassandra.convert.CassandraConverter" />
 				</tool:annotation>
 			</xsd:appinfo>
 		</xsd:annotation>

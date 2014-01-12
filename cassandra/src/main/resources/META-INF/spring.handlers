@@ -1,1 +1,1 @@
-http\://www.springdata.org/schema/cassandra=org.springdata.cassandra.data.config.xml.CassandraNamespaceHandler
+http\://www.springdata.org/schema/cassandra=org.springdata.cassandra.config.xml.CassandraNamespaceHandler
