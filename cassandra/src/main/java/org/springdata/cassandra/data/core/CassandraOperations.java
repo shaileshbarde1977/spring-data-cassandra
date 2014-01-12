@@ -17,8 +17,8 @@ package org.springdata.cassandra.data.core;
 
 import java.util.List;
 
-import org.springdata.cassandra.base.core.CassandraCqlOperations;
-import org.springdata.cassandra.base.core.query.StatementOptions;
+import org.springdata.cassandra.cql.core.CassandraCqlOperations;
+import org.springdata.cassandra.cql.core.query.StatementOptions;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 
 /**

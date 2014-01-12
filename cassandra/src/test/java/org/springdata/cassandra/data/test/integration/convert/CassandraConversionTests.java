@@ -51,7 +51,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdata.cassandra.base.core.CassandraCqlOperations;
+import org.springdata.cassandra.cql.core.CassandraCqlOperations;
 import org.springdata.cassandra.data.core.CassandraOperations;
 import org.springdata.cassandra.data.test.integration.config.JavaConfig;
 import org.springdata.cassandra.data.test.integration.table.BasicTypesEntity;

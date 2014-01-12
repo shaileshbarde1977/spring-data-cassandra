@@ -31,7 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdata.cassandra.base.core.CassandraCqlOperations;
+import org.springdata.cassandra.cql.core.CassandraCqlOperations;
 import org.springdata.cassandra.data.test.integration.config.JavaConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

@@ -18,7 +18,7 @@ Defines the configuration elements for the Spring Data Cassandra support.
 	<xsd:element name="cluster" type="clusterType">
 		<xsd:annotation>
 			<xsd:documentation
-				source="org.springdata.cassandra.base.core.CassandraClusterFactoryBean"><![CDATA[
+				source="org.springdata.cassandra.cql.core.CassandraClusterFactoryBean"><![CDATA[
 Defines a Cassandra Cluster instance used for accessing Cassandra'.
 			]]></xsd:documentation>
 			<xsd:appinfo>
@@ -217,12 +217,12 @@ The reference to a CassandraConverter instance. Will default to 'cassandra-conve
 	<xsd:element name="cql-template" type="cqlTemplateType">
 		<xsd:annotation>
 			<xsd:documentation
-				source="org.springdata.cassandra.base.core.CassandraCqlTemplateFactoryBean"><![CDATA[
+				source="org.springdata.cassandra.cql.core.CassandraCqlTemplateFactoryBean"><![CDATA[
 Defines a Cassandra Driver Template instance.
 			]]></xsd:documentation>
 			<xsd:appinfo>
 				<tool:annotation>
-					<tool:exports type="org.springdata.cassandra.base.core.CassandraCqlTemplate" />
+					<tool:exports type="org.springdata.cassandra.cql.core.CassandraCqlTemplate" />
 				</tool:annotation>
 			</xsd:appinfo>
 		</xsd:annotation>

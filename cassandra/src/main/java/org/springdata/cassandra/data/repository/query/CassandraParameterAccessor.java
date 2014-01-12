@@ -15,7 +15,7 @@
  */
 package org.springdata.cassandra.data.repository.query;
 
-import org.springdata.cassandra.base.core.query.StatementOptionsAccessor;
+import org.springdata.cassandra.cql.core.query.StatementOptionsAccessor;
 import org.springframework.data.repository.query.ParameterAccessor;
 
 /**

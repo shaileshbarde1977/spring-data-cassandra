@@ -18,8 +18,8 @@ package org.springdata.cassandra.data.core;
 import java.util.Collection;
 import java.util.List;
 
-import org.springdata.cassandra.base.core.CassandraCqlSessionFactoryBean;
-import org.springdata.cassandra.base.core.CassandraCqlTemplate;
+import org.springdata.cassandra.cql.core.CassandraCqlSessionFactoryBean;
+import org.springdata.cassandra.cql.core.CassandraCqlTemplate;
 import org.springdata.cassandra.data.config.TableAttributes;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springframework.beans.factory.BeanClassLoaderAware;

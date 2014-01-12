@@ -18,9 +18,9 @@ package org.springdata.cassandra.data.config.java;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springdata.cassandra.base.config.KeyspaceAttributes;
-import org.springdata.cassandra.base.core.CassandraCqlOperations;
-import org.springdata.cassandra.base.core.CassandraCqlTemplate;
+import org.springdata.cassandra.cql.config.KeyspaceAttributes;
+import org.springdata.cassandra.cql.core.CassandraCqlOperations;
+import org.springdata.cassandra.cql.core.CassandraCqlTemplate;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springdata.cassandra.data.convert.MappingCassandraConverter;
 import org.springdata.cassandra.data.core.CassandraOperations;

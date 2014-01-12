@@ -15,7 +15,7 @@
  */
 package org.springdata.cassandra.data.test.integration.table;
 
-import org.springdata.cassandra.base.core.cql.options.TableOptions;
+import org.springdata.cassandra.cql.option.TableOptions;
 import org.springdata.cassandra.data.mapping.Id;
 import org.springdata.cassandra.data.mapping.Table;
 

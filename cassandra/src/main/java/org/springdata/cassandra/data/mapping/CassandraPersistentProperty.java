@@ -15,8 +15,8 @@
  */
 package org.springdata.cassandra.data.mapping;
 
-import org.springdata.cassandra.base.core.KeyPart;
-import org.springdata.cassandra.base.core.Ordering;
+import org.springdata.cassandra.cql.core.KeyPart;
+import org.springdata.cassandra.cql.core.Ordering;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mapping.PersistentProperty;
 

@@ -17,7 +17,7 @@ package org.springdata.cassandra.data.config.xml;
 
 import java.util.List;
 
-import org.springdata.cassandra.base.config.KeyspaceAttributes;
+import org.springdata.cassandra.cql.config.KeyspaceAttributes;
 import org.springdata.cassandra.data.config.ConfigConstants;
 import org.springdata.cassandra.data.config.TableAttributes;
 import org.springdata.cassandra.data.core.CassandraSessionFactoryBean;

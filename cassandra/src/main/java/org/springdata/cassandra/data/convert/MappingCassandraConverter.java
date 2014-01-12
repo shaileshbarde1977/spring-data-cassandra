@@ -25,12 +25,12 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdata.cassandra.base.core.KeyPart;
-import org.springdata.cassandra.base.core.cql.spec.AlterTableSpecification;
-import org.springdata.cassandra.base.core.cql.spec.CreateIndexSpecification;
-import org.springdata.cassandra.base.core.cql.spec.CreateTableSpecification;
-import org.springdata.cassandra.base.core.cql.spec.DropIndexSpecification;
-import org.springdata.cassandra.base.core.cql.spec.WithNameSpecification;
+import org.springdata.cassandra.cql.core.KeyPart;
+import org.springdata.cassandra.cql.spec.AlterTableSpecification;
+import org.springdata.cassandra.cql.spec.CreateIndexSpecification;
+import org.springdata.cassandra.cql.spec.CreateTableSpecification;
+import org.springdata.cassandra.cql.spec.DropIndexSpecification;
+import org.springdata.cassandra.cql.spec.WithNameSpecification;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.data.mapping.CassandraPersistentProperty;
 import org.springframework.beans.BeansException;

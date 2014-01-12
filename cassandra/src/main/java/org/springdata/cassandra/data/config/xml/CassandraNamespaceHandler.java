@@ -15,9 +15,9 @@
  */
 package org.springdata.cassandra.data.config.xml;
 
-import org.springdata.cassandra.base.config.xml.CassandraClusterParser;
-import org.springdata.cassandra.base.config.xml.CassandraCqlTemplateParser;
-import org.springdata.cassandra.base.config.xml.ConfigCqlConstants;
+import org.springdata.cassandra.cql.config.xml.CassandraClusterParser;
+import org.springdata.cassandra.cql.config.xml.CassandraCqlTemplateParser;
+import org.springdata.cassandra.cql.config.xml.ConfigCqlConstants;
 import org.springdata.cassandra.data.config.ConfigConstants;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 

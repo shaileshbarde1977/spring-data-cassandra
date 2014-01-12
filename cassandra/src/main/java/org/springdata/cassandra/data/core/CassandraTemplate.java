@@ -25,12 +25,12 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdata.cassandra.base.core.CassandraCqlOperations;
-import org.springdata.cassandra.base.core.CassandraCqlTemplate;
-import org.springdata.cassandra.base.core.SessionCallback;
-import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
-import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
-import org.springdata.cassandra.base.core.query.StatementOptions;
+import org.springdata.cassandra.cql.core.CassandraCqlOperations;
+import org.springdata.cassandra.cql.core.CassandraCqlTemplate;
+import org.springdata.cassandra.cql.core.SessionCallback;
+import org.springdata.cassandra.cql.core.query.ConsistencyLevelResolver;
+import org.springdata.cassandra.cql.core.query.RetryPolicyResolver;
+import org.springdata.cassandra.cql.core.query.StatementOptions;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.data.mapping.CassandraPersistentProperty;

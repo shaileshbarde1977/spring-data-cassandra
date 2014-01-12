@@ -1,6 +1,6 @@
 package org.springdata.cassandra.data.test.integration.table;
 
-import org.springdata.cassandra.base.core.KeyPart;
+import org.springdata.cassandra.cql.core.KeyPart;
 import org.springdata.cassandra.data.mapping.Embeddable;
 import org.springdata.cassandra.data.mapping.EmbeddedId;
 import org.springdata.cassandra.data.mapping.KeyColumn;

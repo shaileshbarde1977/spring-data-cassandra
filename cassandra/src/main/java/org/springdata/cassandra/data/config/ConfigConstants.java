@@ -1,6 +1,6 @@
 package org.springdata.cassandra.data.config;
 
-import org.springdata.cassandra.base.config.xml.ConfigCqlConstants;
+import org.springdata.cassandra.cql.config.xml.ConfigCqlConstants;
 
 public interface ConfigConstants extends ConfigCqlConstants {
 
