@@ -48,13 +48,13 @@ Add dependencies
 
 <dependency>
   <groupId>org.springdata</groupId>
-  <artifactId>cassandra-base</artifactId>
+  <artifactId>cassandra-cql</artifactId>
   <version>1.0.0.BUILD-SNAPSHOT</version>
 </dependency>
 
 <dependency>
   <groupId>org.springdata</groupId>
-  <artifactId>cassandra-data</artifactId>
+  <artifactId>cassandra</artifactId>
   <version>1.0.0.BUILD-SNAPSHOT</version>
 </dependency>
 
