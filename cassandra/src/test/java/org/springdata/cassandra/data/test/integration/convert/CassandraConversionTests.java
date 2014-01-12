@@ -74,7 +74,7 @@ import com.google.common.collect.ImmutableSet;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { JavaConfig.class }, loader = AnnotationConfigContextLoader.class)
-public class CassandraDataConversionTests {
+public class CassandraConversionTests {
 
 	@Autowired
 	private CassandraCqlOperations cassandraCqlOperations;
@@ -82,7 +82,7 @@ public class CassandraDataConversionTests {
 	@Autowired
 	private CassandraOperations cassandraOperations;
 
-	private static Logger log = LoggerFactory.getLogger(CassandraDataConversionTests.class);
+	private static Logger log = LoggerFactory.getLogger(CassandraConversionTests.class);
 
 	private final static String CASSANDRA_CONFIG = "cassandra.yaml";
 	private final static String KEYSPACE_NAME = "test";

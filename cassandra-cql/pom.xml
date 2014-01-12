@@ -4,10 +4,10 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>cassandra-base</artifactId>
+	<artifactId>cassandra-cql</artifactId>
 
-	<name>Cassandra Base</name>
-	<description>Cassandra support for Spring</description>
+	<name>Spring Cassandra Cql</name>
+	<description>Cassandra support for Spring Framewoprk</description>
 
 	<parent>
 		<groupId>org.springdata</groupId>
