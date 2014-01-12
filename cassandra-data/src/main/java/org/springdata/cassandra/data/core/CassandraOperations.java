@@ -17,6 +17,7 @@ package org.springdata.cassandra.data.core;
 
 import java.util.List;
 
+import org.springdata.cassandra.base.core.CassandraCqlOperations;
 import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 
@@ -216,7 +217,8 @@ public interface CassandraOperations {
 	 * @param tableName
 	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName, StatementOptions optionsOrNull);
+	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName,
+			StatementOptions optionsOrNull);
 
 	/**
 	 * Remove list of objects from the table by given ids.
@@ -225,7 +227,8 @@ public interface CassandraOperations {
 	 * @param entityClass
 	 * @param optionsOrNull
 	 */
-	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, StatementOptions optionsOrNull);
+	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass,
+			StatementOptions optionsOrNull);
 
 	/**
 	 * Remove list of objects from the table by given ids.
@@ -279,5 +282,12 @@ public interface CassandraOperations {
 	 * @return TableDataOperations
 	 */
 	CassandraSchemaDataOperations schemaDataOps();
+
+	/**
+	 * Returns Cql specific operations
+	 * 
+	 * @return CassandraCqlOperations
+	 */
+	CassandraCqlOperations cqlOps();
 
 }

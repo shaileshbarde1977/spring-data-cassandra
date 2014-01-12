@@ -32,7 +32,7 @@ public enum KeyspaceOption implements Option {
 	 */
 	REPLICATION("replication", Map.class, true, false, false),
 
-	DURABLE_WRITES("durable_writes", Boolean.class, true, false, false);
+	DURABLE_WRITES("durable_writes", Boolean.class, false, false, false);
 
 	private Option delegate;
 
@@ -89,7 +89,7 @@ public enum KeyspaceOption implements Option {
 		/**
 		 * <code>class</code>
 		 */
-		CLASS("class", String.class, true, true, true),
+		CLASS("class", String.class, true, false, true),
 
 		/**
 		 * <code>replication_factor</code>

@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springdata.cassandra.base.core.CassandraCqlOperations;
 import org.springdata.cassandra.data.core.CassandraOperations;
 import org.springdata.cassandra.data.core.CassandraTemplate;
 import org.springdata.cassandra.data.repository.CassandraRepository;
@@ -40,7 +39,7 @@ import com.datastax.driver.core.querybuilder.Select;
 
 public class SimpleCassandraRepository<T, ID extends Serializable> implements CassandraRepository<T, ID> {
 
-	private final CassandraTemplate cassandraDataTemplate;
+	private final CassandraTemplate cassandraTemplate;
 	private final CassandraEntityInformation<T, ID> entityInformation;
 
 	/**
@@ -50,31 +49,24 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	 * @param metadata must not be {@literal null}.
 	 * @param template must not be {@literal null}.
 	 */
-	public SimpleCassandraRepository(CassandraEntityInformation<T, ID> metadata,
-			CassandraTemplate cassandraDataTemplate) {
+	public SimpleCassandraRepository(CassandraEntityInformation<T, ID> metadata, CassandraTemplate cassandraTemplate) {
 
-		Assert.notNull(cassandraDataTemplate);
+		Assert.notNull(cassandraTemplate);
 		Assert.notNull(metadata);
 
 		this.entityInformation = metadata;
-		this.cassandraDataTemplate = cassandraDataTemplate;
+		this.cassandraTemplate = cassandraTemplate;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#save(java.lang.Object)
-	 */
+	@Override
 	public <S extends T> S save(S entity) {
 
 		Assert.notNull(entity, "Entity must not be null!");
-		cassandraDataTemplate.saveNew(false, entity, entityInformation.getTableName(), null);
+		cassandraTemplate.saveNew(false, entity, entityInformation.getTableName(), null);
 		return entity;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#save(java.lang.Iterable)
-	 */
+	@Override
 	public <S extends T> List<S> save(Iterable<S> entities) {
 
 		Assert.notNull(entities, "The given Iterable of entities must not be null!");
@@ -94,30 +86,20 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 		return clause;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#findOne(java.io.Serializable)
-	 */
+	@Override
 	public T findOne(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
-		return cassandraDataTemplate.findById(id, entityInformation.getJavaType(), null);
+		return cassandraTemplate.findById(id, entityInformation.getJavaType(), null);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.cassandra.repository.CassandraRepository#findByPartitionKey(java.io.Serializable)
-	 */
 	@Override
 	public List<T> findByPartitionKey(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
 
-		return cassandraDataTemplate.findByPartitionKey(id, entityInformation.getJavaType(), null);
+		return cassandraTemplate.findByPartitionKey(id, entityInformation.getJavaType(), null);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#exists(java.io.Serializable)
-	 */
+	@Override
 	public boolean exists(ID id) {
 
 		Assert.notNull(id, "The given id must not be null!");
@@ -125,41 +107,29 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 		Select select = QueryBuilder.select().countAll().from(entityInformation.getTableName());
 		select.where(getIdClause(id));
 
-		Long num = cassandraDataTemplate.count(select.getQueryString(), null);
+		Long num = cassandraTemplate.count(select.getQueryString(), null);
 		return num != null && num.longValue() > 0;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#count()
-	 */
+	@Override
 	public long count() {
-		return cassandraDataTemplate.countAll(entityInformation.getTableName(), null);
+		return cassandraTemplate.countAll(entityInformation.getTableName(), null);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#delete(java.io.Serializable)
-	 */
+	@Override
 	public void delete(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
 
-		cassandraDataTemplate.deleteById(false, id, entityInformation.getJavaType(), null);
+		cassandraTemplate.deleteById(false, id, entityInformation.getJavaType(), null);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#delete(java.lang.Object)
-	 */
+	@Override
 	public void delete(T entity) {
 		Assert.notNull(entity, "The given entity must not be null!");
 		delete(entityInformation.getId(entity));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#delete(java.lang.Iterable)
-	 */
+	@Override
 	public void delete(Iterable<? extends T> entities) {
 
 		Assert.notNull(entities, "The given Iterable of entities not be null!");
@@ -169,27 +139,18 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#deleteAll()
-	 */
+	@Override
 	public void deleteAll() {
-		cassandraDataTemplate.truncate(entityInformation.getTableName()).execute();
+		cassandraTemplate.cqlOps().truncate(entityInformation.getTableName()).execute();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#findAll()
-	 */
+	@Override
 	public List<T> findAll() {
 		Select select = QueryBuilder.select().all().from(entityInformation.getTableName());
 		return findAll(select);
 	}
 
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.CrudRepository#findAll(java.lang.Iterable)
-	 */
+	@Override
 	public Iterable<T> findAll(Iterable<ID> ids) {
 
 		List<ID> parameters = new ArrayList<ID>();
@@ -209,16 +170,7 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 			return Collections.emptyList();
 		}
 
-		return cassandraDataTemplate.find(query.getQueryString(), entityInformation.getJavaType(), null);
-	}
-
-	/**
-	 * Returns the underlying {@link CassandraCqlOperations} instance.
-	 * 
-	 * @return
-	 */
-	protected CassandraCqlOperations getCassandraOperations() {
-		return this.cassandraDataTemplate;
+		return cassandraTemplate.find(query.getQueryString(), entityInformation.getJavaType(), null);
 	}
 
 	/**
@@ -226,8 +178,8 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	 * 
 	 * @return
 	 */
-	protected CassandraOperations getCassandraDataOperations() {
-		return this.cassandraDataTemplate;
+	protected CassandraOperations getCassandraOperations() {
+		return this.cassandraTemplate;
 	}
 
 	/**

@@ -66,8 +66,7 @@ import com.google.common.collect.Iterators;
  */
 public class CassandraCqlTemplate implements CassandraCqlOperations {
 
-	/** Logger available to subclasses */
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private final static Logger logger = LoggerFactory.getLogger(CassandraCqlTemplate.class);
 
 	private Session session;
 	private String keyspace;

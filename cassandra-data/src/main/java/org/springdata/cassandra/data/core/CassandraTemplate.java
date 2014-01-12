@@ -23,6 +23,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springdata.cassandra.base.core.CassandraCqlOperations;
 import org.springdata.cassandra.base.core.CassandraCqlTemplate;
 import org.springdata.cassandra.base.core.SessionCallback;
 import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
@@ -58,7 +61,9 @@ import com.datastax.driver.core.querybuilder.Update;
  * @author Alex Shvid
  * @author David Webb
  */
-public class CassandraTemplate extends CassandraCqlTemplate implements CassandraOperations {
+public class CassandraTemplate implements CassandraOperations {
+
+	private final static Logger logger = LoggerFactory.getLogger(CassandraTemplate.class);
 
 	/*
 	 * List of iterable classes when testing POJOs for specific operations.
@@ -75,10 +80,12 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 
 	}
 
-	private CassandraConverter cassandraConverter;
-	private MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
+	private final CassandraCqlTemplate cassandraCqlTemplate;
+	private final CassandraConverter cassandraConverter;
+	private final String keyspace;
+	private final MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
 
-	private CassandraSchemaDataOperations schemaDataOperations;
+	private final CassandraSchemaDataOperations schemaDataOperations;
 
 	/**
 	 * Constructor used for a basic template configuration
@@ -87,9 +94,11 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 	 * @param converter must not be {@literal null}.
 	 */
 	public CassandraTemplate(Session session, CassandraConverter converter, String keyspace) {
-		super(session, keyspace);
+		Assert.notNull(session);
 		Assert.notNull(converter);
+		this.cassandraCqlTemplate = new CassandraCqlTemplate(session, keyspace);
 		this.cassandraConverter = converter;
+		this.keyspace = keyspace;
 		this.mappingContext = this.cassandraConverter.getMappingContext();
 		this.schemaDataOperations = new DefaultSchemaDataOperations(this);
 	}
@@ -334,6 +343,11 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 		return schemaDataOperations;
 	}
 
+	@Override
+	public CassandraCqlOperations cqlOps() {
+		return cassandraCqlTemplate;
+	}
+
 	/**
 	 * @param obj
 	 * @return
@@ -354,7 +368,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 	protected <T> List<T> doSelect(final String cql, ReadRowCallback<T> readRowCallback,
 			final StatementOptions optionsOrNull) {
 
-		ResultSet resultSet = doExecute(new SessionCallback<ResultSet>() {
+		ResultSet resultSet = cassandraCqlTemplate.execute(new SessionCallback<ResultSet>() {
 
 			@Override
 			public ResultSet doInSession(Session s) {
@@ -389,7 +403,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 
 		Long count = null;
 
-		ResultSet resultSet = doExecute(new SessionCallback<ResultSet>() {
+		ResultSet resultSet = cassandraCqlTemplate.execute(new SessionCallback<ResultSet>() {
 
 			@Override
 			public ResultSet doInSession(Session s) {
@@ -428,7 +442,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 		/*
 		 * Run the Query
 		 */
-		ResultSet resultSet = doExecute(new SessionCallback<ResultSet>() {
+		ResultSet resultSet = cassandraCqlTemplate.execute(new SessionCallback<ResultSet>() {
 
 			@Override
 			public ResultSet doInSession(Session s) {
@@ -498,7 +512,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 
 		logger.info(batch.getQueryString());
 
-		doExecute(new SessionCallback<Object>() {
+		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public List<T> doInSession(Session s) {
@@ -556,7 +570,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 
 		logger.info(batch.toString());
 
-		doExecute(new SessionCallback<Object>() {
+		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public List<T> doInSession(Session s) {
@@ -587,7 +601,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 
 		logger.info(query.toString());
 
-		doExecute(new SessionCallback<Object>() {
+		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public Object doInSession(Session s) {
@@ -618,7 +632,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 
 		logger.info(query.toString());
 
-		doExecute(new SessionCallback<Object>() {
+		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public Object doInSession(Session s) {
@@ -655,7 +669,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 			logger.info(query.getRetryPolicy().toString());
 		}
 
-		doExecute(new SessionCallback<Object>() {
+		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public T doInSession(Session s) {
@@ -689,7 +703,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 
 		logger.info(q.toString());
 
-		doExecute(new SessionCallback<Object>() {
+		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public T doInSession(Session s) {
@@ -733,7 +747,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 	 */
 	protected Query toInsertQuery(String tableName, final Object objectToSave, StatementOptions optionsOrNull) {
 
-		final Insert query = QueryBuilder.insertInto(getKeyspace(), tableName);
+		final Insert query = QueryBuilder.insertInto(keyspace, tableName);
 
 		/*
 		 * Write properties
@@ -767,7 +781,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 	 */
 	protected Query toUpdateQuery(String tableName, final Object objectToSave, StatementOptions optionsOrNull) {
 
-		final Update query = QueryBuilder.update(getKeyspace(), tableName);
+		final Update query = QueryBuilder.update(keyspace, tableName);
 
 		/*
 		 * Write properties
@@ -804,7 +818,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 		CassandraPersistentEntity<?> entity = getEntity(entityClass);
 
 		final Delete.Selection ds = QueryBuilder.delete();
-		final Delete query = ds.from(getKeyspace(), tableName);
+		final Delete query = ds.from(keyspace, tableName);
 		final Where w = query.where();
 
 		List<Clause> list = cassandraConverter.getPrimaryKey(entity, id);
@@ -854,7 +868,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 
 		logger.info(batch.toString());
 
-		doExecute(new SessionCallback<Object>() {
+		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public Object doInSession(Session s) {
@@ -885,7 +899,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 	protected Query toDeleteQuery(String tableName, final Object objectToRemove, StatementOptions optionsOrNull) {
 
 		final Delete.Selection ds = QueryBuilder.delete();
-		final Delete query = ds.from(getKeyspace(), tableName);
+		final Delete query = ds.from(keyspace, tableName);
 		final Where w = query.where();
 
 		/*
@@ -939,7 +953,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 
 		logger.info(batch.toString());
 
-		doExecute(new SessionCallback<Object>() {
+		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public Object doInSession(Session s) {
@@ -1103,7 +1117,7 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 
 		logger.info(cql);
 
-		return doExecute(new SessionCallback<ResultSet>() {
+		return cassandraCqlTemplate.execute(new SessionCallback<ResultSet>() {
 
 			@Override
 			public ResultSet doInSession(Session s) {
@@ -1115,5 +1129,9 @@ public class CassandraTemplate extends CassandraCqlTemplate implements Cassandra
 				return s.execute(statement);
 			}
 		});
+	}
+
+	protected RuntimeException translateIfPossible(RuntimeException ex) {
+		return cassandraCqlTemplate.translateIfPossible(ex);
 	}
 }

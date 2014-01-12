@@ -114,7 +114,7 @@ public class DefaultSchemaDataOperations implements CassandraSchemaDataOperation
 
 		final CassandraPersistentEntity<?> entity = dataTemplate.getEntity(entityClass);
 
-		TableMetadata tableMetadata = dataTemplate.schemaOps().getTableMetadata(tableName);
+		TableMetadata tableMetadata = dataTemplate.cqlOps().schemaOps().getTableMetadata(tableName);
 
 		AlterTableSpecification spec = dataTemplate.getConverter().getAlterTableSpecification(entity, tableMetadata,
 				dropRemovedAttributeColumns);
@@ -191,7 +191,7 @@ public class DefaultSchemaDataOperations implements CassandraSchemaDataOperation
 
 		CassandraPersistentEntity<?> entity = dataTemplate.getEntity(entityClass);
 
-		TableMetadata tableMetadata = dataTemplate.schemaOps().getTableMetadata(tableName);
+		TableMetadata tableMetadata = dataTemplate.cqlOps().schemaOps().getTableMetadata(tableName);
 
 		List<WithNameSpecification<?>> specList = dataTemplate.getConverter().getIndexChangeSpecifications(entity,
 				tableMetadata);
