@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsd:schema xmlns="http://www.springdata.org/schema/cassandra/data"
+<xsd:schema xmlns="http://www.springdata.org/schema/cassandra"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:tool="http://www.springframework.org/schema/tool"
-	targetNamespace="http://www.springdata.org/schema/cassandra/data"
+	targetNamespace="http://www.springdata.org/schema/cassandra"
 	elementFormDefault="qualified" attributeFormDefault="unqualified">
 
 	<xsd:import namespace="http://www.springframework.org/schema/tool"
@@ -18,7 +18,7 @@ Defines the configuration elements for the Spring Data Cassandra support.
 	<xsd:element name="cluster" type="clusterType">
 		<xsd:annotation>
 			<xsd:documentation
-				source="org.springdata.cassandra.data.core.CassandraClusterFactoryBean"><![CDATA[
+				source="org.springdata.cassandra.base.core.CassandraClusterFactoryBean"><![CDATA[
 Defines a Cassandra Cluster instance used for accessing Cassandra'.
 			]]></xsd:documentation>
 			<xsd:appinfo>
@@ -51,21 +51,21 @@ Defines a Cassandra Cluster instance used for accessing Cassandra'.
 		<xsd:attribute name="contactPoints" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[
-The comma separated hosts to Cassandra servers.  Default is localhost
+The comma separated hosts to Cassandra servers.  Default is 'localhost'.
 							]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="port" type="xsd:string" use="optional">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[
-The port to connect to Cassandra server as native CQL client.  Default is 9042
+The port to connect to Cassandra server as native CQL client.  Default is 9042.
 							]]></xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 		<xsd:attribute name="compression" default="NONE" use="optional">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[
-The protocol options compression. Default is 'none'.
+The protocol options compression. Default is 'NONE'.
 							]]></xsd:documentation>
 			</xsd:annotation>
 			<xsd:simpleType>
@@ -164,7 +164,7 @@ RetryPolicy implementation.
 		<xsd:annotation>
 			<xsd:documentation
 				source="org.springdata.cassandra.data.core.CassandraSessionFactoryBean"><![CDATA[
-Defines a Cassandra Session instance used for accessing Cassandra Keyspace'.
+Defines a Cassandra Session instance.
 			]]></xsd:documentation>
 			<xsd:appinfo>
 				<tool:annotation>
@@ -173,7 +173,7 @@ Defines a Cassandra Session instance used for accessing Cassandra Keyspace'.
 			</xsd:appinfo>
 		</xsd:annotation>
 	</xsd:element>
-
+	
 	<xsd:complexType name="sessionType">
 		<xsd:sequence>
 			<xsd:element name="keyspace-attributes" type="keyspaceAttributesType"
@@ -182,12 +182,12 @@ Defines a Cassandra Session instance used for accessing Cassandra Keyspace'.
 		<xsd:attribute name="id" type="xsd:ID" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
-					The name of the Keyspace definition (by default
-					"cassandra-keyspace")
+					The name of the Cassandra Session definition (by default
+					"cassandra-session")
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="name" type="xsd:string">
+		<xsd:attribute name="keyspace" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[
 The keyspace name of the Cassandra database.
@@ -207,12 +207,140 @@ The reference to a Cassandra Cluster instance. Will default to 'cassandra-cluste
 			use="optional">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[
-The reference to a CassandraConverter instance. Default is null.
+The reference to a CassandraConverter instance. Will default to 'cassandra-converter'.
                                         ]]>
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:complexType>
+	
+	<xsd:element name="cql-template" type="cqlTemplateType">
+		<xsd:annotation>
+			<xsd:documentation
+				source="org.springdata.cassandra.base.core.CassandraCqlTemplateFactoryBean"><![CDATA[
+Defines a Cassandra Driver Template instance.
+			]]></xsd:documentation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="org.springdata.cassandra.base.core.CassandraCqlTemplate" />
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:complexType name="cqlTemplateType">
+		<xsd:attribute name="id" type="xsd:ID" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					The name of the Driver Template definition (by default
+					"cassandra-driver-template")
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyspace" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The keyspace name of the Cassandra database.
+							]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="cassandra-session-ref" type="sessionRef"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The reference to a Cassandra Session instance. Will default to 'cassandra-session'.
+                                        ]]>
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:element name="mapping-converter" type="mappingConverterType">
+		<xsd:annotation>
+			<xsd:documentation
+				source="org.springdata.cassandra.data.core.CassandraMappingConveterFactoryBean"><![CDATA[
+Defines a Cassandra Mapping Converter instance.
+			]]></xsd:documentation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="org.springdata.cassandra.data.core.CassandraConverter" />
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:complexType name="mappingConverterType">
+		<xsd:attribute name="id" type="xsd:ID" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					The name of the Cassandra Converter definition (by default
+					"cassandra-converter")
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	
+	</xsd:complexType>
+
+	<xsd:element name="template" type="templateType">
+		<xsd:annotation>
+			<xsd:documentation
+				source="org.springdata.cassandra.data.core.CassandraTemplateFactoryBean"><![CDATA[
+Defines a Cassandra Template instance.
+			]]></xsd:documentation>
+			<xsd:appinfo>
+				<tool:annotation>
+					<tool:exports type="org.springdata.cassandra.data.core.CassandraDataTemplate" />
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:complexType name="templateType">
+		<xsd:attribute name="id" type="xsd:ID" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					The name of the Cassandra Template definition (by default
+					"cassandra-template")
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="keyspace" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The keyspace name of the Cassandra database.
+							]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="cassandra-session-ref" type="sessionRef"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The reference to a Cassandra Session instance. Will default to 'cassandra-session'.
+                                        ]]>
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="cassandra-converter-ref" type="converterRef"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+The reference to a CassandraConverter instance. Will default to 'cassandra-converter'.
+                                        ]]>
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="sessionRef" final="union">
+		<xsd:annotation>
+			<xsd:appinfo>
+				<tool:annotation kind="ref">
+					<tool:assignable-to type="com.datastax.driver.core.Session" />
+				</tool:annotation>
+			</xsd:appinfo>
+		</xsd:annotation>
+		<xsd:union memberTypes="xsd:string" />
+	</xsd:simpleType>
 
 	<xsd:simpleType name="clusterRef" final="union">
 		<xsd:annotation>
@@ -325,7 +453,7 @@ Sets the SO_SNDBUF socket option.
 			<xsd:element name="table" type="tableType" maxOccurs="unbounded"
 				minOccurs="0"></xsd:element>
 		</xsd:sequence>
-		<xsd:attribute name="auto" default="validate">
+		<xsd:attribute name="action" default="validate">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[
 The keyspace manipulation operation on startup. Default value is 'validate'.
@@ -391,7 +519,7 @@ Support durable writes in the Cassandra keyspace. Default value is 'true'.
 	</xsd:complexType>
 
 	<xsd:complexType name="tableType">
-		<xsd:attribute name="entity" type="xsd:string">
+		<xsd:attribute name="entity-class" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[
 Entity class name.

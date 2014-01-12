@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.data.config;
+package org.springdata.cassandra.base.config.xml;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
- * Namespace handler for &lt;cassandra;gt;.
+ * Namespace handler for Cassandra Driver.
  * 
  * @author Alex Shvid
  */
 
-public class CassandraNamespaceHandler extends NamespaceHandlerSupport {
+public class CassandraCqlNamespaceHandler extends NamespaceHandlerSupport {
 
 	public void init() {
 
-		registerBeanDefinitionParser(ConfigConstants.CASSANDRA_CLUSTER_ELEMENT, new CassandraClusterParser());
-		registerBeanDefinitionParser(ConfigConstants.CASSANDRA_SESSION_ELEMENT, new CassandraSessionParser());
+		registerBeanDefinitionParser(ConfigCqlConstants.CASSANDRA_CLUSTER_ELEMENT, new CassandraClusterParser());
+		registerBeanDefinitionParser(ConfigCqlConstants.CASSANDRA_SESSION_ELEMENT, new CassandraCqlSessionParser());
+		registerBeanDefinitionParser(ConfigCqlConstants.CASSANDRA_CQL_TEMPLATE_ELEMENT, new CassandraCqlTemplateParser());
 
 	}
 

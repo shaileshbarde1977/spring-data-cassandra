@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springdata.cassandra.base.core.CassandraOperations;
+import org.springdata.cassandra.base.core.CassandraCqlOperations;
 import org.springdata.cassandra.data.core.CassandraDataOperations;
 import org.springdata.cassandra.data.core.CassandraDataTemplate;
 import org.springdata.cassandra.data.repository.CassandraRepository;
@@ -213,11 +213,11 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	}
 
 	/**
-	 * Returns the underlying {@link CassandraOperations} instance.
+	 * Returns the underlying {@link CassandraCqlOperations} instance.
 	 * 
 	 * @return
 	 */
-	protected CassandraOperations getCassandraOperations() {
+	protected CassandraCqlOperations getCassandraOperations() {
 		return this.cassandraDataTemplate;
 	}
 

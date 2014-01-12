@@ -33,7 +33,7 @@ import com.datastax.driver.core.Statement;
  * @author David Webb
  * @author Matthew Adams
  */
-public interface CassandraOperations {
+public interface CassandraCqlOperations {
 
 	/**
 	 * Executes the supplied {@link SessionCallback} in the current Template Session. The implementation of

@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.springdata.cassandra.base.core.CassandraTemplate;
+import org.springdata.cassandra.base.core.CassandraCqlTemplate;
 import org.springdata.cassandra.base.core.SessionCallback;
 import org.springdata.cassandra.base.core.query.ConsistencyLevelResolver;
 import org.springdata.cassandra.base.core.query.RetryPolicyResolver;
@@ -53,12 +53,12 @@ import com.datastax.driver.core.querybuilder.Update;
 
 /**
  * The Cassandra Data Template is a convenience API for all Cassandra Operations using POJOs. This is the "Spring Data"
- * flavor of the template. For low level Cassandra Operations use the {@link CassandraTemplate}
+ * flavor of the template. For low level Cassandra Operations use the {@link CassandraCqlTemplate}
  * 
  * @author Alex Shvid
  * @author David Webb
  */
-public class CassandraDataTemplate extends CassandraTemplate implements CassandraDataOperations {
+public class CassandraDataTemplate extends CassandraCqlTemplate implements CassandraDataOperations {
 
 	/*
 	 * List of iterable classes when testing POJOs for specific operations.

@@ -60,7 +60,6 @@ import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Update;
-import com.datastax.driver.core.querybuilder.Update.Where;
 
 /**
  * {@link CassandraConverter} that uses a {@link MappingContext} to do sophisticated mapping of domain objects to
@@ -115,18 +114,12 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		return readRowInternal(persistentEntity, row);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.convert.EntityConverter#getMappingContext()
-	 */
+	@Override
 	public MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> getMappingContext() {
 		return mappingContext;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-	 */
+	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 		this.spELContext = new SpELContext(this.spELContext, applicationContext);
@@ -291,9 +284,6 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		this.useFieldAccessOnly = useFieldAccessOnly;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.convert.EntityWriter#write(java.lang.Object, java.lang.Object)
-	 */
 	@Override
 	public <R> R read(Class<R> type, Object row) {
 		if (row instanceof Row) {
@@ -302,9 +292,6 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		throw new MappingException("Unknown row object " + row.getClass().getName());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.data.convert.EntityWriter#write(java.lang.Object, java.lang.Object)
-	 */
 	@Override
 	public void write(Object obj, Object builtStatement) {
 
@@ -356,6 +343,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		entity.doWithProperties(new DeletePropertyHandler(whereId, wrapper));
 	}
 
+	@Override
 	public CreateTableSpecification getCreateTableSpecification(CassandraPersistentEntity<?> entity) {
 
 		final CreateTableSpecification spec = new CreateTableSpecification();
@@ -408,6 +396,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 	}
 
+	@Override
 	public AlterTableSpecification getAlterTableSpecification(final CassandraPersistentEntity<?> entity,
 			final TableMetadata table, final boolean dropRemovedAttributeColumns) {
 
@@ -468,6 +457,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 	}
 
+	@Override
 	public List<CreateIndexSpecification> getCreateIndexSpecifications(final CassandraPersistentEntity<?> entity) {
 
 		final List<CreateIndexSpecification> indexList = new ArrayList<CreateIndexSpecification>();

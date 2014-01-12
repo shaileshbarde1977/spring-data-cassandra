@@ -32,10 +32,10 @@ public class DefaultSchemaOperations implements CassandraSchemaOperations {
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultSchemaOperations.class);
 
-	private final CassandraTemplate cassandraTemplate;
+	private final CassandraCqlTemplate cassandraTemplate;
 	private final String keyspace;
 
-	protected DefaultSchemaOperations(CassandraTemplate cassandraTemplate, String keyspace) {
+	protected DefaultSchemaOperations(CassandraCqlTemplate cassandraTemplate, String keyspace) {
 
 		Assert.notNull(cassandraTemplate);
 		Assert.notNull(keyspace);

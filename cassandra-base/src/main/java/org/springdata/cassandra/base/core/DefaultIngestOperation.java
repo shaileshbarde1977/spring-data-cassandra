@@ -38,7 +38,7 @@ public class DefaultIngestOperation extends AbstractQueryOperation<List<ResultSe
 
 	private final Iterator<Query> queryIterator;
 
-	public DefaultIngestOperation(CassandraTemplate cassandraTemplate, Iterator<Query> iterator) {
+	public DefaultIngestOperation(CassandraCqlTemplate cassandraTemplate, Iterator<Query> iterator) {
 		super(cassandraTemplate);
 		this.queryIterator = iterator;
 	}

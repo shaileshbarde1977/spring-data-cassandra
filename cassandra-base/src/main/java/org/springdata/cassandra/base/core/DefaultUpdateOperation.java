@@ -32,11 +32,11 @@ public class DefaultUpdateOperation extends AbstractQueryOperation<ResultSet, Up
 
 	private final Query query;
 
-	protected DefaultUpdateOperation(CassandraTemplate cassandraTemplate, String cql) {
+	protected DefaultUpdateOperation(CassandraCqlTemplate cassandraTemplate, String cql) {
 		this(cassandraTemplate, new SimpleStatement(cql));
 	}
 
-	protected DefaultUpdateOperation(CassandraTemplate cassandraTemplate, Query query) {
+	protected DefaultUpdateOperation(CassandraCqlTemplate cassandraTemplate, Query query) {
 		super(cassandraTemplate);
 		this.query = query;
 	}

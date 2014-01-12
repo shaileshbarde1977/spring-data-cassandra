@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.data.config;
+package org.springdata.cassandra.base.config;
 
 /**
- * Pooling options POJO. Can be remote or local.
+ * Pooling options.
  * 
  * @author Alex Shvid
  */

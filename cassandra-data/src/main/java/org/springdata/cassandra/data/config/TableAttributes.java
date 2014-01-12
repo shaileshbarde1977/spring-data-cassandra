@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,28 +22,28 @@ package org.springdata.cassandra.data.config;
  */
 public class TableAttributes {
 
-	private String entity;
-	private String name;
+	private String tableName;
+	private String entityClass;
 
-	public String getEntity() {
-		return entity;
+	public String getEntityClass() {
+		return entityClass;
 	}
 
-	public void setEntity(String entity) {
-		this.entity = entity;
+	public void setEntityClass(String name) {
+		this.entityClass = name;
 	}
 
-	public String getName() {
-		return name;
+	public String getTableName() {
+		return tableName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setTableName(String name) {
+		this.tableName = name;
 	}
 
 	@Override
 	public String toString() {
-		return "TableAttributes [entity=" + entity + "]";
+		return "TableAttributes [entityClass=" + entityClass + ", tableName=" + tableName + "]";
 	}
 
 }

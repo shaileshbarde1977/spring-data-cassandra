@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.data.config;
+package org.springdata.cassandra.data.config.java;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springdata.cassandra.base.core.CassandraOperations;
-import org.springdata.cassandra.base.core.CassandraTemplate;
+import org.springdata.cassandra.base.config.KeyspaceAttributes;
+import org.springdata.cassandra.base.core.CassandraCqlOperations;
+import org.springdata.cassandra.base.core.CassandraCqlTemplate;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springdata.cassandra.data.convert.MappingCassandraConverter;
 import org.springdata.cassandra.data.core.CassandraDataOperations;
@@ -52,15 +53,14 @@ import com.datastax.driver.core.Session;
 public abstract class AbstractCassandraConfiguration implements BeanClassLoaderAware {
 
 	/**
-	 * Used by CassandraTemplate and CassandraAdminTemplate
+	 * Used by CassandraConverter
 	 */
-
 	private ClassLoader beanClassLoader;
 
 	/**
 	 * Return the name of the keyspace to connect to.
 	 * 
-	 * @return must not be {@literal null}.
+	 * @return for {@literal null} value will be used SYSTEM keyspace.
 	 */
 	protected abstract String keyspace();
 
@@ -73,14 +73,18 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	@Bean
 	public abstract Cluster cluster();
 
+	/**
+	 * Return keyspace attributes
+	 * 
+	 * @return KeyspaceAttributes
+	 */
 	@Bean
 	public KeyspaceAttributes keyspaceAttributes() {
 		return new KeyspaceAttributes();
 	}
 
 	/**
-	 * Creates a {@link Session} to be used by the {@link SpringDataKeyspace}. Will use the {@link Cluster} instance
-	 * configured in {@link #cluster()}.
+	 * Creates a {@link Session}. Will create, verify or drop tables in Cassandra on creation/destroy stage.
 	 * 
 	 * @see #cluster()
 	 * @see #Keyspace()
@@ -114,15 +118,15 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	}
 
 	/**
-	 * Creates a {@link CassandraTemplate}.
+	 * Creates a {@link CassandraCqlTemplate}.
 	 * 
 	 * @return
 	 * @throws ClassNotFoundException
 	 * @throws Exception
 	 */
 	@Bean
-	public CassandraOperations cassandraTemplate() throws ClassNotFoundException {
-		return new CassandraTemplate(session(), keyspace());
+	public CassandraCqlOperations cassandraTemplate() throws ClassNotFoundException {
+		return new CassandraCqlTemplate(session(), keyspace());
 	}
 
 	/**
@@ -195,7 +199,7 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	/**
 	 * Bean ClassLoader Aware for CassandraTemplate/CassandraAdminTemplate
 	 */
-
+	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;
 	}

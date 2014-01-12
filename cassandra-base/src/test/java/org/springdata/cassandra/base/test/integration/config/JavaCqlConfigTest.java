@@ -13,53 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.data.test.integration.config;
+package org.springdata.cassandra.base.test.integration.config;
 
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 import org.apache.cassandra.exceptions.ConfigurationException;
 import org.apache.thrift.transport.TTransportException;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
-import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
-public class DriverTests {
+/**
+ * Simple JavaConfig Test
+ * 
+ * @author Alex Shvid
+ * 
+ */
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = JavaCqlConfig.class)
+public class JavaCqlConfigTest {
 
 	@BeforeClass
-	public static void startCassandra() throws IOException, TTransportException, ConfigurationException,
-			InterruptedException {
+	public static void startCassandra() throws ConfigurationException, TTransportException, IOException {
 		EmbeddedCassandraServerHelper.startEmbeddedCassandra("cassandra.yaml");
 	}
 
+	@Inject
+	Session session;
+
 	@Test
-	public void test() throws Exception {
-
-		Cluster.Builder builder = Cluster.builder().addContactPoint("127.0.0.1");
-
-		// builder.withCompression(ProtocolOptions.Compression.SNAPPY);
-
-		Cluster cluster = builder.build();
-
-		Session session = cluster.connect();
-
-		session.shutdown();
-
-		cluster.shutdown();
-
-	}
-
-	@After
-	public void clearCassandra() {
-		EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
-	}
-
-	@AfterClass
-	public static void stopCassandra() {
-		EmbeddedCassandraServerHelper.stopEmbeddedCassandra();
+	public void test() {
+		Assert.assertNotNull(session);
 	}
 }

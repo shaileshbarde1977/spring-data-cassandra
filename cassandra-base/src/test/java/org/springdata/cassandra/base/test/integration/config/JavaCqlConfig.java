@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.data.test.integration.config;
+package org.springdata.cassandra.base.test.integration.config;
 
-import org.springdata.cassandra.data.config.java.AbstractCassandraConfiguration;
+import org.springdata.cassandra.base.config.java.AbstractCassandraCqlConfiguration;
 import org.springframework.context.annotation.Configuration;
 
 import com.datastax.driver.core.Cluster;
@@ -28,7 +28,7 @@ import com.datastax.driver.core.Cluster.Builder;
  * 
  */
 @Configuration
-public class JavaConfig extends AbstractCassandraConfiguration {
+public class JavaCqlConfig extends AbstractCassandraCqlConfiguration {
 
 	@Override
 	protected String keyspace() {

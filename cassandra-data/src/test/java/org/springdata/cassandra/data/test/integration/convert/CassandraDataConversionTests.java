@@ -53,7 +53,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdata.cassandra.base.core.CassandraOperations;
+import org.springdata.cassandra.base.core.CassandraCqlOperations;
 import org.springdata.cassandra.base.core.SimpleQueryCreator;
 import org.springdata.cassandra.data.core.CassandraDataOperations;
 import org.springdata.cassandra.data.test.integration.config.JavaConfig;
@@ -81,7 +81,7 @@ public class CassandraDataConversionTests {
 
 	@Autowired
 	@Named("cassandraTemplate")
-	private CassandraOperations cassandraOperations;
+	private CassandraCqlOperations cassandraOperations;
 
 	@Autowired
 	private CassandraDataOperations cassandraDataTemplate;

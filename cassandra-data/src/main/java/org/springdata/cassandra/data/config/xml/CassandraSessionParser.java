@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.data.config;
+package org.springdata.cassandra.data.config.xml;
 
 import java.util.List;
 
+import org.springdata.cassandra.base.config.KeyspaceAttributes;
+import org.springdata.cassandra.data.config.ConfigConstants;
+import org.springdata.cassandra.data.config.TableAttributes;
 import org.springdata.cassandra.data.core.CassandraSessionFactoryBean;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -31,7 +34,7 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 /**
- * Parser for &lt;keyspace;gt; definitions.
+ * Parser for Cassandra Schema definitions.
  * 
  * @author Alex Shvid
  */
@@ -43,10 +46,6 @@ public class CassandraSessionParser extends AbstractSimpleBeanDefinitionParser {
 		return CassandraSessionFactoryBean.class;
 	}
 
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#resolveId(org.w3c.dom.Element, org.springframework.beans.factory.support.AbstractBeanDefinition, org.springframework.beans.factory.xml.ParserContext)
-	 */
 	@Override
 	protected String resolveId(Element element, AbstractBeanDefinition definition, ParserContext parserContext)
 			throws BeanDefinitionStoreException {
@@ -58,9 +57,9 @@ public class CassandraSessionParser extends AbstractSimpleBeanDefinitionParser {
 	@Override
 	protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
 
-		String name = element.getAttribute("name");
-		if (StringUtils.hasText(name)) {
-			builder.addPropertyValue("keyspace", name);
+		String keyspace = element.getAttribute("keyspace");
+		if (StringUtils.hasText(keyspace)) {
+			builder.addPropertyValue("keyspace", keyspace);
 		}
 
 		String clusterRef = element.getAttribute("cassandra-cluster-ref");
@@ -70,9 +69,10 @@ public class CassandraSessionParser extends AbstractSimpleBeanDefinitionParser {
 		builder.addPropertyReference("cluster", clusterRef);
 
 		String converterRef = element.getAttribute("cassandra-converter-ref");
-		if (StringUtils.hasText(converterRef)) {
-			builder.addPropertyReference("converter", converterRef);
+		if (!StringUtils.hasText(converterRef)) {
+			converterRef = ConfigConstants.CASSANDRA_CONVERTER;
 		}
+		builder.addPropertyReference("converter", converterRef);
 
 		postProcess(builder, element);
 	}
@@ -87,6 +87,7 @@ public class CassandraSessionParser extends AbstractSimpleBeanDefinitionParser {
 
 			if ("keyspace-attributes".equals(name)) {
 				builder.addPropertyValue("keyspaceAttributes", parseKeyspaceAttributes(subElement));
+				builder.addPropertyValue("tables", parseTablesAttributes(subElement));
 			}
 		}
 
@@ -94,10 +95,14 @@ public class CassandraSessionParser extends AbstractSimpleBeanDefinitionParser {
 
 	private BeanDefinition parseKeyspaceAttributes(Element element) {
 		BeanDefinitionBuilder defBuilder = BeanDefinitionBuilder.genericBeanDefinition(KeyspaceAttributes.class);
-		ParsingUtils.setPropertyValue(defBuilder, element, "auto", "auto");
+		ParsingUtils.setPropertyValue(defBuilder, element, "action", "action");
 		ParsingUtils.setPropertyValue(defBuilder, element, "replication-strategy", "replicationStrategy");
 		ParsingUtils.setPropertyValue(defBuilder, element, "replication-factor", "replicationFactor");
 		ParsingUtils.setPropertyValue(defBuilder, element, "durable-writes", "durableWrites");
+		return defBuilder.getBeanDefinition();
+	}
+
+	private ManagedList<Object> parseTablesAttributes(Element element) {
 
 		List<Element> subElements = DomUtils.getChildElements(element);
 		ManagedList<Object> tables = new ManagedList<Object>(subElements.size());
@@ -110,17 +115,14 @@ public class CassandraSessionParser extends AbstractSimpleBeanDefinitionParser {
 				tables.add(parseTable(subElement));
 			}
 		}
-		if (!tables.isEmpty()) {
-			defBuilder.addPropertyValue("tables", tables);
-		}
 
-		return defBuilder.getBeanDefinition();
+		return tables;
 	}
 
 	private BeanDefinition parseTable(Element element) {
 		BeanDefinitionBuilder defBuilder = BeanDefinitionBuilder.genericBeanDefinition(TableAttributes.class);
-		ParsingUtils.setPropertyValue(defBuilder, element, "entity", "entity");
-		ParsingUtils.setPropertyValue(defBuilder, element, "name", "name");
+		ParsingUtils.setPropertyValue(defBuilder, element, "entity-class", "entityClass");
+		ParsingUtils.setPropertyValue(defBuilder, element, "name", "tableName");
 		return defBuilder.getBeanDefinition();
 	}
 

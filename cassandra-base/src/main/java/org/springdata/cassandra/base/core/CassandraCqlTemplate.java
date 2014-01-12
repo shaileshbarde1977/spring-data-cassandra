@@ -64,7 +64,7 @@ import com.google.common.collect.Iterators;
  * @author David Webb
  * @author Matthew Adams
  */
-public class CassandraTemplate implements CassandraOperations {
+public class CassandraCqlTemplate implements CassandraCqlOperations {
 
 	/** Logger available to subclasses */
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -83,7 +83,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @param session must not be {@literal null}.
 	 * @param keyspace must not be {@literal null}.
 	 */
-	public CassandraTemplate(Session session, String keyspace) {
+	public CassandraCqlTemplate(Session session, String keyspace) {
 		setSession(session);
 		setKeyspace(keyspace);
 		this.adminOperations = new DefaultAdminOperations(this);

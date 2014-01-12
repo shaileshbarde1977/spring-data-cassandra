@@ -29,8 +29,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdata.cassandra.base.core.CassandraOperations;
-import org.springdata.cassandra.base.core.CassandraTemplate;
+import org.springdata.cassandra.base.core.CassandraCqlOperations;
+import org.springdata.cassandra.base.core.CassandraCqlTemplate;
 import org.springdata.cassandra.base.core.PreparedStatementBinder;
 import org.springdata.cassandra.base.core.ResultSetCallback;
 import org.springdata.cassandra.base.test.integration.AbstractEmbeddedCassandraIntegrationTest;
@@ -42,7 +42,7 @@ import com.datastax.driver.core.Row;
 
 public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassandraIntegrationTest {
 
-	protected CassandraOperations cassandraTemplate;
+	protected CassandraCqlOperations cassandraTemplate;
 
 	protected Logger log = LoggerFactory.getLogger(getClass());
 
@@ -65,7 +65,7 @@ public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassan
 
 	@Before
 	public void setupTemplate() {
-		cassandraTemplate = new CassandraTemplate(session, keyspace);
+		cassandraTemplate = new CassandraCqlTemplate(session, keyspace);
 	}
 
 	/**

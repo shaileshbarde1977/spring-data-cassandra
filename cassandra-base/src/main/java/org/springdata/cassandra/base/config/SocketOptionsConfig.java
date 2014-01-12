@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.data.config;
+package org.springdata.cassandra.base.config;
 
 /**
- * Socket options POJO. Uses to configure Netty.
+ * Socket options. Uses to configure Driver's Netty.
  * 
  * @author Alex Shvid
  */

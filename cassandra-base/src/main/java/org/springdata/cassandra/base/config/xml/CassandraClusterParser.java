@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.data.config;
+package org.springdata.cassandra.base.config.xml;
 
 import java.util.List;
 
-import org.springdata.cassandra.data.core.CassandraClusterFactoryBean;
+import org.springdata.cassandra.base.config.CompressionType;
+import org.springdata.cassandra.base.config.PoolingOptionsConfig;
+import org.springdata.cassandra.base.config.SocketOptionsConfig;
+import org.springdata.cassandra.base.core.CassandraClusterFactoryBean;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSimpleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.data.config.ParsingUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 /**
- * Parser for &lt;cluster;gt; definitions.
+ * Parser for Cluster definitions.
  * 
  * @author Alex Shvid
  */
@@ -42,16 +44,12 @@ public class CassandraClusterParser extends AbstractSimpleBeanDefinitionParser {
 		return CassandraClusterFactoryBean.class;
 	}
 
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.beans.factory.xml.AbstractBeanDefinitionParser#resolveId(org.w3c.dom.Element, org.springframework.beans.factory.support.AbstractBeanDefinition, org.springframework.beans.factory.xml.ParserContext)
-	 */
 	@Override
 	protected String resolveId(Element element, AbstractBeanDefinition definition, ParserContext parserContext)
 			throws BeanDefinitionStoreException {
 
 		String id = super.resolveId(element, definition, parserContext);
-		return StringUtils.hasText(id) ? id : ConfigConstants.CASSANDRA_CLUSTER;
+		return StringUtils.hasText(id) ? id : ConfigCqlConstants.CASSANDRA_CLUSTER;
 	}
 
 	@Override

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.data.core;
+package org.springdata.cassandra.base.core;
 
+import org.springdata.cassandra.base.config.CompressionType;
+import org.springdata.cassandra.base.config.PoolingOptionsConfig;
+import org.springdata.cassandra.base.config.SocketOptionsConfig;
 import org.springdata.cassandra.base.support.CassandraExceptionTranslator;
-import org.springdata.cassandra.data.config.CompressionType;
-import org.springdata.cassandra.data.config.PoolingOptionsConfig;
-import org.springdata.cassandra.data.config.SocketOptionsConfig;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -45,11 +45,13 @@ import com.datastax.driver.core.policies.RetryPolicy;
 public class CassandraClusterFactoryBean implements FactoryBean<Cluster>, InitializingBean, DisposableBean,
 		PersistenceExceptionTranslator {
 
+	private static final String DEFAULT_CONTACT_POINTS = "localhost";
 	private static final int DEFAULT_PORT = 9042;
+	private static final boolean DEFAULT_METRICS_ENABLED = true;
 
 	private Cluster cluster;
 
-	private String contactPoints;
+	private String contactPoints = DEFAULT_CONTACT_POINTS;
 	private int port = DEFAULT_PORT;
 	private CompressionType compressionType;
 
@@ -62,47 +64,32 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>, Initia
 	private ReconnectionPolicy reconnectionPolicy;
 	private RetryPolicy retryPolicy;
 
-	private boolean metricsEnabled = true;
+	private boolean metricsEnabled = DEFAULT_METRICS_ENABLED;
 
 	private final PersistenceExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
 
+	@Override
 	public Cluster getObject() throws Exception {
 		return cluster;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.beans.factory.FactoryBean#getObjectType()
-	 */
+	@Override
 	public Class<? extends Cluster> getObjectType() {
 		return Cluster.class;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.beans.factory.FactoryBean#isSingleton()
-	 */
+	@Override
 	public boolean isSingleton() {
 		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.dao.support.PersistenceExceptionTranslator#translateExceptionIfPossible(java.lang.RuntimeException)
-	 */
+	@Override
 	public DataAccessException translateExceptionIfPossible(RuntimeException ex) {
 		return exceptionTranslator.translateExceptionIfPossible(ex);
 	}
 
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	public void afterPropertiesSet() throws Exception {
-
-		if (!StringUtils.hasText(contactPoints)) {
-			throw new IllegalArgumentException("at least one server is required");
-		}
+	@Override
+	public void afterPropertiesSet() {
 
 		Cluster.Builder builder = Cluster.builder();
 
@@ -144,16 +131,19 @@ public class CassandraClusterFactoryBean implements FactoryBean<Cluster>, Initia
 			builder.withoutMetrics();
 		}
 
-		Cluster cluster = builder.build();
+		Cluster cluster = null;
+		try {
+			cluster = builder.build();
+		} catch (RuntimeException ex) {
+			RuntimeException resolved = translateExceptionIfPossible(ex);
+			throw resolved == null ? ex : resolved;
+		}
 
 		// initialize property
 		this.cluster = cluster;
 	}
 
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.beans.factory.DisposableBean#destroy()
-	 */
+	@Override
 	public void destroy() throws Exception {
 		this.cluster.shutdown();
 	}
