@@ -20,7 +20,7 @@ import java.util.List;
 import org.springdata.cassandra.base.core.query.StatementOptions;
 
 /**
- * TableDataOperations interface
+ * CassandraSchemaDataOperations interface
  * 
  * @author Alex Shvid
  * 

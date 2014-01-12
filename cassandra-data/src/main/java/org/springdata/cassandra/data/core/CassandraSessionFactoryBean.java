@@ -67,7 +67,7 @@ public class CassandraSessionFactoryBean extends CassandraCqlSessionFactoryBean 
 		if (StringUtils.hasText(keyspace)) {
 
 			CassandraCqlTemplate cassandraTemplate = new CassandraCqlTemplate(session, keyspace);
-			CassandraDataTemplate cassandraDataTemplate = new CassandraDataTemplate(session, converter, keyspace);
+			CassandraTemplate cassandraDataTemplate = new CassandraTemplate(session, converter, keyspace);
 
 			if (!CollectionUtils.isEmpty(tables)) {
 
@@ -130,7 +130,7 @@ public class CassandraSessionFactoryBean extends CassandraCqlSessionFactoryBean 
 		}
 	}
 
-	private void createNewTable(CassandraDataTemplate cassandraDataTemplate, String useTableName, Class<?> entityClass) {
+	private void createNewTable(CassandraTemplate cassandraDataTemplate, String useTableName, Class<?> entityClass) {
 		cassandraDataTemplate.schemaDataOps().createTable(false, useTableName, entityClass, null);
 		cassandraDataTemplate.schemaDataOps().createIndexes(useTableName, entityClass, null);
 	}

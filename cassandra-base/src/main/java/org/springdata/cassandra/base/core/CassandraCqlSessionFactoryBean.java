@@ -173,11 +173,11 @@ public class CassandraCqlSessionFactoryBean implements FactoryBean<Session>, Ini
 
 			log.info("Drop keyspace " + keyspace + " on destroy");
 
-			CassandraCqlTemplate casandraTemplate = new CassandraCqlTemplate(session, keyspace);
-			CassandraAdminOperations keyspaceOps = casandraTemplate.adminOps();
+			CassandraCqlTemplate casandraCqlTemplate = new CassandraCqlTemplate(session, keyspace);
+			CassandraAdminOperations adminOps = casandraCqlTemplate.adminOps();
 
-			keyspaceOps.useSystemKeyspace().execute();
-			keyspaceOps.dropKeyspace(keyspace).execute();
+			adminOps.useSystemKeyspace().execute();
+			adminOps.dropKeyspace(keyspace).execute();
 
 		}
 		this.session.shutdown();

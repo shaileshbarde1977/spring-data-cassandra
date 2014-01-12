@@ -77,12 +77,12 @@ public abstract class AbstractCassandraCqlConfiguration {
 	}
 
 	/**
-	 * Creates a {@link CassandraDriverTemplate}.
+	 * Creates a {@link CassandraCqlTemplate}.
 	 * 
-	 * @return CassandraDriverOperations
+	 * @return CassandraCqlOperations
 	 */
 	@Bean
-	public CassandraCqlOperations cassandraTemplate() {
+	public CassandraCqlOperations cassandraCqlTemplate() {
 		return new CassandraCqlTemplate(session(), keyspace());
 	}
 

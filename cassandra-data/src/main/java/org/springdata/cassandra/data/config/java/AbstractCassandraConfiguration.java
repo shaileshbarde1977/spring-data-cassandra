@@ -23,8 +23,8 @@ import org.springdata.cassandra.base.core.CassandraCqlOperations;
 import org.springdata.cassandra.base.core.CassandraCqlTemplate;
 import org.springdata.cassandra.data.convert.CassandraConverter;
 import org.springdata.cassandra.data.convert.MappingCassandraConverter;
-import org.springdata.cassandra.data.core.CassandraDataOperations;
-import org.springdata.cassandra.data.core.CassandraDataTemplate;
+import org.springdata.cassandra.data.core.CassandraOperations;
+import org.springdata.cassandra.data.core.CassandraTemplate;
 import org.springdata.cassandra.data.core.CassandraSessionFactoryBean;
 import org.springdata.cassandra.data.mapping.CassandraMappingContext;
 import org.springdata.cassandra.data.mapping.CassandraPersistentEntity;
@@ -93,7 +93,7 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 * @throws Exception
 	 */
 	@Bean
-	public Session session() throws ClassNotFoundException {
+	public Session session() {
 		CassandraSessionFactoryBean factory = new CassandraSessionFactoryBean();
 		factory.setKeyspace(keyspace());
 		factory.setCluster(cluster());
@@ -120,25 +120,21 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	/**
 	 * Creates a {@link CassandraCqlTemplate}.
 	 * 
-	 * @return
-	 * @throws ClassNotFoundException
-	 * @throws Exception
+	 * @return CassandraCqlOperations
 	 */
 	@Bean
-	public CassandraCqlOperations cassandraTemplate() throws ClassNotFoundException {
+	public CassandraCqlOperations cassandraCqlTemplate() {
 		return new CassandraCqlTemplate(session(), keyspace());
 	}
 
 	/**
-	 * Creates a {@link CassandraDataTemplate}.
+	 * Creates a {@link CassandraTemplate}.
 	 * 
-	 * @return
-	 * @throws ClassNotFoundException
-	 * @throws Exception
+	 * @return CassandraOperations
 	 */
 	@Bean
-	public CassandraDataOperations cassandraDataTemplate() throws ClassNotFoundException {
-		return new CassandraDataTemplate(session(), converter(), keyspace());
+	public CassandraOperations cassandraTemplate() {
+		return new CassandraTemplate(session(), converter(), keyspace());
 	}
 
 	/**
@@ -149,8 +145,7 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 * @throws Exception
 	 */
 	@Bean
-	public MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext()
-			throws ClassNotFoundException {
+	public MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext() {
 		CassandraMappingContext context = new CassandraMappingContext();
 		context.setInitialEntitySet(getInitialEntitySet());
 		return context;
@@ -164,7 +159,7 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 * @throws Exception
 	 */
 	@Bean
-	public CassandraConverter converter() throws ClassNotFoundException {
+	public CassandraConverter converter() {
 		MappingCassandraConverter converter = new MappingCassandraConverter(mappingContext());
 		converter.setBeanClassLoader(beanClassLoader);
 		return converter;
@@ -177,7 +172,7 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 * @return
 	 * @throws ClassNotFoundException
 	 */
-	protected Set<Class<?>> getInitialEntitySet() throws ClassNotFoundException {
+	protected Set<Class<?>> getInitialEntitySet() {
 
 		String basePackage = getMappingBasePackage();
 		Set<Class<?>> initialEntitySet = new HashSet<Class<?>>();
@@ -189,7 +184,7 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 			componentProvider.addIncludeFilter(new AnnotationTypeFilter(Persistent.class));
 
 			for (BeanDefinition candidate : componentProvider.findCandidateComponents(basePackage)) {
-				initialEntitySet.add(ClassUtils.forName(candidate.getBeanClassName(), beanClassLoader));
+				initialEntitySet.add(loadClass(candidate.getBeanClassName()));
 			}
 		}
 
@@ -202,6 +197,14 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;
+	}
+
+	private Class<?> loadClass(String className) {
+		try {
+			return ClassUtils.forName(className, this.beanClassLoader);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("class not found " + className, e);
+		}
 	}
 
 }

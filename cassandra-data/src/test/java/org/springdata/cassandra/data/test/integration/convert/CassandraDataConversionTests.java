@@ -55,7 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.base.core.CassandraCqlOperations;
 import org.springdata.cassandra.base.core.SimpleQueryCreator;
-import org.springdata.cassandra.data.core.CassandraDataOperations;
+import org.springdata.cassandra.data.core.CassandraOperations;
 import org.springdata.cassandra.data.test.integration.config.JavaConfig;
 import org.springdata.cassandra.data.test.integration.table.BasicTypesEntity;
 import org.springdata.cassandra.data.test.integration.table.CollectionTypesEntity;
@@ -84,7 +84,7 @@ public class CassandraDataConversionTests {
 	private CassandraCqlOperations cassandraOperations;
 
 	@Autowired
-	private CassandraDataOperations cassandraDataTemplate;
+	private CassandraOperations cassandraDataTemplate;
 
 	private static Logger log = LoggerFactory.getLogger(CassandraDataConversionTests.class);
 

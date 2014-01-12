@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.base.core.query.ConsistencyLevel;
 import org.springdata.cassandra.base.core.query.StatementOptions;
 import org.springdata.cassandra.base.core.query.RetryPolicy;
-import org.springdata.cassandra.data.core.CassandraDataOperations;
+import org.springdata.cassandra.data.core.CassandraOperations;
 import org.springdata.cassandra.data.test.integration.config.JavaConfig;
 import org.springdata.cassandra.data.test.integration.table.Book;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ import com.datastax.driver.core.querybuilder.Select;
 public class CassandraDataOperationsTest {
 
 	@Autowired
-	private CassandraDataOperations cassandraDataTemplate;
+	private CassandraOperations cassandraDataTemplate;
 
 	private static Logger log = LoggerFactory.getLogger(CassandraDataOperationsTest.class);
 

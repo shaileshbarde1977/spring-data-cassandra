@@ -29,7 +29,7 @@ import org.springdata.cassandra.data.convert.CassandraConverter;
  * @author Matthew Adams
  * 
  */
-public interface CassandraDataOperations {
+public interface CassandraOperations {
 
 	/**
 	 * The table name used for the specified class by this template.

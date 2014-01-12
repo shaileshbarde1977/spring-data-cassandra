@@ -15,7 +15,7 @@
  */
 package org.springdata.cassandra.data.repository.query;
 
-import org.springdata.cassandra.data.core.CassandraDataOperations;
+import org.springdata.cassandra.data.core.CassandraOperations;
 import org.springdata.cassandra.data.mapping.CassandraPersistentProperty;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.repository.query.QueryMethod;
@@ -38,7 +38,7 @@ public class PartTreeCassandraQuery extends AbstractCassandraQuery {
 	 * @param method must not be {@literal null}.
 	 * @param template must not be {@literal null}.
 	 */
-	public PartTreeCassandraQuery(CassandraQueryMethod method, CassandraDataOperations dataOperations) {
+	public PartTreeCassandraQuery(CassandraQueryMethod method, CassandraOperations dataOperations) {
 
 		super(method, dataOperations);
 		this.tree = new PartTree(method.getName(), method.getEntityInformation().getJavaType());

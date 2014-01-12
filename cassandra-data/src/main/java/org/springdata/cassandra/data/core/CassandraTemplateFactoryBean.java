@@ -22,27 +22,27 @@ import org.springframework.beans.factory.InitializingBean;
 import com.datastax.driver.core.Session;
 
 /**
- * Convenient factory for configuring a Cassandra Template. It is enough to have one session per application.
+ * Convenient factory for configuring a CassandraTemplate. It is enough to have one CassandraTemplate per application.
  * 
  * @author Alex Shvid
  */
 
-public class CassandraTemplateFactoryBean implements FactoryBean<CassandraDataTemplate>, InitializingBean {
+public class CassandraTemplateFactoryBean implements FactoryBean<CassandraTemplate>, InitializingBean {
 
-	private CassandraDataTemplate cassandraTemplate;
+	private CassandraTemplate cassandraTemplate;
 
 	private Session session;
 	private String keyspace;
 	private CassandraConverter converter;
 
 	@Override
-	public CassandraDataTemplate getObject() {
+	public CassandraTemplate getObject() {
 		return cassandraTemplate;
 	}
 
 	@Override
-	public Class<? extends CassandraDataOperations> getObjectType() {
-		return CassandraDataTemplate.class;
+	public Class<? extends CassandraOperations> getObjectType() {
+		return CassandraTemplate.class;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class CassandraTemplateFactoryBean implements FactoryBean<CassandraDataTe
 		}
 
 		// initialize property
-		this.cassandraTemplate = new CassandraDataTemplate(session, converter, keyspace);
+		this.cassandraTemplate = new CassandraTemplate(session, converter, keyspace);
 
 	}
 

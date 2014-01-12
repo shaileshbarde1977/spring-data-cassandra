@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springdata.cassandra.base.core.CassandraCqlOperations;
-import org.springdata.cassandra.data.core.CassandraDataOperations;
-import org.springdata.cassandra.data.core.CassandraDataTemplate;
+import org.springdata.cassandra.data.core.CassandraOperations;
+import org.springdata.cassandra.data.core.CassandraTemplate;
 import org.springdata.cassandra.data.repository.CassandraRepository;
 import org.springdata.cassandra.data.repository.query.CassandraEntityInformation;
 import org.springframework.util.Assert;
@@ -40,18 +40,18 @@ import com.datastax.driver.core.querybuilder.Select;
 
 public class SimpleCassandraRepository<T, ID extends Serializable> implements CassandraRepository<T, ID> {
 
-	private final CassandraDataTemplate cassandraDataTemplate;
+	private final CassandraTemplate cassandraDataTemplate;
 	private final CassandraEntityInformation<T, ID> entityInformation;
 
 	/**
 	 * Creates a new {@link SimpleCassandraRepository} for the given {@link CassandraEntityInformation} and
-	 * {@link CassandraDataTemplate}.
+	 * {@link CassandraTemplate}.
 	 * 
 	 * @param metadata must not be {@literal null}.
 	 * @param template must not be {@literal null}.
 	 */
 	public SimpleCassandraRepository(CassandraEntityInformation<T, ID> metadata,
-			CassandraDataTemplate cassandraDataTemplate) {
+			CassandraTemplate cassandraDataTemplate) {
 
 		Assert.notNull(cassandraDataTemplate);
 		Assert.notNull(metadata);
@@ -222,11 +222,11 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	}
 
 	/**
-	 * Returns the underlying {@link CassandraDataOperations} instance.
+	 * Returns the underlying {@link CassandraOperations} instance.
 	 * 
 	 * @return
 	 */
-	protected CassandraDataOperations getCassandraDataOperations() {
+	protected CassandraOperations getCassandraDataOperations() {
 		return this.cassandraDataTemplate;
 	}
 

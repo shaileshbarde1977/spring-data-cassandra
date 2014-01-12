@@ -46,9 +46,9 @@ import com.datastax.driver.core.TableMetadata;
  */
 public class DefaultSchemaDataOperations implements CassandraSchemaDataOperations {
 
-	private CassandraDataTemplate dataTemplate;
+	private CassandraTemplate dataTemplate;
 
-	protected DefaultSchemaDataOperations(CassandraDataTemplate dataTemplate) {
+	protected DefaultSchemaDataOperations(CassandraTemplate dataTemplate) {
 		Assert.notNull(dataTemplate);
 
 		this.dataTemplate = dataTemplate;

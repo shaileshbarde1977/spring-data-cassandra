@@ -34,7 +34,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springdata.cassandra.data.core.CassandraDataOperations;
+import org.springdata.cassandra.data.core.CassandraOperations;
 import org.springdata.cassandra.data.test.integration.table.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -56,7 +56,7 @@ public class UserRepositoryIntegrationTests {
 	protected UserRepository repository;
 
 	@Autowired
-	protected CassandraDataOperations dataOperations;
+	protected CassandraOperations dataOperations;
 
 	User tom, bob, alice, scott;
 

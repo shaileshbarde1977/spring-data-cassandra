@@ -52,13 +52,13 @@ import com.datastax.driver.core.querybuilder.Select;
 import com.datastax.driver.core.querybuilder.Update;
 
 /**
- * The Cassandra Data Template is a convenience API for all Cassandra Operations using POJOs. This is the "Spring Data"
- * flavor of the template. For low level Cassandra Operations use the {@link CassandraCqlTemplate}
+ * The CassandraTemplate is a convenience API for all CassandraOperations using POJOs. This is the "Spring Data" flavor
+ * of the template. For low level CassandraOperations use the {@link CassandraCqlTemplate}
  * 
  * @author Alex Shvid
  * @author David Webb
  */
-public class CassandraDataTemplate extends CassandraCqlTemplate implements CassandraDataOperations {
+public class CassandraTemplate extends CassandraCqlTemplate implements CassandraOperations {
 
 	/*
 	 * List of iterable classes when testing POJOs for specific operations.
@@ -86,7 +86,7 @@ public class CassandraDataTemplate extends CassandraCqlTemplate implements Cassa
 	 * @param session must not be {@literal null}.
 	 * @param converter must not be {@literal null}.
 	 */
-	public CassandraDataTemplate(Session session, CassandraConverter converter, String keyspace) {
+	public CassandraTemplate(Session session, CassandraConverter converter, String keyspace) {
 		super(session, keyspace);
 		Assert.notNull(converter);
 		this.cassandraConverter = converter;

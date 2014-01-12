@@ -289,7 +289,7 @@ Defines a Cassandra Template instance.
 			]]></xsd:documentation>
 			<xsd:appinfo>
 				<tool:annotation>
-					<tool:exports type="org.springdata.cassandra.data.core.CassandraDataTemplate" />
+					<tool:exports type="org.springdata.cassandra.data.core.CassandraTemplate" />
 				</tool:annotation>
 			</xsd:appinfo>
 		</xsd:annotation>

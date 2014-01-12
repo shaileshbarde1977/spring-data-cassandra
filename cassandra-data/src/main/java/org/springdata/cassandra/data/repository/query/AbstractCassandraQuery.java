@@ -17,7 +17,7 @@ package org.springdata.cassandra.data.repository.query;
 
 import java.util.List;
 
-import org.springdata.cassandra.data.core.CassandraDataOperations;
+import org.springdata.cassandra.data.core.CassandraOperations;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.repository.query.ParameterAccessor;
@@ -34,16 +34,16 @@ public abstract class AbstractCassandraQuery implements RepositoryQuery {
 	private static final ConversionService CONVERSION_SERVICE = new DefaultConversionService();
 
 	private final CassandraQueryMethod method;
-	private final CassandraDataOperations dataOperations;
+	private final CassandraOperations dataOperations;
 
 	/**
 	 * Creates a new {@link AbstractMongoQuery} from the given {@link CassandraQueryMethod} and
-	 * {@link CassandraDataOperations}.
+	 * {@link CassandraOperations}.
 	 * 
 	 * @param method must not be {@literal null}.
 	 * @param operations must not be {@literal null}.
 	 */
-	public AbstractCassandraQuery(CassandraQueryMethod method, CassandraDataOperations dataOperations) {
+	public AbstractCassandraQuery(CassandraQueryMethod method, CassandraOperations dataOperations) {
 
 		Assert.notNull(method);
 		Assert.notNull(dataOperations);

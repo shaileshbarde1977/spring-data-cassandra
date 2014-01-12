@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springdata.cassandra.data.core.CassandraDataTemplate;
+import org.springdata.cassandra.data.core.CassandraTemplate;
 import org.springdata.cassandra.data.repository.support.CassandraRepositoryFactoryBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -109,7 +109,7 @@ public @interface EnableCassandraRepositories {
 	Class<?> repositoryFactoryBeanClass() default CassandraRepositoryFactoryBean.class;
 
 	/**
-	 * Configures the name of the {@link CassandraDataTemplate} bean to be used with the repositories detected.
+	 * Configures the name of the {@link CassandraTemplate} bean to be used with the repositories detected.
 	 * 
 	 * @return
 	 */

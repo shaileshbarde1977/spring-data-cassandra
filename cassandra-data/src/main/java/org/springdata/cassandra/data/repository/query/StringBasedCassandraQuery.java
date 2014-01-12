@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springdata.cassandra.data.core.CassandraDataOperations;
+import org.springdata.cassandra.data.core.CassandraOperations;
 
 import com.datastax.driver.core.Query;
 
@@ -46,7 +46,7 @@ public class StringBasedCassandraQuery extends AbstractCassandraQuery {
 	 * @param method must not be {@literal null}.
 	 * @param template must not be {@literal null}.
 	 */
-	public StringBasedCassandraQuery(String query, CassandraQueryMethod method, CassandraDataOperations dataOperations) {
+	public StringBasedCassandraQuery(String query, CassandraQueryMethod method, CassandraOperations dataOperations) {
 
 		super(method, dataOperations);
 
@@ -54,7 +54,7 @@ public class StringBasedCassandraQuery extends AbstractCassandraQuery {
 		this.isCountQuery = method.hasAnnotatedQuery() ? method.getQueryAnnotation().count() : false;
 	}
 
-	public StringBasedCassandraQuery(CassandraQueryMethod method, CassandraDataOperations dataOperations) {
+	public StringBasedCassandraQuery(CassandraQueryMethod method, CassandraOperations dataOperations) {
 		this(method.getAnnotatedQuery(), method, dataOperations);
 	}
 

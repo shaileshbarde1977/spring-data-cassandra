@@ -15,7 +15,6 @@
  */
 package org.springdata.cassandra.data.config.xml;
 
-import org.springdata.cassandra.base.config.xml.ConfigCqlConstants;
 import org.springdata.cassandra.data.config.ConfigConstants;
 import org.springdata.cassandra.data.core.CassandraTemplateFactoryBean;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
