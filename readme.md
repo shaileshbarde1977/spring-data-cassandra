@@ -26,6 +26,8 @@ Building
 --------
 This is a standard Maven multimodule project.  Just issue the command `mvn clean install` from the repo root.
 
+Snapshot builds are available here https://oss.sonatype.org/index.html.
+
 Using
 -------
 
