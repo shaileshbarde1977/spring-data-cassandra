@@ -5,11 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.springdata</groupId>
-	<artifactId>cassandra-parent</artifactId>
+	<artifactId>spring-data-cassandra-parent</artifactId>
 	<version>1.0.0.BUILD-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Spring Data Cassandra</name>
+	<name>Spring Data Cassandra Parent</name>
 	<description>Cassandra support for Spring Data</description>
 	<url>http://www.springdata.org/cassandra</url>
 
@@ -84,7 +84,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>cassandra-cql</artifactId>
+				<artifactId>spring-cassandra-cql</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

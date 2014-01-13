@@ -4,14 +4,14 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>cassandra-cql</artifactId>
+	<artifactId>spring-cassandra-cql</artifactId>
 
 	<name>Spring Cassandra Cql</name>
 	<description>Cassandra support for Spring Framewoprk</description>
 
 	<parent>
 		<groupId>org.springdata</groupId>
-		<artifactId>cassandra-parent</artifactId>
+		<artifactId>spring-data-cassandra-parent</artifactId>
 		<version>1.0.0.BUILD-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
