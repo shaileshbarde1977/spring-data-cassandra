@@ -78,6 +78,6 @@ A few steps to make this process easy for us:
 
  - Please use [eclipse-formatting.xml] (eclipse-formatting.xml) or similar formatting for Idea with auto-save option.
  - Post new feature/bug on discussion [forum](http://sdc.1003000.n3.nabble.com/).
- - Create new [issue](spring-data-cassandra/issues/) and refer this issue in the push request.
+ - Create new [a workaround link](spring-data-cassandra/issues/) and refer this issue in the push request.
  - Thank you.
 
