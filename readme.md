@@ -11,11 +11,14 @@ Versions
 
  - CQL 3.0
 
- - Cassandra 1.2
+ - Cassandra 1.2.12
 
- - Datastax Java Driver 1.0.4-dse
+ - Datastax Java Driver 1.0.5-dse
 
- - JRE >= 1.6
+Requirements
+--------
+
+  - Java >= 1.6 (OpenJDK and Sun have been tested)
 
 CQL
 --------
