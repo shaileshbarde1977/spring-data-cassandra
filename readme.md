@@ -15,6 +15,7 @@ Versions
 
  - Datastax Java Driver 1.0.4-dse
 
+ - JRE >= 1.6
 
 CQL
 --------
