@@ -74,9 +74,10 @@ http://sdc.1003000.n3.nabble.com/
 Contribution
 --------
 
-A few steps that will make this process easy for us.
+Few steps that make this process easy for us:
 
- - Use eclipse-formatting.xml with auto-save option
- - Discuss new feature/bug on duscussion forum
- - Create new issue and put this link to the push request
+ - Please use eclipse-formatting.xml or similar formatting for Idea with auto-save option.
+ - Post new feature/bug on discussion forum.
+ - Create new issue and use this link in the push request.
+ - Thank you.
 
