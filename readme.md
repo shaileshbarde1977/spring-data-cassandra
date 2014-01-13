@@ -29,10 +29,10 @@ This is a standard Maven multimodule project.  Just issue the command `mvn clean
 
 Snapshot builds are available [here](https://oss.sonatype.org/index.html#nexus-search;quick~org.springdata)
 
-Using
+Using in maven application
 -------
 
-Add snapshot repository to the pom.xml
+Add snapshot repository to pom.xml
 
 ```
 
