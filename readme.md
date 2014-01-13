@@ -19,14 +19,14 @@ Versions
 CQL
 --------
 
-Fully supported CQL 3.0 version. Specification is here http://www.datastax.com/documentation/cql/3.0/pdf/cql30.pdf
+Fully supported CQL 3.0 version. Specification is available [here] (http://www.datastax.com/documentation/cql/3.0/pdf/cql30.pdf)
 
 
 Building
 --------
 This is a standard Maven multimodule project.  Just issue the command `mvn clean install` from the repo root.
 
-Snapshot builds are available here https://oss.sonatype.org/index.html.
+Snapshot builds are available [here](https://oss.sonatype.org/index.html#nexus-search;quick~org.springdata)
 
 Using
 -------
@@ -44,7 +44,7 @@ Add snapshot repository to the pom.xml
 
 ```
 
-Add dependencies
+Add dependencies to pom.xml
 
 ```
 
