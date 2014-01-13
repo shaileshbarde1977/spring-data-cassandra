@@ -48,7 +48,7 @@
 		<dist.id>spring-data-cassandra</dist.id>
 		<springdata.commons>1.6.2.RELEASE</springdata.commons>
 		<cassandra-unit.version>1.2.0.1</cassandra-unit.version>
-		<cassandra-driver-core.version>1.0.4-dse</cassandra-driver-core.version>
+		<cassandra-driver-core.version>1.0.5-dse</cassandra-driver-core.version>
 		<failsafe.version>2.16</failsafe.version>
 		<guava.version>14.0.1</guava.version>
 		
