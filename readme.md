@@ -50,14 +50,14 @@ Add dependencies
 
 <dependency>
   <groupId>org.springdata</groupId>
-  <artifactId>cassandra-cql</artifactId>
-  <version>1.0.0.BUILD-SNAPSHOT</version>
+  <artifactId>spring-cassandra-cql</artifactId>
+  <version>1.2.0.BUILD-SNAPSHOT</version>
 </dependency>
 
 <dependency>
   <groupId>org.springdata</groupId>
-  <artifactId>cassandra</artifactId>
-  <version>1.0.0.BUILD-SNAPSHOT</version>
+  <artifactId>spring-data-cassandra</artifactId>
+  <version>1.2.0.BUILD-SNAPSHOT</version>
 </dependency>
 
 ```
