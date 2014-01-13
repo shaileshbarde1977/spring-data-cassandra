@@ -1,13 +1,15 @@
 Spring Data Cassandra
 =====================
 
-This is a Genuine Spring Data subproject for Cassandra that uses the binary CQL3 protocol via
-the official DataStax 1.x Java driver (https://github.com/datastax/java-driver) for Cassandra 1.2.
+This is a Spring Data project for Cassandra that uses the binary CQL3 protocol via
+the official DataStax 1.x Java [driver](https://github.com/datastax/java-driver) for Cassandra 1.2.
 
 Supports native CQL3 queries in Spring Repositories.
 
 Versions
 --------
+
+Current versions:
 
  - CQL 3.0
 
@@ -15,10 +17,14 @@ Versions
 
  - Datastax Java Driver 1.0.5-dse
 
+Works with Cassandra 2.0.x through Datastax Driver 1.0.5-dse as well.
+
 Requirements
 --------
 
   - Java >= 1.6 (OpenJDK and Sun have been tested)
+
+Recommended to use JDK 1.7
 
 CQL
 --------
