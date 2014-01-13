@@ -74,10 +74,10 @@ http://sdc.1003000.n3.nabble.com/
 Contribution
 --------
 
-Few steps that make this process easy for us:
+Few steps to make this process easy for us:
 
- - Please use eclipse-formatting.xml or similar formatting for Idea with auto-save option.
- - Post new feature/bug on discussion forum.
- - Create new issue and use this link in the push request.
+ - Please use [eclipse-formatting.xml] (spring-data-cassandra/blob/master/eclipse-formatting.xml) or similar formatting for Idea with auto-save option.
+ - Post new feature/bug on discussion [forum](http://sdc.1003000.n3.nabble.com/).
+ - Create new [issue](spring-data-cassandra/issues) and use this link in the push request.
  - Thank you.
 
