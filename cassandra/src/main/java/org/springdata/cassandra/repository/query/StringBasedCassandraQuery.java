@@ -65,7 +65,9 @@ public class StringBasedCassandraQuery extends AbstractCassandraQuery {
 
 		queryString = replacePlaceholders(queryString, accessor);
 
-		logger.info(String.format("Created query %s", queryString));
+		if (logger.isDebugEnabled()) {
+			logger.debug(String.format("Created query %s", queryString));
+		}
 
 		return queryString;
 	}

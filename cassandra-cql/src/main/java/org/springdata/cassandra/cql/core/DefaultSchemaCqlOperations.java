@@ -51,7 +51,7 @@ public class DefaultSchemaCqlOperations implements SchemaCqlOperations {
 
 			public TableMetadata doInSession(Session s) {
 
-				log.info("getTableMetadata keyspace => " + keyspace + ", table => " + tableName);
+				log.debug("getTableMetadata keyspace => " + keyspace + ", table => " + tableName);
 
 				return s.getCluster().getMetadata().getKeyspace(keyspace.toLowerCase()).getTable(tableName.toLowerCase());
 			}

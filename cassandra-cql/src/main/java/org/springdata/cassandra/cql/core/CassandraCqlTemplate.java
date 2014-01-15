@@ -273,7 +273,9 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 	 */
 	public ResultSet doExecute(final Query query) {
 
-		logger.info(query.toString());
+		if (logger.isDebugEnabled()) {
+			logger.debug(query.toString());
+		}
 
 		return doExecute(new SessionCallback<ResultSet>() {
 
@@ -293,7 +295,9 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 	 */
 	public ResultSetFuture doExecuteAsync(final Query query) {
 
-		logger.info(query.toString());
+		if (logger.isDebugEnabled()) {
+			logger.debug(query.toString());
+		}
 
 		return doExecute(new SessionCallback<ResultSetFuture>() {
 

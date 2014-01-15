@@ -437,7 +437,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 */
 	protected <T> T doSelectOne(final String cql, ReadRowCallback<T> readRowCallback, final StatementOptions optionsOrNull) {
 
-		logger.info(cql);
+		logger.debug(cql);
 
 		/*
 		 * Run the Query
@@ -510,7 +510,9 @@ public class CassandraTemplate implements CassandraOperations {
 
 		addQueryOptions(batch, optionsOrNull);
 
-		logger.info(batch.getQueryString());
+		if (logger.isDebugEnabled()) {
+			logger.debug(batch.getQueryString());
+		}
 
 		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
@@ -568,7 +570,9 @@ public class CassandraTemplate implements CassandraOperations {
 
 		addQueryOptions(batch, optionsOrNull);
 
-		logger.info(batch.toString());
+		if (logger.isDebugEnabled()) {
+			logger.debug(batch.toString());
+		}
 
 		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
@@ -599,7 +603,9 @@ public class CassandraTemplate implements CassandraOperations {
 
 		final Query query = toDeleteQueryById(tableName, id, entityClass, optionsOrNull);
 
-		logger.info(query.toString());
+		if (logger.isDebugEnabled()) {
+			logger.debug(query.toString());
+		}
 
 		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
@@ -630,7 +636,9 @@ public class CassandraTemplate implements CassandraOperations {
 
 		final Query query = toDeleteQuery(tableName, objectToRemove, optionsOrNull);
 
-		logger.info(query.toString());
+        if (logger.isDebugEnabled()) {
+			logger.debug(query.toString());
+		}
 
 		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
@@ -661,12 +669,14 @@ public class CassandraTemplate implements CassandraOperations {
 
 		final Query query = toInsertQuery(tableName, entity, optionsOrNull);
 
-		logger.info(query.toString());
-		if (query.getConsistencyLevel() != null) {
-			logger.info(query.getConsistencyLevel().name());
-		}
-		if (query.getRetryPolicy() != null) {
-			logger.info(query.getRetryPolicy().toString());
+        if (logger.isDebugEnabled()) {
+			logger.debug(query.toString());
+			if (query.getConsistencyLevel() != null) {
+				logger.debug(query.getConsistencyLevel().name());
+			}
+			if (query.getRetryPolicy() != null) {
+				logger.debug(query.getRetryPolicy().toString());
+			}
 		}
 
 		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
@@ -701,7 +711,9 @@ public class CassandraTemplate implements CassandraOperations {
 
 		final Query q = toUpdateQuery(tableName, entity, optionsOrNull);
 
-		logger.info(q.toString());
+        if (logger.isDebugEnabled()) {
+		    logger.debug(q.toString());
+        }
 
 		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
@@ -866,7 +878,9 @@ public class CassandraTemplate implements CassandraOperations {
 
 		addQueryOptions(batch, optionsOrNull);
 
-		logger.info(batch.toString());
+        if (logger.isDebugEnabled()) {
+		    logger.debug(batch.toString());
+        }
 
 		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
@@ -951,7 +965,9 @@ public class CassandraTemplate implements CassandraOperations {
 
 		addQueryOptions(batch, optionsOrNull);
 
-		logger.info(batch.toString());
+        if (logger.isDebugEnabled()) {
+		    logger.debug(batch.toString());
+        }
 
 		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
@@ -1115,7 +1131,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 */
 	protected ResultSet doExecute(final String cql, final StatementOptions optionsOrNull) {
 
-		logger.info(cql);
+		logger.debug(cql);
 
 		return cassandraCqlTemplate.execute(new SessionCallback<ResultSet>() {
 

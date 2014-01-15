@@ -77,8 +77,6 @@ public class CassandraPropertyValueProvider implements PropertyValueProvider<Cas
 		}
 		DataType columnType = columnDefinitions.getType(columnIndex);
 
-		log.info(columnType.getName().name());
-
 		if (columnType.isCollection()) {
 
 			List<DataType> typeArguments = columnType.getTypeArguments();
