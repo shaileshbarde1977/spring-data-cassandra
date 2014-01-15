@@ -85,7 +85,7 @@ public class CassandraTemplate implements CassandraOperations {
 	private final String keyspace;
 	private final MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
 
-	private final CassandraSchemaDataOperations schemaDataOperations;
+	private final SchemaOperations schemaDataOperations;
 
 	/**
 	 * Constructor used for a basic template configuration
@@ -100,7 +100,7 @@ public class CassandraTemplate implements CassandraOperations {
 		this.cassandraConverter = converter;
 		this.keyspace = keyspace;
 		this.mappingContext = this.cassandraConverter.getMappingContext();
-		this.schemaDataOperations = new DefaultSchemaDataOperations(this);
+		this.schemaDataOperations = new DefaultSchemaOperations(this);
 	}
 
 	@Override
@@ -339,7 +339,7 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public CassandraSchemaDataOperations schemaDataOps() {
+	public SchemaOperations schemaOps() {
 		return schemaDataOperations;
 	}
 

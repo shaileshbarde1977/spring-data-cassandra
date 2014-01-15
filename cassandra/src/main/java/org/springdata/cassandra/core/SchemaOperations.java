@@ -20,12 +20,12 @@ import java.util.List;
 import org.springdata.cassandra.cql.core.query.StatementOptions;
 
 /**
- * CassandraSchemaDataOperations interface
+ * SchemaOperations interface
  * 
  * @author Alex Shvid
  * 
  */
-public interface CassandraSchemaDataOperations {
+public interface SchemaOperations {
 
 	/**
 	 * Create a table with the name given and fields corresponding to the given class. If the table already exists and

@@ -39,16 +39,16 @@ import org.springframework.util.Assert;
 import com.datastax.driver.core.TableMetadata;
 
 /**
- * CassandraSchemaDataOperations implementation
+ * SchemaOperations implementation
  * 
  * @author Alex Shvid
  * 
  */
-public class DefaultSchemaDataOperations implements CassandraSchemaDataOperations {
+public class DefaultSchemaOperations implements SchemaOperations {
 
 	private CassandraTemplate dataTemplate;
 
-	protected DefaultSchemaDataOperations(CassandraTemplate dataTemplate) {
+	protected DefaultSchemaOperations(CassandraTemplate dataTemplate) {
 		Assert.notNull(dataTemplate);
 
 		this.dataTemplate = dataTemplate;

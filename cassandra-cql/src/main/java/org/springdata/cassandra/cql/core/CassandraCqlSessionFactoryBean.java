@@ -96,7 +96,7 @@ public class CassandraCqlSessionFactoryBean implements FactoryBean<Session>, Ini
 		if (StringUtils.hasText(keyspace)) {
 
 			CassandraCqlTemplate cassandraTemplate = new CassandraCqlTemplate(session, keyspace);
-			CassandraAdminOperations adminOps = cassandraTemplate.adminOps();
+			AdminCqlOperations adminOps = cassandraTemplate.adminOps();
 
 			KeyspaceMetadata keyspaceMetadata = adminOps.getKeyspaceMetadata(keyspace);
 			boolean keyspaceExists = keyspaceMetadata != null;
@@ -174,7 +174,7 @@ public class CassandraCqlSessionFactoryBean implements FactoryBean<Session>, Ini
 			log.info("Drop keyspace " + keyspace + " on destroy");
 
 			CassandraCqlTemplate casandraCqlTemplate = new CassandraCqlTemplate(session, keyspace);
-			CassandraAdminOperations adminOps = casandraCqlTemplate.adminOps();
+			AdminCqlOperations adminOps = casandraCqlTemplate.adminOps();
 
 			adminOps.useSystemKeyspace().execute();
 			adminOps.dropKeyspace(keyspace).execute();

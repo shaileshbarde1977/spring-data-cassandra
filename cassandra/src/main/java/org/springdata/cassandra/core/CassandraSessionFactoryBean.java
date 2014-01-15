@@ -87,9 +87,9 @@ public class CassandraSessionFactoryBean extends CassandraCqlSessionFactoryBean 
 							createNewTable(cassandraDataTemplate, useTableName, entityClass);
 						} else {
 
-							cassandraDataTemplate.schemaDataOps().alterTable(useTableName, entityClass, true, null);
+							cassandraDataTemplate.schemaOps().alterTable(useTableName, entityClass, true, null);
 
-							cassandraDataTemplate.schemaDataOps().alterIndexes(useTableName, entityClass, null);
+							cassandraDataTemplate.schemaOps().alterIndexes(useTableName, entityClass, null);
 
 						}
 					} else if (keyspaceAttributes.isValidate()) {
@@ -100,14 +100,14 @@ public class CassandraSessionFactoryBean extends CassandraCqlSessionFactoryBean 
 									+ entityClassName);
 						}
 
-						String query = cassandraDataTemplate.schemaDataOps().validateTable(useTableName, entityClass);
+						String query = cassandraDataTemplate.schemaOps().validateTable(useTableName, entityClass);
 
 						if (query != null) {
 							throw new InvalidDataAccessApiUsageException("invalid table " + useTableName + " for entity "
 									+ entityClassName + ". modify it by " + query);
 						}
 
-						List<String> queryList = cassandraDataTemplate.schemaDataOps().validateIndexes(useTableName, entityClass);
+						List<String> queryList = cassandraDataTemplate.schemaOps().validateIndexes(useTableName, entityClass);
 
 						if (!queryList.isEmpty()) {
 							throw new InvalidDataAccessApiUsageException("invalid indexes in table " + useTableName + " for entity "
@@ -131,8 +131,8 @@ public class CassandraSessionFactoryBean extends CassandraCqlSessionFactoryBean 
 	}
 
 	private void createNewTable(CassandraTemplate cassandraDataTemplate, String useTableName, Class<?> entityClass) {
-		cassandraDataTemplate.schemaDataOps().createTable(false, useTableName, entityClass, null);
-		cassandraDataTemplate.schemaDataOps().createIndexes(useTableName, entityClass, null);
+		cassandraDataTemplate.schemaOps().createTable(false, useTableName, entityClass, null);
+		cassandraDataTemplate.schemaOps().createIndexes(useTableName, entityClass, null);
 	}
 
 	public void setConverter(CassandraConverter converter) {

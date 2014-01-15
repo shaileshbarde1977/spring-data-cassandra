@@ -27,7 +27,7 @@ import com.datastax.driver.core.TableMetadata;
  * @author Alex Shvid
  * 
  */
-public interface CassandraSchemaOperations {
+public interface SchemaCqlOperations {
 
 	/**
 	 * Get the given table's metadata.

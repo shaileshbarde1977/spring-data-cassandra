@@ -73,8 +73,8 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 
 	private CassandraExceptionTranslator exceptionTranslator = new CassandraExceptionTranslator();
 
-	private CassandraAdminOperations adminOperations;
-	private CassandraSchemaOperations schemaOperations;
+	private AdminCqlOperations adminOperations;
+	private SchemaCqlOperations schemaOperations;
 
 	/**
 	 * Constructor used for a basic template configuration
@@ -85,8 +85,8 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 	public CassandraCqlTemplate(Session session, String keyspace) {
 		setSession(session);
 		setKeyspace(keyspace);
-		this.adminOperations = new DefaultAdminOperations(this);
-		this.schemaOperations = new DefaultSchemaOperations(this, keyspace);
+		this.adminOperations = new DefaultAdminCqlOperations(this);
+		this.schemaOperations = new DefaultSchemaCqlOperations(this, keyspace);
 	}
 
 	/**
@@ -828,12 +828,12 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 	}
 
 	@Override
-	public CassandraAdminOperations adminOps() {
+	public AdminCqlOperations adminOps() {
 		return adminOperations;
 	}
 
 	@Override
-	public CassandraSchemaOperations schemaOps() {
+	public SchemaCqlOperations schemaOps() {
 		return schemaOperations;
 	}
 

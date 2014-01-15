@@ -26,7 +26,7 @@ import com.datastax.driver.core.KeyspaceMetadata;
  * @author David Webb
  * @author Matthew T. Adams
  */
-public interface CassandraAdminOperations {
+public interface AdminCqlOperations {
 
 	/**
 	 * Creates Keyspace with given options

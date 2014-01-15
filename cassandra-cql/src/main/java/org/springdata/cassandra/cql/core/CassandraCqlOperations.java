@@ -309,7 +309,7 @@ public interface CassandraCqlOperations {
 	 * @return CassandraAdminOperations
 	 */
 
-	CassandraAdminOperations adminOps();
+	AdminCqlOperations adminOps();
 
 	/**
 	 * Support schema operations
@@ -317,6 +317,6 @@ public interface CassandraCqlOperations {
 	 * @return CassandraSchemaOperations
 	 */
 
-	CassandraSchemaOperations schemaOps();
+	SchemaCqlOperations schemaOps();
 
 }

@@ -281,7 +281,7 @@ public interface CassandraOperations {
 	 * 
 	 * @return TableDataOperations
 	 */
-	CassandraSchemaDataOperations schemaDataOps();
+	SchemaOperations schemaOps();
 
 	/**
 	 * Returns Cql specific operations

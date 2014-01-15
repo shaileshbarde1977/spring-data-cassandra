@@ -30,17 +30,17 @@ import com.datastax.driver.core.KeyspaceMetadata;
 import com.datastax.driver.core.Session;
 
 /**
- * Default implementation of {@link CassandraAdminOperations}.
+ * Default implementation of {@link AdminCqlOperations}.
  * 
  * @author Alex Shvid
  */
-public class DefaultAdminOperations implements CassandraAdminOperations {
+public class DefaultAdminCqlOperations implements AdminCqlOperations {
 
 	private static final String SYSTEM_KEYSPACE = "system";
 
 	private final CassandraCqlTemplate cassandraTemplate;
 
-	protected DefaultAdminOperations(CassandraCqlTemplate cassandraTemplate) {
+	protected DefaultAdminCqlOperations(CassandraCqlTemplate cassandraTemplate) {
 		Assert.notNull(cassandraTemplate);
 
 		this.cassandraTemplate = cassandraTemplate;

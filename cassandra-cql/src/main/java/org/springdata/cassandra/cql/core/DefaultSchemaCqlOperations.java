@@ -28,14 +28,14 @@ import com.datastax.driver.core.TableMetadata;
  * @author Alex Shvid
  * 
  */
-public class DefaultSchemaOperations implements CassandraSchemaOperations {
+public class DefaultSchemaCqlOperations implements SchemaCqlOperations {
 
-	private static final Logger log = LoggerFactory.getLogger(DefaultSchemaOperations.class);
+	private static final Logger log = LoggerFactory.getLogger(DefaultSchemaCqlOperations.class);
 
 	private final CassandraCqlTemplate cassandraTemplate;
 	private final String keyspace;
 
-	protected DefaultSchemaOperations(CassandraCqlTemplate cassandraTemplate, String keyspace) {
+	protected DefaultSchemaCqlOperations(CassandraCqlTemplate cassandraTemplate, String keyspace) {
 
 		Assert.notNull(cassandraTemplate);
 		Assert.notNull(keyspace);
