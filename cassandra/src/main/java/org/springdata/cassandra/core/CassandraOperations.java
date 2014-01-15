@@ -129,17 +129,7 @@ public interface CassandraOperations {
 	 * @param entity
 	 * @param optionsOrNull
 	 */
-	<T> void saveNew(boolean asychronously, T entity, StatementOptions optionsOrNull);
-
-	/**
-	 * Insert the given object to the table.
-	 * 
-	 * @param entity
-	 * @param tableName
-	 * @param optionsOrNull
-	 * @return
-	 */
-	<T> void saveNew(boolean asychronously, T entity, String tableName, StatementOptions optionsOrNull);
+	<T> SaveNewOperation saveNew(T entity);
 
 	/**
 	 * Insert the given list of objects to the table.
@@ -163,22 +153,10 @@ public interface CassandraOperations {
 	/**
 	 * Updates the given object in the table.
 	 * 
-	 * @param entity
-	 * @param tableName
-	 * @param options
+	 * @param entity to save
 	 * @return
 	 */
-	<T> void save(boolean asychronously, T entity, StatementOptions optionsOrNull);
-
-	/**
-	 * Updates the given object in the table.
-	 * 
-	 * @param entity
-	 * @param tableName
-	 * @param optionsOrNull
-	 * @return
-	 */
-	<T> void save(boolean asychronously, T entity, String tableName, StatementOptions optionsOrNull);
+	<T> SaveOperation save(T entity);
 
 	/**
 	 * Updates list of objects in the table.
@@ -268,6 +246,13 @@ public interface CassandraOperations {
 	 * @param optionsOrNull
 	 */
 	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, String tableName, StatementOptions optionsOrNull);
+
+	/**
+	 * Returns the underlying keyspace.
+	 * 
+	 * @return
+	 */
+	String getKeyspace();
 
 	/**
 	 * Returns the underlying {@link CassandraConverter}.

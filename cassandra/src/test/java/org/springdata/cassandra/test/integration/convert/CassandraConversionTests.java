@@ -49,8 +49,6 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.core.CassandraOperations;
 import org.springdata.cassandra.cql.core.CassandraCqlOperations;
 import org.springdata.cassandra.test.integration.config.JavaConfig;
@@ -81,8 +79,6 @@ public class CassandraConversionTests {
 
 	@Autowired
 	private CassandraOperations cassandraOperations;
-
-	private static Logger log = LoggerFactory.getLogger(CassandraConversionTests.class);
 
 	private final static String CASSANDRA_CONFIG = "cassandra.yaml";
 	private final static String KEYSPACE_NAME = "test";
@@ -191,7 +187,7 @@ public class CassandraConversionTests {
 		newEntity.setProptimeuuid(uuid);
 		newEntity.setPropvarchar("varchar test value");
 		newEntity.setPropvarint(new BigInteger("12345678901234567890"));
-		cassandraOperations.saveNew(false, newEntity, null);
+		cassandraOperations.saveNew(newEntity).execute();
 
 		BasicTypesEntity entity = cassandraOperations.findById("ascii", BasicTypesEntity.class, null);
 		assertThat(entity, is(not(nullValue(BasicTypesEntity.class))));
@@ -292,7 +288,7 @@ public class CassandraConversionTests {
 		newEntity.setUuidlist(ImmutableList.of(listUUID[0], listUUID[1]));
 		newEntity.setUuidset(ImmutableSet.of(setUUID));
 
-		cassandraOperations.saveNew(false, newEntity, null);
+		cassandraOperations.saveNew(newEntity).execute();
 
 		CollectionTypesEntity entity = cassandraOperations.findById("values", CollectionTypesEntity.class, null);
 
@@ -351,7 +347,7 @@ public class CassandraConversionTests {
 		EmbeddedIdEntity newEntity = new EmbeddedIdEntity();
 		newEntity.setId(pk);
 		newEntity.setProptext("two");
-		cassandraOperations.saveNew(false, newEntity, null);
+		cassandraOperations.saveNew(newEntity).execute();
 
 		EmbeddedIdEntity entity = cassandraOperations.findById(pk, EmbeddedIdEntity.class, null);
 		assertThat(entity, is(not(nullValue(EmbeddedIdEntity.class))));
@@ -380,7 +376,7 @@ public class CassandraConversionTests {
 		assertThat(entity.getProptext(), equalTo("two"));
 
 		entity.setProptext("Two!");
-		cassandraOperations.save(false, entity, null);
+		cassandraOperations.save(entity).execute();
 		entity = cassandraOperations.findById(pk, EmbeddedIdEntity.class, null);
 		assertThat(entity.getProptext(), equalTo("Two!"));
 	}
@@ -413,6 +409,7 @@ public class CassandraConversionTests {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@AfterClass
 	public static void stopCassandra() {
 		EmbeddedCassandraServerHelper.stopEmbeddedCassandra();

@@ -28,7 +28,6 @@ import com.datastax.driver.core.ResultSet;
 import com.google.common.base.Function;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * 
@@ -53,7 +52,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 			@Override
 			public Iterator<R> process(ResultSet resultSet) {
-				return cassandraTemplate.process(resultSet, rowMapper);
+				return cassandraCqlTemplate.process(resultSet, rowMapper);
 			}
 
 		});
@@ -66,7 +65,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 			@Override
 			public R process(ResultSet resultSet) {
-				return cassandraTemplate.processOne(resultSet, rowMapper);
+				return cassandraCqlTemplate.processOne(resultSet, rowMapper);
 			}
 
 		});
@@ -79,7 +78,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 			@Override
 			public E process(ResultSet resultSet) {
-				return cassandraTemplate.processOneFirstColumn(resultSet, elementType);
+				return cassandraCqlTemplate.processOneFirstColumn(resultSet, elementType);
 			}
 
 		});
@@ -92,7 +91,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 			@Override
 			public Iterator<E> process(ResultSet resultSet) {
-				return cassandraTemplate.processFirstColumnAsList(resultSet, elementType).iterator();
+				return cassandraCqlTemplate.processFirstColumnAsList(resultSet, elementType).iterator();
 			}
 
 		});
@@ -106,7 +105,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 					@Override
 					public Iterator<Map<String, Object>> process(ResultSet resultSet) {
-						return cassandraTemplate.processAsListOfMap(resultSet).iterator();
+						return cassandraCqlTemplate.processAsListOfMap(resultSet).iterator();
 					}
 
 				});
@@ -120,7 +119,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 			@Override
 			public Map<String, Object> process(ResultSet resultSet) {
-				return cassandraTemplate.processOneAsMap(resultSet);
+				return cassandraCqlTemplate.processOneAsMap(resultSet);
 			}
 
 		});
@@ -133,7 +132,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 			@Override
 			public O process(ResultSet resultSet) {
-				return cassandraTemplate.doProcess(resultSet, rsc);
+				return cassandraCqlTemplate.doProcess(resultSet, rsc);
 			}
 
 		});
@@ -146,7 +145,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 			@Override
 			public Object process(ResultSet resultSet) {
-				cassandraTemplate.process(resultSet, rch);
+				cassandraCqlTemplate.process(resultSet, rch);
 				return null;
 			}
 
@@ -244,9 +243,9 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 					return processWithFallback(resultSet);
 				}
 
-			}, executor != null ? executor : MoreExecutors.sameThreadExecutor());
+			}, getExecutor());
 
-			return new CassandraFuture<T>(future, cassandraTemplate.getExceptionTranslator());
+			return new CassandraFuture<T>(future, cassandraCqlTemplate.getExceptionTranslator());
 		}
 
 		@Override
@@ -273,9 +272,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 			try {
 				return processor.process(resultSet);
 			} catch (RuntimeException e) {
-				if (fh != null) {
-					fh.onFailure(e);
-				}
+				fireOnFailure(e);
 				throw e;
 			}
 		}

@@ -202,7 +202,7 @@ public interface CassandraCqlOperations {
 	 * Converts the CQL provided into a {@link SimplePreparedStatementCreator}. <b>This can only be used for CQL
 	 * Statements that do not have data binding.</b>
 	 * 
-	 * @param cql The CQL Statement to Execute
+	 * @param cql The CQL Statement to prepare
 	 * @return PreparedStatement
 	 */
 	PreparedStatement prepareStatement(String cql);

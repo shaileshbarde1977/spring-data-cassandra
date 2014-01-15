@@ -22,6 +22,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.SimpleStatement;
 
 /**
+ * Default update operation implementation
  * 
  * @author Alex Shvid
  * 
@@ -32,12 +33,12 @@ public class DefaultUpdateOperation extends AbstractQueryOperation<ResultSet, Up
 
 	private final Query query;
 
-	protected DefaultUpdateOperation(CassandraCqlTemplate cassandraTemplate, String cql) {
-		this(cassandraTemplate, new SimpleStatement(cql));
+	protected DefaultUpdateOperation(CassandraCqlTemplate cassandraCqlTemplate, String cql) {
+		this(cassandraCqlTemplate, new SimpleStatement(cql));
 	}
 
-	protected DefaultUpdateOperation(CassandraCqlTemplate cassandraTemplate, Query query) {
-		super(cassandraTemplate);
+	protected DefaultUpdateOperation(CassandraCqlTemplate cassandraCqlTemplate, Query query) {
+		super(cassandraCqlTemplate);
 		this.query = query;
 	}
 

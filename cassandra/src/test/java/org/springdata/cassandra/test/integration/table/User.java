@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.springdata.cassandra.mapping.Indexed;
 import org.springdata.cassandra.mapping.Table;
+import org.springdata.cassandra.mapping.Tag;
 import org.springframework.data.annotation.Id;
 
 /**
@@ -33,16 +34,23 @@ import org.springframework.data.annotation.Id;
 @Table(name = "users")
 public class User {
 
+	public final int PROFILE_FIELDS = 1;
+	public final int ACCOUNT_FIELDS = 1;
+
 	/*
 	 * Primary Row ID
 	 */
 	@Id
+	@Tag({ PROFILE_FIELDS, ACCOUNT_FIELDS })
 	private String username;
 
 	/*
 	 * Public information
 	 */
+	@Tag({ PROFILE_FIELDS })
 	private String firstName;
+
+	@Tag({ PROFILE_FIELDS })
 	private String lastName;
 
 	/*

@@ -28,6 +28,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 /**
+ * Default ingest operation implementation
  * 
  * @author Alex Shvid
  * 
@@ -38,8 +39,8 @@ public class DefaultIngestOperation extends AbstractQueryOperation<List<ResultSe
 
 	private final Iterator<Query> queryIterator;
 
-	public DefaultIngestOperation(CassandraCqlTemplate cassandraTemplate, Iterator<Query> iterator) {
-		super(cassandraTemplate);
+	public DefaultIngestOperation(CassandraCqlTemplate cassandraCqlTemplate, Iterator<Query> iterator) {
+		super(cassandraCqlTemplate);
 		this.queryIterator = iterator;
 	}
 
@@ -82,7 +83,7 @@ public class DefaultIngestOperation extends AbstractQueryOperation<List<ResultSe
 				});
 
 		CassandraFuture<List<ResultSet>> wrappedFuture = new CassandraFuture<List<ResultSet>>(allResultSetFuture,
-				cassandraTemplate.getExceptionTranslator());
+				cassandraCqlTemplate.getExceptionTranslator());
 
 		return wrappedFuture;
 	}

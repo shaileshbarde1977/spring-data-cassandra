@@ -275,6 +275,11 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
+	public String getKeyspace() {
+		return keyspace;
+	}
+
+	@Override
 	public String getTableName(Class<?> entityClass) {
 		return determineTableName(entityClass);
 	}
@@ -294,19 +299,10 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> void saveNew(boolean asychronously, T entity, StatementOptions optionsOrNull) {
-		String tableName = determineTableName(entity);
-		Assert.notNull(tableName);
-		saveNew(asychronously, entity, tableName, optionsOrNull);
-	}
-
-	@Override
-	public <T> void saveNew(boolean asychronously, T entity, String tableName, StatementOptions optionsOrNull) {
+	public <T> SaveNewOperation saveNew(T entity) {
 		Assert.notNull(entity);
 		assertNotIterable(entity);
-		Assert.notNull(tableName);
-		assertNotIterable(entity);
-		doInsert(asychronously, tableName, entity, optionsOrNull);
+		return new DefaultSaveNewOperation<T>(this, entity);
 	}
 
 	@Override
@@ -324,18 +320,10 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> void save(boolean asychronously, T entity, StatementOptions options) {
-		String tableName = getTableName(entity.getClass());
-		Assert.notNull(tableName);
-		save(asychronously, entity, tableName, options);
-	}
-
-	@Override
-	public <T> void save(boolean asychronously, T entity, String tableName, StatementOptions optionsOrNull) {
+	public <T> SaveOperation save(T entity) {
 		Assert.notNull(entity);
 		assertNotIterable(entity);
-		Assert.notNull(tableName);
-		doUpdate(asychronously, tableName, entity, optionsOrNull);
+		return new DefaultSaveOperation<T>(this, entity);
 	}
 
 	@Override
@@ -345,6 +333,10 @@ public class CassandraTemplate implements CassandraOperations {
 
 	@Override
 	public CassandraCqlOperations cqlOps() {
+		return cassandraCqlTemplate;
+	}
+
+	public CassandraCqlTemplate cqlTemplate() {
 		return cassandraCqlTemplate;
 	}
 
@@ -636,7 +628,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 		final Query query = toDeleteQuery(tableName, objectToRemove, optionsOrNull);
 
-        if (logger.isDebugEnabled()) {
+		if (logger.isDebugEnabled()) {
 			logger.debug(query.toString());
 		}
 
@@ -649,81 +641,6 @@ public class CassandraTemplate implements CassandraOperations {
 					s.executeAsync(query);
 				} else {
 					s.execute(query);
-				}
-
-				return null;
-
-			}
-		});
-
-	}
-
-	/**
-	 * Insert a row into a Cassandra CQL Table
-	 * 
-	 * @param tableName
-	 * @param entity
-	 */
-	protected <T> void doInsert(final boolean insertAsychronously, final String tableName, final T entity,
-			StatementOptions optionsOrNull) {
-
-		final Query query = toInsertQuery(tableName, entity, optionsOrNull);
-
-        if (logger.isDebugEnabled()) {
-			logger.debug(query.toString());
-			if (query.getConsistencyLevel() != null) {
-				logger.debug(query.getConsistencyLevel().name());
-			}
-			if (query.getRetryPolicy() != null) {
-				logger.debug(query.getRetryPolicy().toString());
-			}
-		}
-
-		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
-
-			@Override
-			public T doInSession(Session s) {
-
-				if (insertAsychronously) {
-					s.executeAsync(query);
-				} else {
-					s.execute(query);
-				}
-
-				return null;
-
-			}
-		});
-
-	}
-
-	/**
-	 * Update a row into a Cassandra CQL Table
-	 * 
-	 * @param tableName
-	 * @param entity
-	 * @param optionsByName
-	 * @param updateAsychronously
-	 * @return
-	 */
-	protected <T> void doUpdate(final boolean updateAsychronously, final String tableName, final T entity,
-			StatementOptions optionsOrNull) {
-
-		final Query q = toUpdateQuery(tableName, entity, optionsOrNull);
-
-        if (logger.isDebugEnabled()) {
-		    logger.debug(q.toString());
-        }
-
-		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
-
-			@Override
-			public T doInSession(Session s) {
-
-				if (updateAsychronously) {
-					s.executeAsync(q);
-				} else {
-					s.execute(q);
 				}
 
 				return null;
@@ -878,9 +795,9 @@ public class CassandraTemplate implements CassandraOperations {
 
 		addQueryOptions(batch, optionsOrNull);
 
-        if (logger.isDebugEnabled()) {
-		    logger.debug(batch.toString());
-        }
+		if (logger.isDebugEnabled()) {
+			logger.debug(batch.toString());
+		}
 
 		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
@@ -965,9 +882,9 @@ public class CassandraTemplate implements CassandraOperations {
 
 		addQueryOptions(batch, optionsOrNull);
 
-        if (logger.isDebugEnabled()) {
-		    logger.debug(batch.toString());
-        }
+		if (logger.isDebugEnabled()) {
+			logger.debug(batch.toString());
+		}
 
 		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
 
