@@ -15,32 +15,28 @@
  */
 package org.springdata.cassandra.core;
 
-import org.springdata.cassandra.cql.core.QueryOperation;
-
-import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Statement;
 
 /**
- * Base interface for delete operations
+ * Batched Statement Creator interface to create Statements that are using in Batch operations.
  * 
  * @author Alex Shvid
  * 
  */
-public interface DeleteOperation extends QueryOperation<ResultSet, DeleteOperation> {
+public interface BatchedStatementCreator {
 
 	/**
-	 * Specifies table differ from entitie's table to delete
+	 * This function returns Statement object
 	 * 
-	 * @param tableName table is using for deleting entity
-	 * @return this
+	 * @return
 	 */
-	DeleteOperation fromTable(String tableName);
+	Statement createStatement();
 
 	/**
-	 * Specifies Timestamp (cell's timestamp in the Cassandra) in milliseconds for the deleting entity
+	 * Defines specific table name for Statement creator
 	 * 
-	 * @param timestamp Timestamp in milliseconds
-	 * @return this
+	 * @param tableName - override table name
 	 */
-	DeleteOperation withTimestamp(long timestampMls);
+	void setTableName(String tableName);
 
 }

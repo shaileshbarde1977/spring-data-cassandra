@@ -30,7 +30,7 @@ public interface SaveOperation extends QueryOperation<ResultSet, SaveOperation> 
 	/**
 	 * Specifies table differ from entitie's table to save
 	 * 
-	 * @param tableName table to save
+	 * @param tableName table name is using to save entity
 	 * @return this
 	 */
 	SaveOperation toTable(String tableName);

@@ -103,7 +103,7 @@ public class UserRepositoryIntegrationTests {
 
 		all = Arrays.asList(tom, bob, alice, scott);
 
-		dataOperations.saveNewInBatch(false, all, null);
+		dataOperations.saveNewInBatch(all).execute();
 	}
 
 	@Test
@@ -181,6 +181,7 @@ public class UserRepositoryIntegrationTests {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@AfterClass
 	public static void stopCassandra() {
 		EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();

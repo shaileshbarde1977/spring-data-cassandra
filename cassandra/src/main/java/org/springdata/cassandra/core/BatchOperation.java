@@ -20,36 +20,19 @@ import org.springdata.cassandra.cql.core.QueryOperation;
 import com.datastax.driver.core.ResultSet;
 
 /**
- * 
- * Base interface to save new entity (actually insert).
+ * Base interface for batch operations
  * 
  * @author Alex Shvid
  * 
  */
-public interface SaveNewOperation extends QueryOperation<ResultSet, SaveNewOperation> {
+public interface BatchOperation extends QueryOperation<ResultSet, BatchOperation> {
 
 	/**
-	 * Specifies table differ from entitie's table to save
+	 * Specifies table differ from entitie's table to make batch operations
 	 * 
-	 * @param tableName table is using to save entity
+	 * @param tableName table name
 	 * @return this
 	 */
-	SaveNewOperation toTable(String tableName);
-
-	/**
-	 * Specifies TTL (time to live) in seconds for the saved entity in the Cassandra
-	 * 
-	 * @param ttlSeconds Time to live in seconds
-	 * @return this
-	 */
-	SaveNewOperation withTtl(int ttlSeconds);
-
-	/**
-	 * Specifies Timestamp (cell's timestamp in the Cassandra) in milliseconds for the saved entity in the Cassandra
-	 * 
-	 * @param timestamp Timestamp in milliseconds
-	 * @return this
-	 */
-	SaveNewOperation withTimestamp(long timestampMls);
+	BatchOperation inTable(String tableName);
 
 }

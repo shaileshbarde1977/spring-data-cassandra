@@ -138,17 +138,7 @@ public interface CassandraOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, StatementOptions optionsOrNull);
-
-	/**
-	 * Insert the given list of objects to the table.
-	 * 
-	 * @param entities
-	 * @param tableName
-	 * @param optionsOrNull
-	 * @return
-	 */
-	<T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, String tableName, StatementOptions optionsOrNull);
+	<T> BatchOperation saveNewInBatch(Iterable<T> entities);
 
 	/**
 	 * Updates the given object in the table.
@@ -162,21 +152,9 @@ public interface CassandraOperations {
 	 * Updates list of objects in the table.
 	 * 
 	 * @param entities
-	 * @param tableName
-	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> void saveInBatch(boolean asychronously, Iterable<T> entities, StatementOptions optionsOrNull);
-
-	/**
-	 * Updates list of objects in the table.
-	 * 
-	 * @param entities
-	 * @param tableName
-	 * @param optionsOrNull
-	 * @return
-	 */
-	<T> void saveInBatch(boolean asychronously, Iterable<T> entities, String tableName, StatementOptions optionsOrNull);
+	<T> BatchOperation saveInBatch(Iterable<T> entities);
 
 	/**
 	 * Removes the given object by id from the given table.
@@ -189,23 +167,10 @@ public interface CassandraOperations {
 	/**
 	 * Remove list of objects from the table by given ids.
 	 * 
-	 * @param ids
 	 * @param entityClass
-	 * @param optionsOrNull
-	 */
-	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass,
-			StatementOptions optionsOrNull);
-
-	/**
-	 * Remove list of objects from the table by given ids.
-	 * 
 	 * @param ids
-	 * @param entityClass
-	 * @param tableName
-	 * @param optionsOrNull
 	 */
-	<T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, String tableName,
-			StatementOptions optionsOrNull);
+	<T> BatchOperation deleteByIdInBatch(Class<T> entityClass, Iterable<?> ids);
 
 	/**
 	 * Remove entity from the table
@@ -216,17 +181,8 @@ public interface CassandraOperations {
 
 	/**
 	 * @param entities
-	 * @param tableName
-	 * @param optionsOrNull
 	 */
-	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, StatementOptions optionsOrNull);
-
-	/**
-	 * @param entities
-	 * @param tableName
-	 * @param optionsOrNull
-	 */
-	<T> void deleteInBatch(boolean asychronously, Iterable<T> entities, String tableName, StatementOptions optionsOrNull);
+	<T> BatchOperation deleteInBatch(Iterable<T> entities);
 
 	/**
 	 * Returns the underlying keyspace.

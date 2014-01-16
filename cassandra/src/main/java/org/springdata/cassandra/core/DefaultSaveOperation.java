@@ -16,6 +16,7 @@
 package org.springdata.cassandra.core;
 
 import com.datastax.driver.core.Query;
+import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Update;
 
@@ -41,6 +42,11 @@ public class DefaultSaveOperation<T> extends AbstractSaveOperation<T, SaveOperat
 
 	@Override
 	public Query createQuery() {
+		return createStatement();
+	}
+
+	@Override
+	public Statement createStatement() {
 
 		Update query = QueryBuilder.update(cassandraTemplate.getKeyspace(), getTableName());
 

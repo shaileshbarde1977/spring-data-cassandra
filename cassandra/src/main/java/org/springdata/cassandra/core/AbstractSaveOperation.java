@@ -31,7 +31,7 @@ import com.datastax.driver.core.ResultSet;
  */
 
 public abstract class AbstractSaveOperation<T, O extends QueryOperation<ResultSet, O>> extends
-		AbstractUpdateOperation<O> {
+		AbstractUpdateOperation<O> implements BatchedStatementCreator {
 
 	protected final CassandraTemplate cassandraTemplate;
 	protected final T entity;
@@ -51,6 +51,7 @@ public abstract class AbstractSaveOperation<T, O extends QueryOperation<ResultSe
 		return tableName != null ? tableName : cassandraTemplate.getTableName(entity.getClass());
 	}
 
+	@Override
 	public void setTableName(String tableName) {
 		this.tableName = tableName;
 	}

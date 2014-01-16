@@ -22,6 +22,7 @@ import org.springdata.cassandra.mapping.CassandraPersistentEntity;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Query;
+import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Clause;
 import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.Delete.Where;
@@ -35,7 +36,8 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
  * @author Alex Shvid
  * 
  */
-public class DefaultDeleteOperation<T> extends AbstractUpdateOperation<DeleteOperation> implements DeleteOperation {
+public class DefaultDeleteOperation<T> extends AbstractUpdateOperation<DeleteOperation> implements DeleteOperation,
+		BatchedStatementCreator {
 
 	enum DeleteBy {
 		ID, ENTITY;
@@ -79,6 +81,11 @@ public class DefaultDeleteOperation<T> extends AbstractUpdateOperation<DeleteOpe
 	}
 
 	@Override
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	@Override
 	public DeleteOperation withTimestamp(long timestampMls) {
 		this.timestamp = timestampMls;
 		return this;
@@ -101,6 +108,11 @@ public class DefaultDeleteOperation<T> extends AbstractUpdateOperation<DeleteOpe
 
 	@Override
 	public Query createQuery() {
+		return createStatement();
+	}
+
+	@Override
+	public Statement createStatement() {
 
 		Delete.Selection ds = QueryBuilder.delete();
 

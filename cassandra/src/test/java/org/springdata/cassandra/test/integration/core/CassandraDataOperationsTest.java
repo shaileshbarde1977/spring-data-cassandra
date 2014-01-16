@@ -189,54 +189,50 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void insertBatchTest() {
 
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(books).execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
+		cassandraTemplate.saveNewInBatch(books).inTable("book_alt").execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 	}
 
 	@Test
 	public void insertBatchAsynchronouslyTest() {
 
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(true, books, null);
+		cassandraTemplate.saveNewInBatch(books).executeAsync();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(true, books, "book_alt", null);
+		cassandraTemplate.saveNewInBatch(books).inTable("book_alt").executeAsync();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(true, books, "book", options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(true, books, options);
+		cassandraTemplate.saveNewInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 	}
 
@@ -364,86 +360,86 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void updateBatchTest() {
 
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(books).execute();
 
 		alterBooks(books);
 
-		cassandraTemplate.saveInBatch(false, books, null);
+		cassandraTemplate.saveInBatch(books).execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
+		cassandraTemplate.saveNewInBatch(books).inTable("book_alt").execute();
 
 		alterBooks(books);
 
-		cassandraTemplate.saveInBatch(false, books, "book_alt", null);
+		cassandraTemplate.saveInBatch(books).inTable("book_alt").execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 		alterBooks(books);
 
-		cassandraTemplate.saveInBatch(false, books, "book", options);
+		cassandraTemplate.saveInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 		alterBooks(books);
 
-		cassandraTemplate.saveInBatch(false, books, options);
+		cassandraTemplate.saveInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 	}
 
 	@Test
 	public void updateBatchAsynchronouslyTest() {
 
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(books).execute();
 
 		alterBooks(books);
 
-		cassandraTemplate.saveInBatch(true, books, null);
+		cassandraTemplate.saveInBatch(books).executeAsync();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
+		cassandraTemplate.saveNewInBatch(books).inTable("book_alt").execute();
 
 		alterBooks(books);
 
-		cassandraTemplate.saveInBatch(true, books, "book_alt", null);
+		cassandraTemplate.saveInBatch(books).inTable("book_alt").executeAsync();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 		alterBooks(books);
 
-		cassandraTemplate.saveInBatch(true, books, "book", options);
+		cassandraTemplate.saveInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 		alterBooks(books);
 
-		cassandraTemplate.saveInBatch(true, books, options);
+		cassandraTemplate.saveInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 	}
 
@@ -545,70 +541,70 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void deleteBatchTest() {
 
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(books).execute();
 
-		cassandraTemplate.deleteInBatch(false, books, null);
-
-		books = getBookList(20);
-
-		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
-
-		cassandraTemplate.deleteInBatch(false, books, "book_alt", null);
+		cassandraTemplate.deleteInBatch(books).execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book_alt").execute();
 
-		cassandraTemplate.deleteInBatch(false, books, "book", options);
+		cassandraTemplate.deleteInBatch(books).inTable("book_alt").execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
-		cassandraTemplate.deleteInBatch(false, books, options);
+		cassandraTemplate.deleteInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
+
+		books = getBookList(20);
+
+		cassandraTemplate.saveNewInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
+
+		cassandraTemplate.deleteInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 	}
 
 	@Test
 	public void deleteBatchAsynchronouslyTest() {
 
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(books).execute();
 
-		cassandraTemplate.deleteInBatch(true, books, null);
-
-		books = getBookList(20);
-
-		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
-
-		cassandraTemplate.deleteInBatch(true, books, "book_alt", null);
+		cassandraTemplate.deleteInBatch(books).executeAsync();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book_alt").execute();
 
-		cassandraTemplate.deleteInBatch(true, books, "book", options);
+		cassandraTemplate.deleteInBatch(books).inTable("book_alt").executeAsync();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
-		cassandraTemplate.deleteInBatch(true, books, options);
+		cassandraTemplate.deleteInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
+
+		books = getBookList(20);
+
+		cassandraTemplate.saveNewInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
+
+		cassandraTemplate.deleteInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 	}
 
@@ -699,35 +695,35 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void deleteByIdBatchTest() {
 
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(books).execute();
 
-		cassandraTemplate.deleteInBatchById(false, ids(books), Book.class, null);
-
-		books = getBookList(20);
-
-		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
-
-		cassandraTemplate.deleteInBatchById(false, ids(books), Book.class, "book_alt", null);
+		cassandraTemplate.deleteByIdInBatch(Book.class, ids(books)).execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book_alt").execute();
 
-		cassandraTemplate.deleteInBatchById(false, ids(books), Book.class, "book", options);
+		cassandraTemplate.deleteByIdInBatch(Book.class, ids(books)).inTable("book_alt").execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
-		cassandraTemplate.deleteInBatchById(false, ids(books), Book.class, options);
+		cassandraTemplate.deleteByIdInBatch(Book.class, ids(books)).inTable("book")
+				.withConsistencyLevel(ConsistencyLevel.ONE).withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
+
+		books = getBookList(20);
+
+		cassandraTemplate.saveNewInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
+
+		cassandraTemplate.deleteByIdInBatch(Book.class, ids(books)).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 	}
 
@@ -742,35 +738,35 @@ public class CassandraDataOperationsTest {
 	@Test
 	public void deleteByIdBatchAsynchronouslyTest() {
 
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
-
 		List<Book> books = null;
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(books).execute();
 
-		cassandraTemplate.deleteInBatchById(true, ids(books), Book.class, null);
-
-		books = getBookList(20);
-
-		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
-
-		cassandraTemplate.deleteInBatchById(true, ids(books), Book.class, "book_alt", null);
+		cassandraTemplate.deleteByIdInBatch(Book.class, ids(books)).execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book_alt").execute();
 
-		cassandraTemplate.deleteInBatchById(true, ids(books), Book.class, "book", options);
+		cassandraTemplate.deleteByIdInBatch(Book.class, ids(books)).inTable("book_alt").execute();
 
 		books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(books).inTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
-		cassandraTemplate.deleteInBatchById(true, ids(books), Book.class, options);
+		cassandraTemplate.deleteByIdInBatch(Book.class, ids(books)).inTable("book")
+				.withConsistencyLevel(ConsistencyLevel.ONE).withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
+
+		books = getBookList(20);
+
+		cassandraTemplate.saveNewInBatch(books).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
+
+		cassandraTemplate.deleteByIdInBatch(Book.class, ids(books)).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 	}
 
@@ -829,7 +825,7 @@ public class CassandraDataOperationsTest {
 
 		List<Book> books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(books).execute();
 
 		Select select = QueryBuilder.select().all().from("book");
 
@@ -846,7 +842,7 @@ public class CassandraDataOperationsTest {
 
 		List<Book> books = getBookList(20);
 
-		cassandraTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(books).execute();
 
 		Select select = QueryBuilder.select().countAll().from("book");
 

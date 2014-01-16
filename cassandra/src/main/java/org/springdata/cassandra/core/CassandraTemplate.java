@@ -53,6 +53,8 @@ import com.datastax.driver.core.querybuilder.Insert;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
 import com.datastax.driver.core.querybuilder.Update;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterators;
 
 /**
  * The CassandraTemplate is a convenience API for all CassandraOperations using POJOs. This is the "Spring Data" flavor
@@ -188,20 +190,26 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass,
-			StatementOptions optionsOrNull) {
-		String tableName = getTableName(entityClass);
-		Assert.notNull(tableName);
-		deleteInBatchById(asychronously, ids, entityClass, tableName, optionsOrNull);
-	}
-
-	@Override
-	public <T> void deleteInBatchById(boolean asychronously, Iterable<T> ids, Class<?> entityClass, String tableName,
-			StatementOptions optionsOrNull) {
-		Assert.notNull(ids);
+	public <T> BatchOperation deleteByIdInBatch(final Class<T> entityClass, Iterable<?> ids) {
 		Assert.notNull(entityClass);
-		Assert.notNull(tableName);
-		doBatchDeleteById(asychronously, tableName, ids, entityClass, optionsOrNull);
+		Assert.notNull(ids);
+
+		final CassandraTemplate cassandraTemplate = this;
+		Iterator<BatchedStatementCreator> creators = Iterators.transform(ids.iterator(),
+				new Function<Object, BatchedStatementCreator>() {
+
+					@Override
+					public BatchedStatementCreator apply(Object id) {
+
+						Assert.notNull(id);
+						assertNotIterable(id);
+
+						return new DefaultDeleteOperation<T>(cassandraTemplate, entityClass, id);
+					}
+
+				});
+
+		return new DefaultBatchOperation(this, creators);
 	}
 
 	@Override
@@ -213,17 +221,25 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> void deleteInBatch(boolean asychronously, Iterable<T> entities, StatementOptions optionsOrNull) {
+	public <T> BatchOperation deleteInBatch(Iterable<T> entities) {
 		Assert.notNull(entities);
-		doBatchDelete(asychronously, null, entities, optionsOrNull);
-	}
 
-	@Override
-	public <T> void deleteInBatch(boolean asychronously, Iterable<T> entities, String tableName,
-			StatementOptions optionsOrNull) {
-		Assert.notNull(entities);
-		Assert.notNull(tableName);
-		doBatchDelete(asychronously, tableName, entities, optionsOrNull);
+		final CassandraTemplate cassandraTemplate = this;
+		Iterator<BatchedStatementCreator> creators = Iterators.transform(entities.iterator(),
+				new Function<T, BatchedStatementCreator>() {
+
+					@Override
+					public BatchedStatementCreator apply(T entity) {
+
+						Assert.notNull(entity);
+						assertNotIterable(entity);
+
+						return new DefaultDeleteOperation<T>(cassandraTemplate, entity);
+					}
+
+				});
+
+		return new DefaultBatchOperation(this, creators);
 	}
 
 	@Override
@@ -268,17 +284,26 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, StatementOptions optionsOrNull) {
+	public <T> BatchOperation saveNewInBatch(Iterable<T> entities) {
 		Assert.notNull(entities);
-		doBatchInsert(asychronously, null, entities, optionsOrNull);
-	}
 
-	@Override
-	public <T> void saveNewInBatch(boolean asychronously, Iterable<T> entities, String tableName,
-			StatementOptions optionsOrNull) {
-		Assert.notNull(entities);
-		Assert.notNull(tableName);
-		doBatchInsert(asychronously, tableName, entities, optionsOrNull);
+		final CassandraTemplate cassandraTemplate = this;
+		Iterator<BatchedStatementCreator> creators = Iterators.transform(entities.iterator(),
+				new Function<T, BatchedStatementCreator>() {
+
+					@Override
+					public BatchedStatementCreator apply(T entity) {
+
+						Assert.notNull(entity);
+						assertNotIterable(entity);
+
+						return new DefaultSaveNewOperation<T>(cassandraTemplate, entity);
+					}
+
+				});
+
+		return new DefaultBatchOperation(this, creators);
+
 	}
 
 	@Override
@@ -289,17 +314,25 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> void saveInBatch(boolean asychronously, Iterable<T> entities, StatementOptions optionsOrNull) {
+	public <T> BatchOperation saveInBatch(Iterable<T> entities) {
 		Assert.notNull(entities);
-		doBatchUpdate(asychronously, null, entities, optionsOrNull);
-	}
 
-	@Override
-	public <T> void saveInBatch(boolean asychronously, Iterable<T> entities, String tableName,
-			StatementOptions optionsOrNull) {
-		Assert.notNull(entities);
-		Assert.notNull(tableName);
-		doBatchUpdate(asychronously, tableName, entities, optionsOrNull);
+		final CassandraTemplate cassandraTemplate = this;
+		Iterator<BatchedStatementCreator> creators = Iterators.transform(entities.iterator(),
+				new Function<T, BatchedStatementCreator>() {
+
+					@Override
+					public BatchedStatementCreator apply(T entity) {
+
+						Assert.notNull(entity);
+						assertNotIterable(entity);
+
+						return new DefaultSaveOperation<T>(cassandraTemplate, entity);
+					}
+
+				});
+
+		return new DefaultBatchOperation(this, creators);
 	}
 
 	@Override
