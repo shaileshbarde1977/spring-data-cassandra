@@ -34,23 +34,24 @@ import org.springframework.data.annotation.Id;
 @Table(name = "users")
 public class User {
 
-	public final int PROFILE_FIELDS = 1;
-	public final int ACCOUNT_FIELDS = 1;
+	public final int USER_NAME = 1;
+	public final int FIRST_NAME = 2;
+	public final int LAST_NAME = 3;
 
 	/*
 	 * Primary Row ID
 	 */
 	@Id
-	@Tag({ PROFILE_FIELDS, ACCOUNT_FIELDS })
+	@Tag(USER_NAME)
 	private String username;
 
 	/*
 	 * Public information
 	 */
-	@Tag({ PROFILE_FIELDS })
+	@Tag(FIRST_NAME)
 	private String firstName;
 
-	@Tag({ PROFILE_FIELDS })
+	@Tag(LAST_NAME)
 	private String lastName;
 
 	/*

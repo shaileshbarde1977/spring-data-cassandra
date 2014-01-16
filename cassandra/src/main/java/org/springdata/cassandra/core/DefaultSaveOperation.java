@@ -29,10 +29,11 @@ import com.datastax.driver.core.querybuilder.Update;
 public class DefaultSaveOperation<T> extends AbstractSaveOperation<T, SaveOperation> implements SaveOperation {
 
 	/*
-	 * TODO: add support of selected fields
+	 * TODO: add support for selected / tagged fields
 	 */
 
-	private Integer fieldsWithTag;
+	private String[] selectedFields;
+	private int[] taggedFields;
 
 	protected DefaultSaveOperation(CassandraTemplate cassandraTemplate, T entity) {
 		super(cassandraTemplate, entity);
@@ -49,8 +50,14 @@ public class DefaultSaveOperation<T> extends AbstractSaveOperation<T, SaveOperat
 	}
 
 	@Override
-	public SaveOperation fieldsWithTag(int tag) {
-		this.fieldsWithTag = tag;
+	public SaveOperation selectedFields(String... fields) {
+		this.selectedFields = fields;
+		return this;
+	}
+
+	@Override
+	public SaveOperation taggedFields(int... tags) {
+		this.taggedFields = tags;
 		return this;
 	}
 

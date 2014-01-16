@@ -36,14 +36,22 @@ public interface SaveOperation extends QueryOperation<ResultSet, SaveOperation> 
 	SaveOperation toTable(String tableName);
 
 	/**
+	 * Specifies fields that actually have to be saved. By default will save all fields in the entity.
+	 * 
+	 * @param fields Array of selected fields
+	 * @return this
+	 */
+	SaveOperation selectedFields(String... fields);
+
+	/**
 	 * Specifies fields that actually have to be saved. By default will save all fields in the entity. The only fields
 	 * that have special tag will be saved in this update. Tags are integers and usually constants that defined by @Tag
 	 * annotation
 	 * 
-	 * @param tag Number of the tag
+	 * @param tags Array of tagged fields
 	 * @return this
 	 */
-	SaveOperation fieldsWithTag(int tag);
+	SaveOperation taggedFields(int... tags);
 
 	/**
 	 * Specifies TTL (time to live) in seconds for the saved entity in the Cassandra

@@ -21,22 +21,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to identify fields by specific tag name.
+ * Used to identify fields by a specific tag. Tagged fields do not have dependency for the field name and it is a
+ * refactoring friendly approach.
  * 
  * Example:
  * 
  * <code>
- * class Profile
+ * class Profile { @Tag(USER_NAME) String userName; String firstName; String lastName; }
+ * cassandraTemplate.save(profile).taggedFields(USER_NAME).execute(); 
+ * </code>
  * 
- * @Tag(PROFILE_FIELDS, ACCOUNT_FIELDS) String userName;
- * @Tag(PROFILE_FIELDS) String firstName;
- * @Tag(PROFILE_FIELDS) String lastName;
- * 
- * 
- * 
- *                      cassandraTemplate.save(profile).taggedFields(ACCOUNT_FIELDS).execute(); </code>
- * 
- *                      Will update only userName field.
+ * Will update only userName field.
  * 
  * @author Alex Shvid
  */
@@ -44,6 +39,6 @@ import java.lang.annotation.Target;
 @Target(value = { ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 public @interface Tag {
 
-	int[] value();
+	int value();
 
 }
