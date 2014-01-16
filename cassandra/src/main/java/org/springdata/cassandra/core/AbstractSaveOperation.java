@@ -15,19 +15,11 @@
  */
 package org.springdata.cassandra.core;
 
-import java.util.concurrent.TimeoutException;
-
-import org.springdata.cassandra.cql.core.AbstractQueryOperation;
-import org.springdata.cassandra.cql.core.CallbackHandler;
-import org.springdata.cassandra.cql.core.CassandraFuture;
+import org.springdata.cassandra.cql.core.AbstractUpdateOperation;
 import org.springdata.cassandra.cql.core.QueryOperation;
 import org.springframework.util.Assert;
 
-import com.datastax.driver.core.Query;
 import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.querybuilder.Insert;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Update;
 
 /**
  * Abstract save operation implementation
@@ -39,7 +31,7 @@ import com.datastax.driver.core.querybuilder.Update;
  */
 
 public abstract class AbstractSaveOperation<T, O extends QueryOperation<ResultSet, O>> extends
-		AbstractQueryOperation<ResultSet, O> {
+		AbstractUpdateOperation<O> {
 
 	protected final CassandraTemplate cassandraTemplate;
 	protected final T entity;
@@ -53,36 +45,6 @@ public abstract class AbstractSaveOperation<T, O extends QueryOperation<ResultSe
 		Assert.notNull(entity);
 		this.cassandraTemplate = cassandraTemplate;
 		this.entity = entity;
-	}
-
-	abstract Query createQuery();
-
-	@Override
-	public ResultSet execute() {
-		Query query = createQuery();
-		addSaveOptions(query);
-		return doExecute(query);
-	}
-
-	@Override
-	public CassandraFuture<ResultSet> executeAsync() {
-		Query query = createQuery();
-		addSaveOptions(query);
-		return doExecuteAsync(query);
-	}
-
-	@Override
-	public void executeAsync(final CallbackHandler<ResultSet> cb) {
-		Query query = createQuery();
-		addSaveOptions(query);
-		doExecuteAsync(query, cb);
-	}
-
-	@Override
-	public ResultSet executeNonstop(int timeoutMls) throws TimeoutException {
-		Query query = createQuery();
-		addSaveOptions(query);
-		return doExecuteNonstop(query, timeoutMls);
 	}
 
 	public String getTableName() {
@@ -101,40 +63,12 @@ public abstract class AbstractSaveOperation<T, O extends QueryOperation<ResultSe
 		this.timestamp = timestamp;
 	}
 
-	private void addSaveOptions(Query query) {
+	public Integer getTtl() {
+		return ttl;
+	}
 
-		if (query instanceof Update) {
-
-			Update update = (Update) query;
-
-			/*
-			 * Add TTL to Update object
-			 */
-			if (ttl != null) {
-				update.using(QueryBuilder.ttl(ttl));
-			}
-			if (timestamp != null) {
-				update.using(QueryBuilder.timestamp(timestamp));
-			}
-
-		} else if (query instanceof Insert) {
-
-			Insert insert = (Insert) query;
-
-			/*
-			 * Add TTL to Insert object
-			 */
-			if (ttl != null) {
-				insert.using(QueryBuilder.ttl(ttl));
-			}
-			if (timestamp != null) {
-				insert.using(QueryBuilder.timestamp(timestamp));
-			}
-
-		} else {
-			throw new IllegalArgumentException("unsupported query object " + query.getClass());
-		}
-
+	public Long getTimestamp() {
+		return timestamp;
 	}
 
 }

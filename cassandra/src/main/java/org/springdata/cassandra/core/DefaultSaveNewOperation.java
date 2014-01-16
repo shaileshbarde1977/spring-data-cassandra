@@ -33,11 +33,21 @@ public class DefaultSaveNewOperation<T> extends AbstractSaveOperation<T, SaveNew
 	}
 
 	@Override
-	Query createQuery() {
+	public Query createQuery() {
 
 		Insert query = QueryBuilder.insertInto(cassandraTemplate.getKeyspace(), getTableName());
 
 		cassandraTemplate.getConverter().write(entity, query);
+
+		/*
+		 * Add Ttl and Timestamp to Insert query
+		 */
+		if (getTtl() != null) {
+			query.using(QueryBuilder.ttl(getTtl()));
+		}
+		if (getTimestamp() != null) {
+			query.using(QueryBuilder.timestamp(getTimestamp()));
+		}
 
 		return query;
 	}
