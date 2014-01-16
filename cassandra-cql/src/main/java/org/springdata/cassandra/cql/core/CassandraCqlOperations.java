@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.Query;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
@@ -34,6 +35,14 @@ import com.datastax.driver.core.Statement;
  * @author Matthew Adams
  */
 public interface CassandraCqlOperations {
+
+	/**
+	 * Creates query by using QueryCreator
+	 * 
+	 * @param qc - QueryCreator interface
+	 * @return
+	 */
+	Query createQuery(QueryCreator qc);
 
 	/**
 	 * Executes the supplied {@link SessionCallback} in the current Template Session. The implementation of
@@ -85,7 +94,7 @@ public interface CassandraCqlOperations {
 	 * 
 	 * @param is The Statement iterator
 	 */
-	UpdateOperation batchUpdate(Iterable<Statement> is);
+	UpdateOperation batchUpdate(Iterator<Statement> is);
 
 	/**
 	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback.

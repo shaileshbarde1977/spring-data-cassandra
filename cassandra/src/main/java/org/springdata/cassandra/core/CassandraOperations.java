@@ -181,22 +181,10 @@ public interface CassandraOperations {
 	/**
 	 * Removes the given object by id from the given table.
 	 * 
-	 * @param id
 	 * @param entityClass
-	 * @param optionsOrNull
-	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, StatementOptions optionsOrNull);
-
-	/**
-	 * Removes the given object by id from the given table.
-	 * 
 	 * @param id
-	 * @param entityClass
-	 * @param tableName
-	 * @param optionsOrNull
 	 */
-	<T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName,
-			StatementOptions optionsOrNull);
+	<T> DeleteOperation deleteById(Class<T> entityClass, Object id);
 
 	/**
 	 * Remove list of objects from the table by given ids.
@@ -220,18 +208,11 @@ public interface CassandraOperations {
 			StatementOptions optionsOrNull);
 
 	/**
+	 * Remove entity from the table
+	 * 
 	 * @param entity
-	 * @param tableName
-	 * @param optionsOrNull
 	 */
-	<T> void delete(boolean asychronously, T entity, StatementOptions optionsOrNull);
-
-	/**
-	 * @param entity
-	 * @param tableName
-	 * @param optionsOrNull
-	 */
-	<T> void delete(boolean asychronously, T entity, String tableName, StatementOptions optionsOrNull);
+	<T> DeleteOperation delete(T entity);
 
 	/**
 	 * @param entities

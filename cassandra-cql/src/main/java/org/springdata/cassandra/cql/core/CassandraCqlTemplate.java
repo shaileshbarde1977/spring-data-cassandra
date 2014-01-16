@@ -148,6 +148,12 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 	}
 
 	@Override
+	public Query createQuery(QueryCreator qc) {
+		Assert.notNull(qc);
+		return doCreateQuery(qc);
+	}
+
+	@Override
 	public <T> T execute(SessionCallback<T> sessionCallback) {
 		Assert.notNull(sessionCallback);
 		return doExecute(sessionCallback);
@@ -156,28 +162,32 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 	@Override
 	public UpdateOperation update(final String cql) {
 		Assert.notNull(cql);
-		SimpleStatement ss = new SimpleStatement(cql);
-		return new DefaultUpdateOperation(this, ss);
+		return new DefaultUpdateOperation(this, cql);
 	}
 
 	@Override
 	public UpdateOperation update(PreparedStatement ps, PreparedStatementBinder psb) {
 		Assert.notNull(ps);
-		BoundStatement bs = doBind(ps, psb);
-		return new DefaultUpdateOperation(this, bs);
+		return new DefaultUpdateOperation(this, new SimplePreparedStatementQueryCreator(ps, psb));
 	}
 
 	@Override
-	public UpdateOperation update(BoundStatement bs) {
+	public UpdateOperation update(final BoundStatement bs) {
 		Assert.notNull(bs);
-		return new DefaultUpdateOperation(this, bs);
+		return new DefaultUpdateOperation(this, new QueryCreator() {
+
+			@Override
+			public Query createQuery() {
+				return bs;
+			}
+
+		});
 	}
 
 	@Override
 	public UpdateOperation update(final QueryCreator qc) {
 		Assert.notNull(qc);
-		Query query = doCreateQuery(qc);
-		return new DefaultUpdateOperation(this, query);
+		return new DefaultUpdateOperation(this, qc);
 	}
 
 	@Override
@@ -194,14 +204,41 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 
 				});
 
-		return new DefaultUpdateOperation(this, doCreateBatch(statements));
+		return batchUpdate(statements);
 	}
 
 	@Override
-	public UpdateOperation batchUpdate(final Iterable<Statement> statements) {
+	public UpdateOperation batchUpdate(final Iterator<Statement> statements) {
 		Assert.notNull(statements);
-		Batch batch = doCreateBatch(statements.iterator());
-		return new DefaultUpdateOperation(this, batch);
+
+		return new DefaultUpdateOperation(this, new QueryCreator() {
+
+			@Override
+			public Query createQuery() {
+
+				/*
+				 * Return variable is a Batch statement
+				 */
+				final Batch batch = QueryBuilder.batch();
+
+				boolean emptyBatch = true;
+				while (statements.hasNext()) {
+
+					Statement statement = statements.next();
+					Assert.notNull(statement);
+
+					batch.add(statement);
+					emptyBatch = false;
+				}
+
+				if (emptyBatch) {
+					throw new IllegalArgumentException("statements are empty");
+				}
+
+				return batch;
+			}
+
+		});
 	}
 
 	@Override
@@ -703,45 +740,6 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 
 	}
 
-	/**
-	 * Service method that creates batch statement
-	 * 
-	 * @param statements
-	 * @param optionsOrNull
-	 * @return
-	 */
-
-	protected Batch doCreateBatch(Iterator<Statement> statements) {
-
-		try {
-
-			/*
-			 * Return variable is a Batch statement
-			 */
-			final Batch batch = QueryBuilder.batch();
-
-			boolean emptyBatch = true;
-			while (statements.hasNext()) {
-
-				Statement statement = statements.next();
-				Assert.notNull(statement);
-
-				batch.add(statement);
-				emptyBatch = false;
-			}
-
-			if (emptyBatch) {
-				throw new IllegalArgumentException("statements are empty");
-			}
-
-			return batch;
-
-		} catch (RuntimeException e) {
-			throw translateIfPossible(e);
-		}
-
-	}
-
 	@Override
 	public BoundStatement bind(PreparedStatement ps) {
 		return doBind(ps, null);
@@ -828,7 +826,14 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 	@Override
 	public UpdateOperation truncate(final String tableName) {
 		Assert.notNull(tableName);
-		return new DefaultUpdateOperation(this, QueryBuilder.truncate(tableName));
+		return new DefaultUpdateOperation(this, new QueryCreator() {
+
+			@Override
+			public Query createQuery() {
+				return QueryBuilder.truncate(tableName);
+			}
+
+		});
 	}
 
 	@Override

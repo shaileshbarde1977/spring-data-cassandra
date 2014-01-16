@@ -398,7 +398,7 @@ public class CassandraConversionTests {
 		assertThat(entityPk.getClusteringKey(), equalTo(pk.getClusteringKey()));
 		assertThat(entity.getProptext(), equalTo("two"));
 
-		cassandraOperations.delete(false, entity, null);
+		cassandraOperations.delete(entity).execute();
 		entity = cassandraOperations.findById(pk, EmbeddedIdEntity.class, null);
 		assertThat(entity, is(nullValue(EmbeddedIdEntity.class)));
 	}

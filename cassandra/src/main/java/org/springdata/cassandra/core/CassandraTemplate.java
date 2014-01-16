@@ -205,20 +205,11 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, StatementOptions optionsOrNull) {
-		String tableName = getTableName(entityClass);
-		Assert.notNull(tableName);
-		deleteById(asychronously, id, entityClass, tableName, optionsOrNull);
-	}
-
-	@Override
-	public <T> void deleteById(boolean asychronously, T id, Class<?> entityClass, String tableName,
-			StatementOptions optionsOrNull) {
+	public <T> DefaultDeleteOperation<T> deleteById(Class<T> entityClass, Object id) {
+		Assert.notNull(entityClass);
 		Assert.notNull(id);
 		assertNotIterable(id);
-		Assert.notNull(entityClass);
-		Assert.notNull(tableName);
-		doDeleteById(asychronously, tableName, id, entityClass, optionsOrNull);
+		return new DefaultDeleteOperation<T>(this, entityClass, id);
 	}
 
 	@Override
@@ -236,18 +227,10 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> void delete(boolean asychronously, T entity, StatementOptions optionsOrNull) {
-		String tableName = getTableName(entity.getClass());
-		Assert.notNull(tableName);
-		delete(asychronously, entity, tableName, optionsOrNull);
-	}
-
-	@Override
-	public <T> void delete(boolean asychronously, T entity, String tableName, StatementOptions optionsOrNull) {
+	public <T> DeleteOperation delete(T entity) {
 		Assert.notNull(entity);
 		assertNotIterable(entity);
-		Assert.notNull(tableName);
-		doDelete(asychronously, tableName, entity, optionsOrNull);
+		return new DefaultDeleteOperation<T>(this, entity);
 	}
 
 	/**

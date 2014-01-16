@@ -15,11 +15,7 @@
  */
 package org.springdata.cassandra.cql.core;
 
-import java.util.concurrent.TimeoutException;
-
 import com.datastax.driver.core.Query;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.SimpleStatement;
 
 /**
  * Default update operation implementation
@@ -28,38 +24,22 @@ import com.datastax.driver.core.SimpleStatement;
  * 
  */
 
-public class DefaultUpdateOperation extends AbstractQueryOperation<ResultSet, UpdateOperation> implements
-		UpdateOperation {
+public class DefaultUpdateOperation extends AbstractUpdateOperation<UpdateOperation> implements UpdateOperation {
 
-	private final Query query;
+	private final QueryCreator qc;
 
 	protected DefaultUpdateOperation(CassandraCqlTemplate cassandraCqlTemplate, String cql) {
-		this(cassandraCqlTemplate, new SimpleStatement(cql));
+		this(cassandraCqlTemplate, new SimpleQueryCreator(cql));
 	}
 
-	protected DefaultUpdateOperation(CassandraCqlTemplate cassandraCqlTemplate, Query query) {
+	protected DefaultUpdateOperation(CassandraCqlTemplate cassandraCqlTemplate, QueryCreator qc) {
 		super(cassandraCqlTemplate);
-		this.query = query;
+		this.qc = qc;
 	}
 
 	@Override
-	public ResultSet execute() {
-		return doExecute(query);
-	}
-
-	@Override
-	public CassandraFuture<ResultSet> executeAsync() {
-		return doExecuteAsync(query);
-	}
-
-	@Override
-	public void executeAsync(final CallbackHandler<ResultSet> cb) {
-		doExecuteAsync(query, cb);
-	}
-
-	@Override
-	public ResultSet executeNonstop(int timeoutMls) throws TimeoutException {
-		return doExecuteNonstop(query, timeoutMls);
+	public Query createQuery() {
+		return qc.createQuery();
 	}
 
 }

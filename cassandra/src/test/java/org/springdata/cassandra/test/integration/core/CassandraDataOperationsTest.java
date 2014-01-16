@@ -63,7 +63,7 @@ import com.datastax.driver.core.querybuilder.Select;
 public class CassandraDataOperationsTest {
 
 	@Autowired
-	private CassandraOperations cassandraDataTemplate;
+	private CassandraOperations cassandraTemplate;
 
 	private static Logger log = LoggerFactory.getLogger(CassandraDataOperationsTest.class);
 
@@ -102,7 +102,7 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.saveNew(b1).execute();
+		cassandraTemplate.saveNew(b1).execute();
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
@@ -110,7 +110,7 @@ public class CassandraDataOperationsTest {
 		b2.setAuthor("Cassandra Guru");
 		b2.setPages(521);
 
-		cassandraDataTemplate.saveNew(b2).toTable("book_alt").execute();
+		cassandraTemplate.saveNew(b2).toTable("book_alt").execute();
 
 		/*
 		 * Test Single Insert with entity
@@ -121,7 +121,7 @@ public class CassandraDataOperationsTest {
 		b3.setAuthor("Cassandra Guru");
 		b3.setPages(265);
 
-		cassandraDataTemplate.saveNew(b3).toTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+		cassandraTemplate.saveNew(b3).toTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
 				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 		/*
@@ -133,7 +133,7 @@ public class CassandraDataOperationsTest {
 		b5.setAuthor("Cassandra Guru");
 		b5.setPages(265);
 
-		cassandraDataTemplate.saveNew(b5).withConsistencyLevel(ConsistencyLevel.ONE)
+		cassandraTemplate.saveNew(b5).withConsistencyLevel(ConsistencyLevel.ONE)
 				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 	}
@@ -150,7 +150,7 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.saveNew(b1).executeAsync();
+		cassandraTemplate.saveNew(b1).executeAsync();
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
@@ -158,7 +158,7 @@ public class CassandraDataOperationsTest {
 		b2.setAuthor("Cassandra Guru");
 		b2.setPages(521);
 
-		cassandraDataTemplate.saveNew(b2).toTable("book_alt").executeAsync();
+		cassandraTemplate.saveNew(b2).toTable("book_alt").executeAsync();
 
 		/*
 		 * Test Single Insert with entity
@@ -169,7 +169,7 @@ public class CassandraDataOperationsTest {
 		b3.setAuthor("Cassandra Guru");
 		b3.setPages(265);
 
-		cassandraDataTemplate.saveNew(b3).toTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+		cassandraTemplate.saveNew(b3).toTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
 				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 		/*
@@ -181,7 +181,7 @@ public class CassandraDataOperationsTest {
 		b5.setAuthor("Cassandra Guru");
 		b5.setPages(265);
 
-		cassandraDataTemplate.saveNew(b5).withConsistencyLevel(ConsistencyLevel.ONE)
+		cassandraTemplate.saveNew(b5).withConsistencyLevel(ConsistencyLevel.ONE)
 				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 	}
@@ -197,19 +197,19 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(false, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
+		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(false, books, "book", options);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(false, books, options);
 
 	}
 
@@ -224,19 +224,19 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(true, books, null);
+		cassandraTemplate.saveNewInBatch(true, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(true, books, "book_alt", null);
+		cassandraTemplate.saveNewInBatch(true, books, "book_alt", null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(true, books, "book", options);
+		cassandraTemplate.saveNewInBatch(true, books, "book", options);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(true, books, options);
+		cassandraTemplate.saveNewInBatch(true, books, options);
 
 	}
 
@@ -274,7 +274,7 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.save(b1).execute();
+		cassandraTemplate.save(b1).execute();
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
@@ -282,7 +282,7 @@ public class CassandraDataOperationsTest {
 		b2.setAuthor("Cassandra Guru");
 		b2.setPages(521);
 
-		cassandraDataTemplate.save(b2).toTable("book_alt").execute();
+		cassandraTemplate.save(b2).toTable("book_alt").execute();
 
 		/*
 		 * Test Single Insert with entity
@@ -293,7 +293,7 @@ public class CassandraDataOperationsTest {
 		b3.setAuthor("Cassandra Guru");
 		b3.setPages(265);
 
-		cassandraDataTemplate.save(b3).toTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+		cassandraTemplate.save(b3).toTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
 				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 		/*
@@ -305,7 +305,7 @@ public class CassandraDataOperationsTest {
 		b5.setAuthor("Cassandra Guru");
 		b5.setPages(265);
 
-		cassandraDataTemplate.save(b5).withConsistencyLevel(ConsistencyLevel.ONE)
+		cassandraTemplate.save(b5).withConsistencyLevel(ConsistencyLevel.ONE)
 				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 	}
@@ -324,7 +324,7 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.save(b1).executeAsync();
+		cassandraTemplate.save(b1).executeAsync();
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
@@ -332,7 +332,7 @@ public class CassandraDataOperationsTest {
 		b2.setAuthor("Cassandra Guru");
 		b2.setPages(521);
 
-		cassandraDataTemplate.save(b2).toTable("book_alt").executeAsync();
+		cassandraTemplate.save(b2).toTable("book_alt").executeAsync();
 
 		/*
 		 * Test Single Insert with entity
@@ -343,7 +343,7 @@ public class CassandraDataOperationsTest {
 		b3.setAuthor("Cassandra Guru");
 		b3.setPages(265);
 
-		cassandraDataTemplate.save(b3).toTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+		cassandraTemplate.save(b3).toTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
 				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 		/*
@@ -355,7 +355,7 @@ public class CassandraDataOperationsTest {
 		b5.setAuthor("Cassandra Guru");
 		b5.setPages(265);
 
-		cassandraDataTemplate.save(b5).withConsistencyLevel(ConsistencyLevel.ONE)
+		cassandraTemplate.save(b5).withConsistencyLevel(ConsistencyLevel.ONE)
 				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 		;
 
@@ -372,35 +372,35 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(false, books, null);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(false, books, null);
+		cassandraTemplate.saveInBatch(false, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
+		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(false, books, "book_alt", null);
+		cassandraTemplate.saveInBatch(false, books, "book_alt", null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(false, books, "book", options);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(false, books, "book", options);
+		cassandraTemplate.saveInBatch(false, books, "book", options);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(false, books, options);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(false, books, options);
+		cassandraTemplate.saveInBatch(false, books, options);
 
 	}
 
@@ -415,35 +415,35 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(false, books, null);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(true, books, null);
+		cassandraTemplate.saveInBatch(true, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
+		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(true, books, "book_alt", null);
+		cassandraTemplate.saveInBatch(true, books, "book_alt", null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(false, books, "book", options);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(true, books, "book", options);
+		cassandraTemplate.saveInBatch(true, books, "book", options);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(false, books, options);
 
 		alterBooks(books);
 
-		cassandraDataTemplate.saveInBatch(true, books, options);
+		cassandraTemplate.saveInBatch(true, books, options);
 
 	}
 
@@ -474,12 +474,12 @@ public class CassandraDataOperationsTest {
 		Book b1 = new Book();
 		b1.setIsbn("123456-1");
 
-		cassandraDataTemplate.delete(false, b1, null);
+		cassandraTemplate.delete(b1).execute();
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
 
-		cassandraDataTemplate.delete(false, b2, "book_alt", null);
+		cassandraTemplate.delete(b2).fromTable("book_alt").execute();
 
 		/*
 		 * Test Single Insert with entity
@@ -487,7 +487,8 @@ public class CassandraDataOperationsTest {
 		Book b3 = new Book();
 		b3.setIsbn("123456-3");
 
-		cassandraDataTemplate.delete(false, b3, "book", options);
+		cassandraTemplate.delete(b3).fromTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 		/*
 		 * Test Single Insert with entity
@@ -495,7 +496,8 @@ public class CassandraDataOperationsTest {
 		Book b5 = new Book();
 		b5.setIsbn("123456-5");
 
-		cassandraDataTemplate.delete(false, b5, options);
+		cassandraTemplate.delete(b5).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 	}
 
@@ -514,12 +516,12 @@ public class CassandraDataOperationsTest {
 		Book b1 = new Book();
 		b1.setIsbn("123456-1");
 
-		cassandraDataTemplate.delete(true, b1, null);
+		cassandraTemplate.delete(b1).executeAsync();
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
 
-		cassandraDataTemplate.delete(true, b2, "book_alt", null);
+		cassandraTemplate.delete(b2).fromTable("book_alt").executeAsync();
 
 		/*
 		 * Test Single Insert with entity
@@ -527,7 +529,8 @@ public class CassandraDataOperationsTest {
 		Book b3 = new Book();
 		b3.setIsbn("123456-3");
 
-		cassandraDataTemplate.delete(true, b3, "book", options);
+		cassandraTemplate.delete(b3).fromTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 		/*
 		 * Test Single Insert with entity
@@ -535,7 +538,8 @@ public class CassandraDataOperationsTest {
 		Book b5 = new Book();
 		b5.setIsbn("123456-5");
 
-		cassandraDataTemplate.delete(true, b5, options);
+		cassandraTemplate.delete(b5).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 	}
 
 	@Test
@@ -549,27 +553,27 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(false, books, null);
 
-		cassandraDataTemplate.deleteInBatch(false, books, null);
-
-		books = getBookList(20);
-
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
-
-		cassandraDataTemplate.deleteInBatch(false, books, "book_alt", null);
+		cassandraTemplate.deleteInBatch(false, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
 
-		cassandraDataTemplate.deleteInBatch(false, books, "book", options);
+		cassandraTemplate.deleteInBatch(false, books, "book_alt", null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(false, books, "book", options);
 
-		cassandraDataTemplate.deleteInBatch(false, books, options);
+		cassandraTemplate.deleteInBatch(false, books, "book", options);
+
+		books = getBookList(20);
+
+		cassandraTemplate.saveNewInBatch(false, books, options);
+
+		cassandraTemplate.deleteInBatch(false, books, options);
 
 	}
 
@@ -584,27 +588,27 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(false, books, null);
 
-		cassandraDataTemplate.deleteInBatch(true, books, null);
-
-		books = getBookList(20);
-
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
-
-		cassandraDataTemplate.deleteInBatch(true, books, "book_alt", null);
+		cassandraTemplate.deleteInBatch(true, books, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
 
-		cassandraDataTemplate.deleteInBatch(true, books, "book", options);
+		cassandraTemplate.deleteInBatch(true, books, "book_alt", null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(false, books, "book", options);
 
-		cassandraDataTemplate.deleteInBatch(true, books, options);
+		cassandraTemplate.deleteInBatch(true, books, "book", options);
+
+		books = getBookList(20);
+
+		cassandraTemplate.saveNewInBatch(false, books, options);
+
+		cassandraTemplate.deleteInBatch(true, books, options);
 
 	}
 
@@ -623,12 +627,12 @@ public class CassandraDataOperationsTest {
 		Book b1 = new Book();
 		b1.setIsbn("123456-1");
 
-		cassandraDataTemplate.deleteById(false, b1.getIsbn(), Book.class, null);
+		cassandraTemplate.deleteById(Book.class, b1.getIsbn()).execute();
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
 
-		cassandraDataTemplate.deleteById(false, b2.getIsbn(), Book.class, "book_alt", null);
+		cassandraTemplate.deleteById(Book.class, b2.getIsbn()).fromTable("book_alt").execute();
 
 		/*
 		 * Test Single Insert with entity
@@ -636,7 +640,8 @@ public class CassandraDataOperationsTest {
 		Book b3 = new Book();
 		b3.setIsbn("123456-3");
 
-		cassandraDataTemplate.deleteById(false, b3.getIsbn(), Book.class, "book", options);
+		cassandraTemplate.deleteById(Book.class, b3.getIsbn()).fromTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 		/*
 		 * Test Single Insert with entity
@@ -644,7 +649,8 @@ public class CassandraDataOperationsTest {
 		Book b5 = new Book();
 		b5.setIsbn("123456-5");
 
-		cassandraDataTemplate.deleteById(false, b5.getIsbn(), Book.class, options);
+		cassandraTemplate.deleteById(Book.class, b5.getIsbn()).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).execute();
 
 	}
 
@@ -663,12 +669,12 @@ public class CassandraDataOperationsTest {
 		Book b1 = new Book();
 		b1.setIsbn("123456-1");
 
-		cassandraDataTemplate.deleteById(true, b1.getIsbn(), Book.class, null);
+		cassandraTemplate.deleteById(Book.class, b1.getIsbn()).executeAsync();
 
 		Book b2 = new Book();
 		b2.setIsbn("123456-2");
 
-		cassandraDataTemplate.deleteById(true, b2.getIsbn(), Book.class, "book_alt", null);
+		cassandraTemplate.deleteById(Book.class, b2.getIsbn()).fromTable("book_alt").executeAsync();
 
 		/*
 		 * Test Single Insert with entity
@@ -676,7 +682,8 @@ public class CassandraDataOperationsTest {
 		Book b3 = new Book();
 		b3.setIsbn("123456-3");
 
-		cassandraDataTemplate.deleteById(true, b3.getIsbn(), Book.class, "book", options);
+		cassandraTemplate.deleteById(Book.class, b3.getIsbn()).fromTable("book").withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 		/*
 		 * Test Single Insert with entity
@@ -684,7 +691,8 @@ public class CassandraDataOperationsTest {
 		Book b5 = new Book();
 		b5.setIsbn("123456-5");
 
-		cassandraDataTemplate.deleteById(true, b5.getIsbn(), Book.class, options);
+		cassandraTemplate.deleteById(Book.class, b5.getIsbn()).withConsistencyLevel(ConsistencyLevel.ONE)
+				.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY).executeAsync();
 
 	}
 
@@ -699,27 +707,27 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(false, books, null);
 
-		cassandraDataTemplate.deleteInBatchById(false, ids(books), Book.class, null);
-
-		books = getBookList(20);
-
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
-
-		cassandraDataTemplate.deleteInBatchById(false, ids(books), Book.class, "book_alt", null);
+		cassandraTemplate.deleteInBatchById(false, ids(books), Book.class, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
 
-		cassandraDataTemplate.deleteInBatchById(false, ids(books), Book.class, "book", options);
+		cassandraTemplate.deleteInBatchById(false, ids(books), Book.class, "book_alt", null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(false, books, "book", options);
 
-		cassandraDataTemplate.deleteInBatchById(false, ids(books), Book.class, options);
+		cassandraTemplate.deleteInBatchById(false, ids(books), Book.class, "book", options);
+
+		books = getBookList(20);
+
+		cassandraTemplate.saveNewInBatch(false, books, options);
+
+		cassandraTemplate.deleteInBatchById(false, ids(books), Book.class, options);
 
 	}
 
@@ -742,27 +750,27 @@ public class CassandraDataOperationsTest {
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(false, books, null);
 
-		cassandraDataTemplate.deleteInBatchById(true, ids(books), Book.class, null);
-
-		books = getBookList(20);
-
-		cassandraDataTemplate.saveNewInBatch(false, books, "book_alt", null);
-
-		cassandraDataTemplate.deleteInBatchById(true, ids(books), Book.class, "book_alt", null);
+		cassandraTemplate.deleteInBatchById(true, ids(books), Book.class, null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, "book", options);
+		cassandraTemplate.saveNewInBatch(false, books, "book_alt", null);
 
-		cassandraDataTemplate.deleteInBatchById(true, ids(books), Book.class, "book", options);
+		cassandraTemplate.deleteInBatchById(true, ids(books), Book.class, "book_alt", null);
 
 		books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, options);
+		cassandraTemplate.saveNewInBatch(false, books, "book", options);
 
-		cassandraDataTemplate.deleteInBatchById(true, ids(books), Book.class, options);
+		cassandraTemplate.deleteInBatchById(true, ids(books), Book.class, "book", options);
+
+		books = getBookList(20);
+
+		cassandraTemplate.saveNewInBatch(false, books, options);
+
+		cassandraTemplate.deleteInBatchById(true, ids(books), Book.class, options);
 
 	}
 
@@ -778,12 +786,12 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.saveNew(b1).execute();
+		cassandraTemplate.saveNew(b1).execute();
 
 		Select select = QueryBuilder.select().all().from("book");
 		select.where(QueryBuilder.eq("isbn", "123456-1"));
 
-		Book b = cassandraDataTemplate.findOne(select.getQueryString(), Book.class, null);
+		Book b = cassandraTemplate.findOne(select.getQueryString(), Book.class, null);
 
 		log.info("SingleSelect Book Title -> " + b.getTitle());
 		log.info("SingleSelect Book Author -> " + b.getAuthor());
@@ -805,9 +813,9 @@ public class CassandraDataOperationsTest {
 		b1.setAuthor("Cassandra Guru");
 		b1.setPages(521);
 
-		cassandraDataTemplate.saveNew(b1).execute();
+		cassandraTemplate.saveNew(b1).execute();
 
-		Book b = cassandraDataTemplate.findById("123456-1", Book.class, null);
+		Book b = cassandraTemplate.findById("123456-1", Book.class, null);
 
 		log.info("SingleSelect Book Title -> " + b.getTitle());
 		log.info("SingleSelect Book Author -> " + b.getAuthor());
@@ -821,11 +829,11 @@ public class CassandraDataOperationsTest {
 
 		List<Book> books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(false, books, null);
 
 		Select select = QueryBuilder.select().all().from("book");
 
-		List<Book> b = cassandraDataTemplate.find(select.getQueryString(), Book.class, null);
+		List<Book> b = cassandraTemplate.find(select.getQueryString(), Book.class, null);
 
 		log.info("Book Count -> " + b.size());
 
@@ -838,11 +846,11 @@ public class CassandraDataOperationsTest {
 
 		List<Book> books = getBookList(20);
 
-		cassandraDataTemplate.saveNewInBatch(false, books, null);
+		cassandraTemplate.saveNewInBatch(false, books, null);
 
 		Select select = QueryBuilder.select().countAll().from("book");
 
-		Long count = cassandraDataTemplate.count(select.getQueryString(), null);
+		Long count = cassandraTemplate.count(select.getQueryString(), null);
 
 		log.info("Book Count -> " + count);
 
