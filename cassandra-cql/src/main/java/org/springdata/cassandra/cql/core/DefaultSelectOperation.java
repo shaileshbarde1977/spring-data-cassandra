@@ -72,6 +72,28 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
+	public ProcessOperation<Boolean> notEmpty() {
+
+		return new ProcessingSelectOperation<Boolean>(this, new Processor<Boolean>() {
+
+			@Override
+			public Boolean process(ResultSet resultSet) {
+				return cassandraCqlTemplate.doProcess(resultSet, new ResultSetCallback<Boolean>() {
+
+					@Override
+					public Boolean doWithResultSet(ResultSet resultSet) {
+						return resultSet.iterator().hasNext();
+					}
+
+				});
+
+			}
+
+		});
+
+	}
+
+	@Override
 	public <E> ProcessOperation<E> firstColumnOne(final Class<E> elementType) {
 
 		return new ProcessingSelectOperation<E>(this, new Processor<E>() {

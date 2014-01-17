@@ -41,7 +41,7 @@ public class CassandraFuture<T> extends SimpleForwardingListenableFuture<T> {
 
 	private CassandraExceptionTranslator exceptionTranslator;
 
-	protected CassandraFuture(ListenableFuture<T> delegate, CassandraExceptionTranslator exceptionTranslator) {
+	public CassandraFuture(ListenableFuture<T> delegate, CassandraExceptionTranslator exceptionTranslator) {
 		super(delegate);
 		this.exceptionTranslator = exceptionTranslator;
 	}

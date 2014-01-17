@@ -1,45 +1,36 @@
 /*
- * Copyright 2013 the original author or authors.
- *
+ * Copyright 2014 the original author or authors.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.repository.query;
+package org.springdata.cassandra.core;
 
-import java.io.Serializable;
-
-import org.springframework.data.repository.core.EntityInformation;
+import org.springdata.cassandra.cql.core.QueryOperation;
 
 /**
- * Cassandra specific {@link EntityInformation}.
+ * Base interface to get entity (actually select).
  * 
  * @author Alex Shvid
  * 
  */
-public interface CassandraEntityInformation<T, ID extends Serializable> extends EntityInformation<T, ID> {
+public interface GetOperation<T> extends QueryOperation<T, GetOperation<T>> {
 
 	/**
-	 * Returns the name of the table the entity shall be persisted to.
+	 * Specifies table differ from entitie's table
 	 * 
-	 * @return
+	 * @param tableName table name to override entities table
+	 * @return this
 	 */
-	String getTableName();
-
-	/**
-	 * Returns the column that the id will be persisted to.
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	String getIdColumn();
+	GetOperation<T> formTable(String tableName);
 
 }

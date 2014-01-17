@@ -1,0 +1,117 @@
+/*
+ * Copyright 2014 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springdata.cassandra.core;
+
+import java.util.concurrent.TimeoutException;
+
+import org.springdata.cassandra.cql.core.AbstractQueryOperation;
+import org.springdata.cassandra.cql.core.CallbackHandler;
+import org.springdata.cassandra.cql.core.CassandraCqlTemplate;
+import org.springdata.cassandra.cql.core.CassandraFuture;
+import org.springdata.cassandra.cql.core.QueryCreator;
+
+import com.datastax.driver.core.Query;
+import com.datastax.driver.core.ResultSet;
+import com.google.common.base.Function;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+
+/**
+ * Abstract Get Operation
+ * 
+ * @author Alex Shvid
+ * 
+ * @param <T> - return Type
+ */
+
+public abstract class AbstractGetOperation<T> extends AbstractQueryOperation<T, GetOperation<T>> implements
+		GetOperation<T>, QueryCreator {
+
+	private String tableName;
+
+	public abstract T transform(ResultSet resultSet);
+
+	public AbstractGetOperation(CassandraCqlTemplate cassandraCqlTemplate) {
+		super(cassandraCqlTemplate);
+	}
+
+	@Override
+	public GetOperation<T> formTable(String tableName) {
+		this.tableName = tableName;
+		return this;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	@Override
+	public T execute() {
+		Query query = doCreateQuery(this);
+		ResultSet resultSet = doExecute(query);
+		return transform(resultSet);
+	}
+
+	@Override
+	public CassandraFuture<T> executeAsync() {
+		Query query = doCreateQuery(this);
+		CassandraFuture<ResultSet> resultSetFuture = doExecuteAsync(query);
+
+		ListenableFuture<T> future = Futures.transform(resultSetFuture, new Function<ResultSet, T>() {
+
+			@Override
+			public T apply(ResultSet resultSet) {
+				return processWithFallback(resultSet);
+			}
+
+		}, getExecutor());
+
+		return new CassandraFuture<T>(future, cassandraCqlTemplate.getExceptionTranslator());
+
+	}
+
+	@Override
+	public void executeAsync(final CallbackHandler<T> cb) {
+
+		Query query = doCreateQuery(this);
+		doExecuteAsync(query, new CallbackHandler<ResultSet>() {
+
+			@Override
+			public void onComplete(ResultSet resultSet) {
+				T result = processWithFallback(resultSet);
+				cb.onComplete(result);
+			}
+
+		});
+	}
+
+	@Override
+	public T executeNonstop(int timeoutMls) throws TimeoutException {
+		Query query = doCreateQuery(this);
+		ResultSet resultSet = doExecuteNonstop(query, timeoutMls);
+		return transform(resultSet);
+	}
+
+	protected T processWithFallback(ResultSet resultSet) {
+		try {
+			return transform(resultSet);
+		} catch (RuntimeException e) {
+			fireOnFailure(e);
+			throw e;
+		}
+	}
+
+}

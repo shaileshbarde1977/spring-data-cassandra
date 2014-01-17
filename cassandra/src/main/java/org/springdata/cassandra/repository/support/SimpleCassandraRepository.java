@@ -81,11 +81,6 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 		return result;
 	}
 
-	private Clause getIdClause(ID id) {
-		Clause clause = QueryBuilder.eq(entityInformation.getIdColumn(), id);
-		return clause;
-	}
-
 	@Override
 	public T findOne(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
@@ -101,25 +96,19 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 
 	@Override
 	public boolean exists(ID id) {
-
 		Assert.notNull(id, "The given id must not be null!");
-
-		Select select = QueryBuilder.select().countAll().from(entityInformation.getTableName());
-		select.where(getIdClause(id));
-
-		Long num = cassandraTemplate.count(select.getQueryString(), null);
-		return num != null && num.longValue() > 0;
+		return cassandraTemplate.exists(entityInformation.getJavaType(), id).execute();
 	}
 
 	@Override
 	public long count() {
-		return cassandraTemplate.countAll(entityInformation.getTableName(), null);
+		Long result = cassandraTemplate.cqlOps().countAll(entityInformation.getTableName()).execute();
+		return result != null ? result : 0;
 	}
 
 	@Override
 	public void delete(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
-
 		cassandraTemplate.deleteById(entityInformation.getJavaType(), id).execute();
 	}
 

@@ -184,12 +184,6 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public Long countAll(String tableName, StatementOptions optionsOrNull) {
-		Select select = QueryBuilder.select().countAll().from(tableName);
-		return doSelectCount(select.getQueryString(), optionsOrNull);
-	}
-
-	@Override
 	public <T> BatchOperation deleteByIdInBatch(final Class<T> entityClass, Iterable<?> ids) {
 		Assert.notNull(entityClass);
 		Assert.notNull(ids);
@@ -247,6 +241,19 @@ public class CassandraTemplate implements CassandraOperations {
 		Assert.notNull(entity);
 		assertNotIterable(entity);
 		return new DefaultDeleteOperation<T>(this, entity);
+	}
+
+	@Override
+	public <T> GetOperation<Boolean> exists(T entity) {
+		Assert.notNull(entity);
+		return new DefaultExistsOperation<T>(this, entity);
+	}
+
+	@Override
+	public <T> GetOperation<Boolean> exists(Class<T> entityClass, Object id) {
+		Assert.notNull(entityClass);
+		Assert.notNull(id);
+		return new DefaultExistsOperation<T>(this, entityClass, id);
 	}
 
 	/**

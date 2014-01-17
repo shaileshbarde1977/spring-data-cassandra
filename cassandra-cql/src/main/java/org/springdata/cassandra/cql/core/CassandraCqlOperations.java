@@ -306,6 +306,14 @@ public interface CassandraCqlOperations {
 	IngestOperation ingest(PreparedStatement ps, Object[][] rows);
 
 	/**
+	 * Calculates number of rows in table
+	 * 
+	 * @param tableName
+	 * @return
+	 */
+	ProcessOperation<Long> countAll(String tableName);
+
+	/**
 	 * Delete all rows in the table
 	 * 
 	 * @param tableName

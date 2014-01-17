@@ -46,6 +46,7 @@ import com.datastax.driver.core.SimpleStatement;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Batch;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 
@@ -821,6 +822,21 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 			throw new UnsupportedOperationException("Cannot remove an element of an array.");
 		}
 
+	}
+
+	@Override
+	public ProcessOperation<Long> countAll(final String tableName) {
+		Assert.notNull(tableName);
+
+		return select(new QueryCreator() {
+
+			@Override
+			public Query createQuery() {
+				Select select = QueryBuilder.select().countAll().from(tableName);
+				return select;
+			}
+
+		}).firstColumnOne(Long.class);
 	}
 
 	@Override

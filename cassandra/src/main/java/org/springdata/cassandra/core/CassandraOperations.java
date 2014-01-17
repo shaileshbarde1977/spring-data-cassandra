@@ -105,23 +105,29 @@ public interface CassandraOperations {
 	<T> T findOne(String query, Class<T> entityClass, StatementOptions optionsOrNull);
 
 	/**
-	 * Counts all rows for given table
-	 * 
-	 * @param tableName
-	 * @param optionsOrNull
-	 * @return
-	 */
-
-	Long countAll(String tableName, StatementOptions optionsOrNull);
-
-	/**
 	 * Counts rows for given query
 	 * 
 	 * @param query
 	 * @return
 	 */
-
 	Long count(String query, StatementOptions optionsOrNull);
+
+	/**
+	 * Checks if entity exists in Cassandra
+	 * 
+	 * @param entity
+	 * @return GetOperation
+	 */
+	<T> GetOperation<Boolean> exists(T entity);
+
+	/**
+	 * Checks if entity exists in Cassandra
+	 * 
+	 * @param entityClass
+	 * @param id
+	 * @return GetOperation
+	 */
+	<T> GetOperation<Boolean> exists(Class<T> entityClass, Object id);
 
 	/**
 	 * Insert the given object to the table.
