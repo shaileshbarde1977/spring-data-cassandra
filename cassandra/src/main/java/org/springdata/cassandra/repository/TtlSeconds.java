@@ -22,13 +22,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used for define StatementOptions QueryTracing parameter. Must be Boolean parameter.
+ * Annotation to be used for define Ttl parameter for save operations. Must be Integer parameter.
  * 
  * @author Alex Shvid
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface QueryTracing {
+public @interface TtlSeconds {
 
 }

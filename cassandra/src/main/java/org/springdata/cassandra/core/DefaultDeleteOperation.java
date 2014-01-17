@@ -122,7 +122,7 @@ public class DefaultDeleteOperation<T> extends AbstractUpdateOperation<DeleteOpe
 		switch (deleteBy) {
 
 		case ID:
-			CassandraPersistentEntity<?> persistenceEntity = cassandraTemplate.getEntity(entityClass);
+			CassandraPersistentEntity<?> persistenceEntity = cassandraTemplate.getPersistentEntity(entityClass);
 			List<Clause> list = cassandraTemplate.getConverter().getPrimaryKey(persistenceEntity, id);
 
 			for (Clause c : list) {

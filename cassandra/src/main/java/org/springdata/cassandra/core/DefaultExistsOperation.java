@@ -85,7 +85,7 @@ public class DefaultExistsOperation<T> extends AbstractGetOperation<Boolean> {
 		Select select = QueryBuilder.select().countAll().from(cassandraTemplate.getKeyspace(), tableName);
 		Select.Where w = select.where();
 
-		CassandraPersistentEntity<?> persistentEntity = cassandraTemplate.getEntity(entity != null ? entity.getClass()
+		CassandraPersistentEntity<?> persistentEntity = cassandraTemplate.getPersistentEntity(entity != null ? entity.getClass()
 				: entityClass);
 
 		List<Clause> list = cassandraTemplate.getConverter().getPrimaryKey(persistentEntity, entity != null ? entity : id);

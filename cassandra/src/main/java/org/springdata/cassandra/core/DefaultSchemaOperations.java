@@ -61,7 +61,7 @@ public class DefaultSchemaOperations implements SchemaOperations {
 
 		try {
 
-			final CassandraPersistentEntity<?> entity = dataTemplate.getEntity(entityClass);
+			final CassandraPersistentEntity<?> entity = dataTemplate.getPersistentEntity(entityClass);
 			CreateTableSpecification spec = dataTemplate.getConverter().getCreateTableSpecification(entity);
 			spec.name(tableName);
 
@@ -112,7 +112,7 @@ public class DefaultSchemaOperations implements SchemaOperations {
 	 */
 	protected String alterTableCql(String tableName, Class<?> entityClass, boolean dropRemovedAttributeColumns) {
 
-		final CassandraPersistentEntity<?> entity = dataTemplate.getEntity(entityClass);
+		final CassandraPersistentEntity<?> entity = dataTemplate.getPersistentEntity(entityClass);
 
 		TableMetadata tableMetadata = dataTemplate.cqlOps().schemaOps().getTableMetadata(tableName);
 
@@ -146,7 +146,7 @@ public class DefaultSchemaOperations implements SchemaOperations {
 
 		Assert.notNull(entityClass);
 
-		CassandraPersistentEntity<?> entity = dataTemplate.getEntity(entityClass);
+		CassandraPersistentEntity<?> entity = dataTemplate.getPersistentEntity(entityClass);
 
 		List<CreateIndexSpecification> specList = dataTemplate.getConverter().getCreateIndexSpecifications(entity);
 
@@ -189,7 +189,7 @@ public class DefaultSchemaOperations implements SchemaOperations {
 
 	protected List<String> alterIndexesCql(String tableName, Class<?> entityClass) {
 
-		CassandraPersistentEntity<?> entity = dataTemplate.getEntity(entityClass);
+		CassandraPersistentEntity<?> entity = dataTemplate.getPersistentEntity(entityClass);
 
 		TableMetadata tableMetadata = dataTemplate.cqlOps().schemaOps().getTableMetadata(tableName);
 

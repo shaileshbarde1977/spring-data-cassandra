@@ -151,7 +151,7 @@ public class CassandraTemplate implements CassandraOperations {
 		Select select = QueryBuilder.select().all().from(tableName);
 		Select.Where w = select.where();
 
-		CassandraPersistentEntity<?> entity = getEntity(entityClass);
+		CassandraPersistentEntity<?> entity = getPersistentEntity(entityClass);
 
 		List<Clause> list = cassandraConverter.getPartitionKey(entity, id);
 
@@ -767,7 +767,7 @@ public class CassandraTemplate implements CassandraOperations {
 	protected Query toDeleteQueryById(String tableName, final Object id, Class<?> entityClass,
 			StatementOptions optionsOrNull) {
 
-		CassandraPersistentEntity<?> entity = getEntity(entityClass);
+		CassandraPersistentEntity<?> entity = getPersistentEntity(entityClass);
 
 		final Delete.Selection ds = QueryBuilder.delete();
 		final Delete query = ds.from(keyspace, tableName);
@@ -931,7 +931,7 @@ public class CassandraTemplate implements CassandraOperations {
 		Select select = QueryBuilder.select().all().from(tableName);
 		Select.Where w = select.where();
 
-		CassandraPersistentEntity<?> entity = getEntity(entityClass);
+		CassandraPersistentEntity<?> entity = getPersistentEntity(entityClass);
 
 		List<Clause> list = cassandraConverter.getPrimaryKey(entity, id);
 
@@ -950,7 +950,7 @@ public class CassandraTemplate implements CassandraOperations {
 	 * @return CassandraPertistentEntity
 	 */
 
-	protected CassandraPersistentEntity<?> getEntity(Class<?> entityClass) {
+	protected CassandraPersistentEntity<?> getPersistentEntity(Class<?> entityClass) {
 
 		if (entityClass == null) {
 			throw new InvalidDataAccessApiUsageException(

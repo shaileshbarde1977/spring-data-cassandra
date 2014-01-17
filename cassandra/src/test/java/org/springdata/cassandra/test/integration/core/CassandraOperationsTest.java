@@ -60,12 +60,12 @@ import com.datastax.driver.core.querybuilder.Select;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { JavaConfig.class }, loader = AnnotationConfigContextLoader.class)
-public class CassandraDataOperationsTest {
+public class CassandraOperationsTest {
 
 	@Autowired
 	private CassandraOperations cassandraTemplate;
 
-	private static Logger log = LoggerFactory.getLogger(CassandraDataOperationsTest.class);
+	private static Logger log = LoggerFactory.getLogger(CassandraOperationsTest.class);
 
 	private final static String CASSANDRA_CONFIG = "cassandra.yaml";
 	private final static String KEYSPACE_NAME = "test";

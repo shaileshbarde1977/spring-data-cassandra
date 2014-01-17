@@ -18,8 +18,8 @@ package org.springdata.cassandra.repository.query;
 import org.springdata.cassandra.cql.core.query.ConsistencyLevel;
 import org.springdata.cassandra.cql.core.query.RetryPolicy;
 import org.springdata.cassandra.repository.QueryTracing;
-import org.springdata.cassandra.repository.Timestamp;
-import org.springdata.cassandra.repository.Ttl;
+import org.springdata.cassandra.repository.TimestampMilliseconds;
+import org.springdata.cassandra.repository.TtlSeconds;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.repository.query.Parameter;
 
@@ -80,11 +80,11 @@ public class CassandraParameter extends Parameter {
 	}
 
 	boolean hasTtlAnnotation() {
-		return parameter.getParameterAnnotation(Ttl.class) != null;
+		return parameter.getParameterAnnotation(TtlSeconds.class) != null;
 	}
 
 	boolean hasTimestampAnnotation() {
-		return parameter.getParameterAnnotation(Timestamp.class) != null;
+		return parameter.getParameterAnnotation(TimestampMilliseconds.class) != null;
 	}
 
 }

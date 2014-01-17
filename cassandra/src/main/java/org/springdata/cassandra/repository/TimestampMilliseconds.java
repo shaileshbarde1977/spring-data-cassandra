@@ -22,13 +22,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to be used for define StatementOptions QueryTracing parameter. Must be Boolean parameter.
+ * Annotation to be used for define Timestamp parameter for save and delete operations. Must be Long parameter.
  * 
  * @author Alex Shvid
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface QueryTracing {
+public @interface TimestampMilliseconds {
 
 }
