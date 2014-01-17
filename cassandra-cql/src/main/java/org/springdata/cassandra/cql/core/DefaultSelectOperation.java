@@ -113,7 +113,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 			@Override
 			public Iterator<E> process(ResultSet resultSet) {
-				return cassandraCqlTemplate.processFirstColumnAsList(resultSet, elementType).iterator();
+				return cassandraCqlTemplate.processFirstColumn(resultSet, elementType);
 			}
 
 		});
@@ -127,7 +127,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 					@Override
 					public Iterator<Map<String, Object>> process(ResultSet resultSet) {
-						return cassandraCqlTemplate.processAsListOfMap(resultSet).iterator();
+						return cassandraCqlTemplate.processAsMap(resultSet);
 					}
 
 				});

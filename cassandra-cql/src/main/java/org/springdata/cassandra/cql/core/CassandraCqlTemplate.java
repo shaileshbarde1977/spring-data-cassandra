@@ -15,12 +15,10 @@
  */
 package org.springdata.cassandra.cql.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -595,20 +593,23 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<T> processFirstColumnAsList(ResultSet resultSet, Class<T> elementType) {
+	public <T> Iterator<T> processFirstColumn(ResultSet resultSet, Class<T> elementType) {
 		Assert.notNull(resultSet);
 		Assert.notNull(elementType);
 
-		return doProcess(resultSet, new ResultSetCallback<List<T>>() {
+		return doProcess(resultSet, new ResultSetCallback<Iterator<T>>() {
 
 			@Override
-			public List<T> doWithResultSet(ResultSet resultSet) {
+			public Iterator<T> doWithResultSet(ResultSet resultSet) {
 
-				List<T> list = new ArrayList<T>();
-				for (Row row : resultSet) {
-					list.add((T) firstColumnToObject(row));
-				}
-				return list;
+				return Iterators.transform(resultSet.iterator(), new Function<Row, T>() {
+
+					@Override
+					public T apply(Row row) {
+						return (T) firstColumnToObject(row);
+					}
+
+				});
 
 			}
 
@@ -617,23 +618,22 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 	}
 
 	@Override
-	public List<Map<String, Object>> processAsListOfMap(ResultSet resultSet) {
+	public Iterator<Map<String, Object>> processAsMap(ResultSet resultSet) {
 		Assert.notNull(resultSet);
 
-		return doProcess(resultSet, new ResultSetCallback<List<Map<String, Object>>>() {
+		return doProcess(resultSet, new ResultSetCallback<Iterator<Map<String, Object>>>() {
 
 			@Override
-			public List<Map<String, Object>> doWithResultSet(ResultSet resultSet) {
+			public Iterator<Map<String, Object>> doWithResultSet(ResultSet resultSet) {
 
-				List<Row> rows = resultSet.all();
-				if (rows == null || rows.isEmpty()) {
-					return Collections.emptyList();
-				}
-				List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(rows.size());
-				for (Row row : rows) {
-					list.add(toMap(row));
-				}
-				return list;
+				return Iterators.transform(resultSet.iterator(), new Function<Row, Map<String, Object>>() {
+
+					@Override
+					public Map<String, Object> apply(Row row) {
+						return toMap(row);
+					}
+
+				});
 
 			}
 
@@ -752,12 +752,12 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 	}
 
 	@Override
-	public IngestOperation ingest(final PreparedStatement ps, Iterable<Object[]> rows) {
+	public IngestOperation ingest(final PreparedStatement ps, Iterator<Object[]> rows) {
 
 		Assert.notNull(ps);
 		Assert.notNull(rows);
 
-		Iterator<Query> queryIterator = Iterators.transform(rows.iterator(), new Function<Object[], Query>() {
+		Iterator<Query> queryIterator = Iterators.transform(rows, new Function<Object[], Query>() {
 
 			@Override
 			public Query apply(final Object[] values) {
@@ -785,12 +785,7 @@ public class CassandraCqlTemplate implements CassandraCqlOperations {
 		Assert.notNull(rows);
 		Assert.notEmpty(rows);
 
-		return ingest(ps, new Iterable<Object[]>() {
-
-			public Iterator<Object[]> iterator() {
-				return new ArrayIterator<Object[]>(rows);
-			}
-		});
+		return ingest(ps, new ArrayIterator<Object[]>(rows));
 	}
 
 	/**

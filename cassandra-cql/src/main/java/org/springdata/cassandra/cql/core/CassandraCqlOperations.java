@@ -17,7 +17,6 @@ package org.springdata.cassandra.cql.core;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import com.datastax.driver.core.BoundStatement;
@@ -195,7 +194,7 @@ public interface CassandraCqlOperations {
 	 * @param elementType
 	 * @return
 	 */
-	<T> List<T> processFirstColumnAsList(ResultSet resultSet, Class<T> elementType);
+	<T> Iterator<T> processFirstColumn(ResultSet resultSet, Class<T> elementType);
 
 	/**
 	 * Process a ResultSet and convert it to a List of Maps with column/value. This is used internal to the Template for
@@ -205,7 +204,7 @@ public interface CassandraCqlOperations {
 	 * @param resultSet
 	 * @return
 	 */
-	List<Map<String, Object>> processAsListOfMap(ResultSet resultSet);
+	Iterator<Map<String, Object>> processAsMap(ResultSet resultSet);
 
 	/**
 	 * Converts the CQL provided into a {@link SimplePreparedStatementCreator}. <b>This can only be used for CQL
@@ -289,7 +288,7 @@ public interface CassandraCqlOperations {
 	 * @param ps The PreparedStatement
 	 * @param rowIterator Implementation to provide the Object[] to be bound to the CQL.
 	 */
-	IngestOperation ingest(PreparedStatement ps, Iterable<Object[]> rows);
+	IngestOperation ingest(PreparedStatement ps, Iterator<Object[]> rows);
 
 	/**
 	 * This is an operation designed for high performance writes. The cql is used to create a PreparedStatement once, then

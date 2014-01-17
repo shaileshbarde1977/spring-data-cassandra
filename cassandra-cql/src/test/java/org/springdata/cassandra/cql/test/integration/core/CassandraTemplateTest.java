@@ -43,6 +43,7 @@ import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
@@ -439,7 +440,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 
 		assertNotNull(rs);
 
-		List<String> titles = cassandraTemplate.processFirstColumnAsList(rs, String.class);
+		List<String> titles = ImmutableList.copyOf(cassandraTemplate.processFirstColumn(rs, String.class));
 
 		log.debug(titles.toString());
 
@@ -473,7 +474,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 
 		assertNotNull(rs);
 
-		List<Map<String, Object>> results = cassandraTemplate.processAsListOfMap(rs);
+		List<Map<String, Object>> results = ImmutableList.copyOf(cassandraTemplate.processAsMap(rs));
 
 		log.debug(results.toString());
 
