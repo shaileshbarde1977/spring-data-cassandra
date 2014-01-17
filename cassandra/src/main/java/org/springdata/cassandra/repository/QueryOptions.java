@@ -39,8 +39,8 @@ public @interface QueryOptions {
 
 	RetryPolicy retryPolicy() default RetryPolicy.DEFAULT;
 
-	int ttl() default -1;
+	int timeToLiveSeconds() default -1;
 
-	long timestamp() default -1L;
+	long timestampMilliseconds() default -1L;
 
 }

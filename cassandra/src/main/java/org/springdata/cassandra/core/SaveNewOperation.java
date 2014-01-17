@@ -42,7 +42,7 @@ public interface SaveNewOperation extends QueryOperation<ResultSet, SaveNewOpera
 	 * @param ttlSeconds Time to live in seconds
 	 * @return this
 	 */
-	SaveNewOperation withTtl(int ttlSeconds);
+	SaveNewOperation withTimeToLive(int ttlSeconds);
 
 	/**
 	 * Specifies Timestamp (cell's timestamp in the Cassandra) in milliseconds for the saved entity in the Cassandra

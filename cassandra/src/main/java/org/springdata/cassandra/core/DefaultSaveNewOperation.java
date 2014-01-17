@@ -65,7 +65,7 @@ public class DefaultSaveNewOperation<T> extends AbstractSaveOperation<T, SaveNew
 	}
 
 	@Override
-	public SaveNewOperation withTtl(int ttlSeconds) {
+	public SaveNewOperation withTimeToLive(int ttlSeconds) {
 		setTtl(ttlSeconds);
 		return this;
 	}
