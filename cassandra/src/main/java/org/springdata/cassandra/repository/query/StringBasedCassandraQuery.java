@@ -46,16 +46,16 @@ public class StringBasedCassandraQuery extends AbstractCassandraQuery {
 	 * @param method must not be {@literal null}.
 	 * @param template must not be {@literal null}.
 	 */
-	public StringBasedCassandraQuery(String query, CassandraQueryMethod method, CassandraOperations dataOperations) {
+	public StringBasedCassandraQuery(String query, CassandraQueryMethod method, CassandraOperations cassandraOperations) {
 
-		super(method, dataOperations);
+		super(method, cassandraOperations);
 
 		this.query = query;
 		this.isCountQuery = method.hasAnnotatedQuery() ? method.getQueryAnnotation().count() : false;
 	}
 
-	public StringBasedCassandraQuery(CassandraQueryMethod method, CassandraOperations dataOperations) {
-		this(method.getAnnotatedQuery(), method, dataOperations);
+	public StringBasedCassandraQuery(CassandraQueryMethod method, CassandraOperations cassandraOperations) {
+		this(method.getAnnotatedQuery(), method, cassandraOperations);
 	}
 
 	@Override

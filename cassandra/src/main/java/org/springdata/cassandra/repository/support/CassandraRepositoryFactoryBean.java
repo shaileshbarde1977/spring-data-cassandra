@@ -33,11 +33,11 @@ import org.springframework.util.Assert;
 public class CassandraRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable> extends
 		RepositoryFactoryBeanSupport<T, S, ID> {
 
-	private CassandraTemplate cassandraDataTemplate;
+	private CassandraTemplate cassandraTemplate;
 
 	@Override
 	protected RepositoryFactorySupport createRepositoryFactory() {
-		return new CassandraRepositoryFactory(cassandraDataTemplate);
+		return new CassandraRepositoryFactory(cassandraTemplate);
 	}
 
 	/**
@@ -45,22 +45,15 @@ public class CassandraRepositoryFactoryBean<T extends Repository<S, ID>, S, ID e
 	 * 
 	 * @param operations the operations to set
 	 */
-	public void setCassandraDataTemplate(CassandraTemplate cassandraDataTemplate) {
-		this.cassandraDataTemplate = cassandraDataTemplate;
-		setMappingContext(cassandraDataTemplate.getConverter().getMappingContext());
+	public void setCassandraTemplate(CassandraTemplate cassandraTemplate) {
+		this.cassandraTemplate = cassandraTemplate;
+		setMappingContext(cassandraTemplate.getConverter().getMappingContext());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.data.repository.support.RepositoryFactoryBeanSupport
-	 * #afterPropertiesSet()
-	 */
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
-		Assert.notNull(cassandraDataTemplate, "cassandraDataTemplate must not be null!");
+		Assert.notNull(cassandraTemplate, "cassandraTemplate must not be null!");
 	}
 
 }

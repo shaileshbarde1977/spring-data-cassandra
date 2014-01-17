@@ -45,7 +45,7 @@ import org.springframework.util.Assert;
 
 public class CassandraRepositoryFactory extends RepositoryFactorySupport {
 
-	private final CassandraTemplate cassandraDataTemplate;
+	private final CassandraTemplate cassandraTemplate;
 	private final MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
 
 	/**
@@ -53,12 +53,12 @@ public class CassandraRepositoryFactory extends RepositoryFactorySupport {
 	 * 
 	 * @param mongoOperations must not be {@literal null}
 	 */
-	public CassandraRepositoryFactory(CassandraTemplate cassandraDataTemplate) {
+	public CassandraRepositoryFactory(CassandraTemplate cassandraTemplate) {
 
-		Assert.notNull(cassandraDataTemplate);
+		Assert.notNull(cassandraTemplate);
 
-		this.cassandraDataTemplate = cassandraDataTemplate;
-		this.mappingContext = cassandraDataTemplate.getConverter().getMappingContext();
+		this.cassandraTemplate = cassandraTemplate;
+		this.mappingContext = cassandraTemplate.getConverter().getMappingContext();
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class CassandraRepositoryFactory extends RepositoryFactorySupport {
 
 		CassandraEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType());
 
-		return new SimpleCassandraRepository(entityInformation, cassandraDataTemplate);
+		return new SimpleCassandraRepository(entityInformation, cassandraTemplate);
 
 	}
 
@@ -96,19 +96,15 @@ public class CassandraRepositoryFactory extends RepositoryFactorySupport {
 
 			if (namedQueries.hasQuery(namedQueryName)) {
 				String namedQuery = namedQueries.getQuery(namedQueryName);
-				return new StringBasedCassandraQuery(namedQuery, queryMethod, cassandraDataTemplate);
+				return new StringBasedCassandraQuery(namedQuery, queryMethod, cassandraTemplate);
 			} else if (queryMethod.hasAnnotatedQuery()) {
-				return new StringBasedCassandraQuery(queryMethod, cassandraDataTemplate);
+				return new StringBasedCassandraQuery(queryMethod, cassandraTemplate);
 			} else {
-				return new PartTreeCassandraQuery(queryMethod, cassandraDataTemplate);
+				return new PartTreeCassandraQuery(queryMethod, cassandraTemplate);
 			}
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getEntityInformation(java.lang.Class)
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T, ID extends Serializable> CassandraEntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {

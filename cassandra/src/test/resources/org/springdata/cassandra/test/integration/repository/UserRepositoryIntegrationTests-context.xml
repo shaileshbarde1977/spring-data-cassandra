@@ -44,7 +44,7 @@
 	<cassandra:template keyspace="${cassandra.keyspace}" />
 
 	<bean class="org.springdata.cassandra.repository.support.CassandraRepositoryFactoryBean">
-		<property name="cassandraDataTemplate" ref="cassandra-template"/>
+		<property name="cassandraTemplate" ref="cassandra-template"/>
 		<property name="repositoryInterface" value="org.springdata.cassandra.test.integration.repository.UserRepository"/>
 		<property name="namedQueries">
 			<bean class="org.springframework.data.repository.core.support.PropertiesBasedNamedQueries">

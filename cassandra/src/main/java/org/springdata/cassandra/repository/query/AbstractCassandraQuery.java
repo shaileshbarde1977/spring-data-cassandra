@@ -34,7 +34,7 @@ public abstract class AbstractCassandraQuery implements RepositoryQuery {
 	private static final ConversionService CONVERSION_SERVICE = new DefaultConversionService();
 
 	private final CassandraQueryMethod method;
-	private final CassandraOperations dataOperations;
+	private final CassandraOperations cassandraOperations;
 
 	/**
 	 * Creates a new {@link AbstractMongoQuery} from the given {@link CassandraQueryMethod} and
@@ -43,27 +43,21 @@ public abstract class AbstractCassandraQuery implements RepositoryQuery {
 	 * @param method must not be {@literal null}.
 	 * @param operations must not be {@literal null}.
 	 */
-	public AbstractCassandraQuery(CassandraQueryMethod method, CassandraOperations dataOperations) {
+	public AbstractCassandraQuery(CassandraQueryMethod method, CassandraOperations cassandraOperations) {
 
 		Assert.notNull(method);
-		Assert.notNull(dataOperations);
+		Assert.notNull(cassandraOperations);
 
 		this.method = method;
-		this.dataOperations = dataOperations;
+		this.cassandraOperations = cassandraOperations;
 	}
 
-	/* 
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.query.RepositoryQuery#getQueryMethod()
-	 */
+	@Override
 	public CassandraQueryMethod getQueryMethod() {
 		return method;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.springframework.data.repository.query.RepositoryQuery#execute(java.lang.Object[])
-	 */
+	@Override
 	public Object execute(Object[] parameters) {
 
 		CassandraEntityMetadata<?> metadata = method.getEntityInformation();
@@ -125,7 +119,7 @@ public abstract class AbstractCassandraQuery implements RepositoryQuery {
 
 			CassandraEntityMetadata<?> metadata = method.getEntityInformation();
 
-			return dataOperations.find(query, metadata.getJavaType(), null);
+			return cassandraOperations.find(query, metadata.getJavaType(), null);
 		}
 	}
 
@@ -162,7 +156,7 @@ public abstract class AbstractCassandraQuery implements RepositoryQuery {
 		Object execute(String query) {
 
 			CassandraEntityMetadata<?> metadata = method.getEntityInformation();
-			return countProjection ? dataOperations.count(query, null) : dataOperations.findOne(query,
+			return countProjection ? cassandraOperations.count(query, null) : cassandraOperations.findOne(query,
 					metadata.getJavaType(), null);
 		}
 	}

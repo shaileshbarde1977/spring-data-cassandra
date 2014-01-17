@@ -38,11 +38,11 @@ public class PartTreeCassandraQuery extends AbstractCassandraQuery {
 	 * @param method must not be {@literal null}.
 	 * @param template must not be {@literal null}.
 	 */
-	public PartTreeCassandraQuery(CassandraQueryMethod method, CassandraOperations dataOperations) {
+	public PartTreeCassandraQuery(CassandraQueryMethod method, CassandraOperations cassandraOperations) {
 
-		super(method, dataOperations);
+		super(method, cassandraOperations);
 		this.tree = new PartTree(method.getName(), method.getEntityInformation().getJavaType());
-		this.context = dataOperations.getConverter().getMappingContext();
+		this.context = cassandraOperations.getConverter().getMappingContext();
 	}
 
 	/**
