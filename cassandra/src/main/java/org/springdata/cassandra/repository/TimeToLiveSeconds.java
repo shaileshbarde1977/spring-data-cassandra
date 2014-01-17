@@ -29,6 +29,6 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface TtlSeconds {
+public @interface TimeToLiveSeconds {
 
 }
