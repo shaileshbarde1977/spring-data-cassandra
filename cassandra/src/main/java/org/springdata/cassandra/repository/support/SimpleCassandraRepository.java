@@ -18,6 +18,7 @@ package org.springdata.cassandra.repository.support;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springdata.cassandra.core.CassandraOperations;
@@ -29,9 +30,10 @@ import org.springframework.util.Assert;
 import com.datastax.driver.core.querybuilder.Clause;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
+import com.google.common.collect.ImmutableList;
 
 /**
- * Repository base implementation for Cassandra.
+ * Simple Repository implementation for Cassandra.
  * 
  * @author Alex Shvid
  * 
@@ -60,7 +62,6 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 
 	@Override
 	public <S extends T> S save(S entity) {
-
 		Assert.notNull(entity, "Entity must not be null!");
 		cassandraTemplate.saveNew(entity).execute();
 		return entity;
@@ -70,15 +71,13 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	public <S extends T> List<S> save(Iterable<S> entities) {
 
 		Assert.notNull(entities, "The given Iterable of entities must not be null!");
+		cassandraTemplate.saveNewInBatch(entities).execute();
 
-		List<S> result = new ArrayList<S>();
-
-		for (S entity : entities) {
-			save(entity);
-			result.add(entity);
+		if (entities instanceof List) {
+			return (List<S>) entities;
+		} else {
+			return ImmutableList.copyOf(entities);
 		}
-
-		return result;
 	}
 
 	@Override
@@ -90,7 +89,6 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	@Override
 	public List<T> findByPartitionKey(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
-
 		return cassandraTemplate.findByPartitionKey(id, entityInformation.getJavaType(), null);
 	}
 
@@ -115,17 +113,13 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	@Override
 	public void delete(T entity) {
 		Assert.notNull(entity, "The given entity must not be null!");
-		delete(entityInformation.getId(entity));
+		cassandraTemplate.delete(entity).execute();
 	}
 
 	@Override
 	public void delete(Iterable<? extends T> entities) {
-
 		Assert.notNull(entities, "The given Iterable of entities not be null!");
-
-		for (T entity : entities) {
-			delete(entity);
-		}
+		cassandraTemplate.deleteInBatch(entities).execute();
 	}
 
 	@Override
@@ -135,8 +129,8 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 
 	@Override
 	public List<T> findAll() {
-		Select select = QueryBuilder.select().all().from(entityInformation.getTableName());
-		return findAll(select);
+		Iterator<T> iterator = cassandraTemplate.findAll(entityInformation.getJavaType()).execute();
+		return ImmutableList.copyOf(iterator);
 	}
 
 	@Override

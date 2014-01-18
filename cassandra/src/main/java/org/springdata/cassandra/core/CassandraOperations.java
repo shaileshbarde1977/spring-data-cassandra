@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package org.springdata.cassandra.core;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.springdata.cassandra.convert.CassandraConverter;
@@ -22,8 +23,8 @@ import org.springdata.cassandra.cql.core.CassandraCqlOperations;
 import org.springdata.cassandra.cql.core.query.StatementOptions;
 
 /**
- * Operations for interacting with Cassandra. These operations are used by the Repository implementation, but can also
- * be used directly when that is desired by the developer.
+ * Operations for interacting with Cassandra. These operations are also used by the SimpleCassandraRepository
+ * implementation.
  * 
  * @author Alex Shvid
  * @author David Webb
@@ -39,6 +40,15 @@ public interface CassandraOperations {
 	 * @return
 	 */
 	String getTableName(Class<?> entityClass);
+
+	/**
+	 * Finds all entities in table
+	 * 
+	 * @param entityClass
+	 * @return GetOperation
+	 */
+
+	<T> GetOperation<Iterator<T>> findAll(Class<T> entityClass);
 
 	/**
 	 * 
