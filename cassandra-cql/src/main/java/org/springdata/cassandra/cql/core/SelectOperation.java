@@ -94,6 +94,6 @@ public interface SelectOperation<T> extends QueryOperation<T, SelectOperation<T>
 	 * @param rch
 	 * @return ProcessOperation
 	 */
-	ProcessOperation<Object> each(RowCallbackHandler rch);
+	ProcessOperation<Object> forEach(RowCallbackHandler rch);
 
 }

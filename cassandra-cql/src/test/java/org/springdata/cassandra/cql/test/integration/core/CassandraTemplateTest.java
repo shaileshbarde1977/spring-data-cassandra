@@ -180,7 +180,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 
 		final Book b1 = getBook(isbn);
 
-		cassandraTemplate.select("select * from book where isbn='" + isbn + "'").each(new RowCallbackHandler() {
+		cassandraTemplate.select("select * from book where isbn='" + isbn + "'").forEach(new RowCallbackHandler() {
 
 			@Override
 			public void processRow(Row row) {

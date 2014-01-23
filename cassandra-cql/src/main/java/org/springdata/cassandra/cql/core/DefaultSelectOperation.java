@@ -161,7 +161,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public ProcessOperation<Object> each(final RowCallbackHandler rch) {
+	public ProcessOperation<Object> forEach(final RowCallbackHandler rch) {
 
 		return new ProcessingSelectOperation<Object>(this, new Processor<Object>() {
 

@@ -140,7 +140,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			public BoundStatement bindValues(PreparedStatement ps) {
 				return ps.bind(isbn);
 			}
-		})).each(new RowCallbackHandler() {
+		})).forEach(new RowCallbackHandler() {
 
 			@Override
 			public void processRow(Row row) {
@@ -240,7 +240,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 
 		BoundStatement bs = cassandraTemplate.bind(ps);
 
-		cassandraTemplate.select(bs).each(new RowCallbackHandler() {
+		cassandraTemplate.select(bs).forEach(new RowCallbackHandler() {
 
 			@Override
 			public void processRow(Row row) {
@@ -353,7 +353,7 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			}
 		});
 
-		cassandraTemplate.select(new SimpleQueryCreator(bs)).each(new RowCallbackHandler() {
+		cassandraTemplate.select(new SimpleQueryCreator(bs)).forEach(new RowCallbackHandler() {
 
 			@Override
 			public void processRow(Row row) {
