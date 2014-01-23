@@ -308,7 +308,7 @@ Creates and then drop the keyspace at the end of the session.
 				</xsd:restriction>
 			</xsd:simpleType>
 		</xsd:attribute>
-		<xsd:attribute name="replication-stategy" type="xsd:string"
+		<xsd:attribute name="replication-strategy" type="xsd:string"
 			use="optional" default="SimpleStrategy">
 			<xsd:annotation>
 				<xsd:documentation><![CDATA[
