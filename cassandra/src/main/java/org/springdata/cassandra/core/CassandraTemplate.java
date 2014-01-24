@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.convert.CassandraConverter;
 import org.springdata.cassandra.cql.core.CassandraCqlOperations;
 import org.springdata.cassandra.cql.core.CassandraCqlTemplate;
+import org.springdata.cassandra.cql.core.QueryCreator;
 import org.springdata.cassandra.cql.core.SessionCallback;
 import org.springdata.cassandra.cql.core.query.ConsistencyLevelResolver;
 import org.springdata.cassandra.cql.core.query.RetryPolicyResolver;
@@ -37,6 +38,7 @@ import org.springdata.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Query;
@@ -121,6 +123,14 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
+	public <T> GetOperation<List<T>> findAll(final Class<T> entityClass, final Iterable<?> ids) {
+		Assert.notNull(entityClass);
+		Assert.notNull(ids);
+
+		return new DefaultFindByIdsOperation<T>(this, entityClass, ids.iterator());
+	}
+
+	@Override
 	public <T> GetOperation<T> findById(Class<T> entityClass, final Object id) {
 		Assert.notNull(entityClass);
 		Assert.notNull(id);
@@ -172,33 +182,6 @@ public class CassandraTemplate implements CassandraOperations {
 
 		};
 
-	}
-
-	/**
-	 * Service method to find entities by PartitionKey
-	 * 
-	 * @param id
-	 * @param entityClass
-	 * @param tableName
-	 * @param optionsOrNull
-	 * @return
-	 */
-
-	protected <T> List<T> doFindByPartitionKey(Object id, Class<T> entityClass, String tableName,
-			StatementOptions optionsOrNull) {
-
-		Select select = QueryBuilder.select().all().from(tableName);
-		Select.Where w = select.where();
-
-		CassandraPersistentEntity<?> entity = getPersistentEntity(entityClass);
-
-		List<Clause> list = cassandraConverter.getPartitionKey(entity, id);
-
-		for (Clause c : list) {
-			w.and(c);
-		}
-
-		return doSelect(select.getQueryString(), new ReadRowCallback<T>(cassandraConverter, entityClass), optionsOrNull);
 	}
 
 	@Override
@@ -992,14 +975,13 @@ public class CassandraTemplate implements CassandraOperations {
 	protected CassandraPersistentEntity<?> getPersistentEntity(Class<?> entityClass) {
 
 		if (entityClass == null) {
-			throw new InvalidDataAccessApiUsageException(
-					"No class parameter provided, entity table name can't be determined!");
+			throw new IllegalArgumentException("No class parameter provided, entity table name can't be determined!");
 		}
 
 		CassandraPersistentEntity<?> entity = mappingContext.getPersistentEntity(entityClass);
 
 		if (entity == null) {
-			throw new InvalidDataAccessApiUsageException("persistent entity not found for a given class " + entityClass);
+			throw new MappingException("persistent entity not found for a given class " + entityClass);
 		}
 
 		return entity;

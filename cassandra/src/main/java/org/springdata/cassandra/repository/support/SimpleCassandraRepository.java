@@ -16,8 +16,6 @@
 package org.springdata.cassandra.repository.support;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,9 +25,6 @@ import org.springdata.cassandra.repository.CassandraRepository;
 import org.springdata.cassandra.repository.query.CassandraEntityInformation;
 import org.springframework.util.Assert;
 
-import com.datastax.driver.core.querybuilder.Clause;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -136,25 +131,8 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 
 	@Override
 	public Iterable<T> findAll(Iterable<ID> ids) {
-
-		List<ID> parameters = new ArrayList<ID>();
-		for (ID id : ids) {
-			parameters.add(id);
-		}
-		Clause clause = QueryBuilder.in(entityInformation.getIdColumn(), parameters.toArray());
-		Select select = QueryBuilder.select().all().from(entityInformation.getTableName());
-		select.where(clause);
-
-		return findAll(select);
-	}
-
-	private List<T> findAll(Select query) {
-
-		if (query == null) {
-			return Collections.emptyList();
-		}
-
-		return cassandraTemplate.find(query.getQueryString(), entityInformation.getJavaType(), null);
+		Assert.notNull(ids, "The given Iterable of ids not be null!");
+		return cassandraTemplate.findAll(entityInformation.getJavaType(), ids).execute();
 	}
 
 	/**

@@ -47,8 +47,16 @@ public interface CassandraOperations {
 	 * @param entityClass
 	 * @return GetOperation
 	 */
-
 	<T> GetOperation<Iterator<T>> findAll(Class<T> entityClass);
+
+	/**
+	 * Finds all entities with specific ids in table
+	 * 
+	 * @param entityClass
+	 * @param ids
+	 * @return GetOperation
+	 */
+	<T> GetOperation<List<T>> findAll(Class<T> entityClass, Iterable<?> ids);
 
 	/**
 	 * 
@@ -56,7 +64,6 @@ public interface CassandraOperations {
 	 * @param id
 	 * @return
 	 */
-
 	<T> GetOperation<T> findById(Class<T> entityClass, Object id);
 
 	/**
@@ -77,7 +84,7 @@ public interface CassandraOperations {
 	 * @param optionsOrNull
 	 * @return
 	 */
-	<T> List<T> find(String query, Class<T> entityClass, StatementOptions optionsOrNull);
+	<T> List<T> find(String cql, Class<T> entityClass, StatementOptions optionsOrNull);
 
 	/**
 	 * Execute query and convert ResultSet to the list of entities
