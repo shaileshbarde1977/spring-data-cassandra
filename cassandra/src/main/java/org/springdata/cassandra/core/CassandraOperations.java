@@ -52,47 +52,22 @@ public interface CassandraOperations {
 
 	/**
 	 * 
-	 * @param id
 	 * @param entityClass
-	 * @param optionsOrNull
+	 * @param id
 	 * @return
 	 */
 
 	<T> GetOperation<T> findById(Class<T> entityClass, Object id);
 
 	/**
-	 * 
-	 * @param id
-	 * @param entityClass
-	 * @param tableName
-	 * @param optionsOrNull
-	 * @return
-	 */
-
-	<T> T findById(Object id, Class<T> entityClass, String tableName, StatementOptions optionsOrNull);
-
-	/**
 	 * Finds a list of instances with the specified partition part of the primary key
 	 * 
-	 * @param id
 	 * @param entityClass
-	 * @param optionsOrNull
+	 * @param id
 	 * @param <T>
 	 * @return
 	 */
-	<T> List<T> findByPartitionKey(Object id, Class<T> entityClass, StatementOptions optionsOrNull);
-
-	/**
-	 * Finds a list of instances with the specified partition part of the primary key
-	 * 
-	 * @param id
-	 * @param entityClass
-	 * @param tableName
-	 * @param optionsOrNull
-	 * @param <T>
-	 * @return
-	 */
-	<T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName, StatementOptions optionsOrNull);
+	<T> GetOperation<Iterator<T>> findByPartitionKey(Class<T> entityClass, Object id);
 
 	/**
 	 * Execute query and convert ResultSet to the list of entities

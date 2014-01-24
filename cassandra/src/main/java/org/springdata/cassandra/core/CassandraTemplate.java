@@ -148,26 +148,30 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> T findById(Object id, Class<T> entityClass, String tableName, StatementOptions optionsOrNull) {
-		Assert.notNull(id);
-		assertNotIterable(id);
+	public <T> GetOperation<Iterator<T>> findByPartitionKey(Class<T> entityClass, final Object id) {
 		Assert.notNull(entityClass);
-		Assert.notNull(tableName);
-		return doFindById(id, entityClass, tableName, optionsOrNull);
-	}
-
-	@Override
-	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, StatementOptions optionsOrNull) {
-		return doFindByPartitionKey(id, entityClass, getTableName(entityClass), optionsOrNull);
-	}
-
-	@Override
-	public <T> List<T> findByPartitionKey(Object id, Class<T> entityClass, String tableName,
-			StatementOptions optionsOrNull) {
 		Assert.notNull(id);
-		Assert.notNull(entityClass);
-		Assert.notNull(tableName);
-		return doFindByPartitionKey(id, entityClass, tableName, optionsOrNull);
+
+		return new AbstractFindOperation<T>(this, entityClass) {
+
+			@Override
+			public Query createQuery() {
+				Select select = QueryBuilder.select().all().from(cassandraTemplate.getKeyspace(), getTableName());
+				Select.Where w = select.where();
+
+				CassandraPersistentEntity<?> entity = getPersistentEntity(entityClass);
+
+				List<Clause> list = cassandraConverter.getPartitionKey(entity, id);
+
+				for (Clause c : list) {
+					w.and(c);
+				}
+
+				return select;
+			}
+
+		};
+
 	}
 
 	/**

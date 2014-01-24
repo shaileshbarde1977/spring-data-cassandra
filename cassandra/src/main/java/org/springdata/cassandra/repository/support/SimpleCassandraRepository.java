@@ -89,7 +89,8 @@ public class SimpleCassandraRepository<T, ID extends Serializable> implements Ca
 	@Override
 	public List<T> findByPartitionKey(ID id) {
 		Assert.notNull(id, "The given id must not be null!");
-		return cassandraTemplate.findByPartitionKey(id, entityInformation.getJavaType(), null);
+		Iterator<T> iterator = cassandraTemplate.findByPartitionKey(entityInformation.getJavaType(), id).execute();
+		return ImmutableList.copyOf(iterator);
 	}
 
 	@Override
