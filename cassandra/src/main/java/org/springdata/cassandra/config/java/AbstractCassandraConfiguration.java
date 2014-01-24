@@ -24,8 +24,8 @@ import org.springdata.cassandra.core.CassandraOperations;
 import org.springdata.cassandra.core.CassandraSessionFactoryBean;
 import org.springdata.cassandra.core.CassandraTemplate;
 import org.springdata.cassandra.cql.config.KeyspaceAttributes;
-import org.springdata.cassandra.cql.core.CassandraCqlOperations;
-import org.springdata.cassandra.cql.core.CassandraCqlTemplate;
+import org.springdata.cassandra.cql.core.CqlOperations;
+import org.springdata.cassandra.cql.core.CqlTemplate;
 import org.springdata.cassandra.mapping.CassandraMappingContext;
 import org.springdata.cassandra.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.mapping.CassandraPersistentProperty;
@@ -118,13 +118,13 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	}
 
 	/**
-	 * Creates a {@link CassandraCqlTemplate}.
+	 * Creates a {@link CqlTemplate}.
 	 * 
 	 * @return CassandraCqlOperations
 	 */
 	@Bean
-	public CassandraCqlOperations cassandraCqlTemplate() {
-		return new CassandraCqlTemplate(session(), keyspace());
+	public CqlOperations cassandraCqlTemplate() {
+		return new CqlTemplate(session(), keyspace());
 	}
 
 	/**

@@ -40,7 +40,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 	private final Query query;
 
-	protected DefaultSelectOperation(CassandraCqlTemplate cassandraTemplate, Query query) {
+	protected DefaultSelectOperation(CqlTemplate cassandraTemplate, Query query) {
 		super(cassandraTemplate);
 		this.query = query;
 	}

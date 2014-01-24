@@ -26,8 +26,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.convert.CassandraConverter;
-import org.springdata.cassandra.cql.core.CassandraCqlOperations;
-import org.springdata.cassandra.cql.core.CassandraCqlTemplate;
+import org.springdata.cassandra.cql.core.CqlOperations;
+import org.springdata.cassandra.cql.core.CqlTemplate;
 import org.springdata.cassandra.cql.core.QueryCreator;
 import org.springdata.cassandra.cql.core.SessionCallback;
 import org.springdata.cassandra.cql.core.query.ConsistencyLevelResolver;
@@ -60,7 +60,7 @@ import com.google.common.collect.Iterators;
 
 /**
  * The CassandraTemplate is a convenience API for all CassandraOperations using POJOs. This is the "Spring Data" flavor
- * of the template. For low level CassandraOperations use the {@link CassandraCqlTemplate}
+ * of the template. For low level CassandraOperations use the {@link CqlTemplate}
  * 
  * @author Alex Shvid
  * @author David Webb
@@ -84,7 +84,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 	}
 
-	private final CassandraCqlTemplate cassandraCqlTemplate;
+	private final CqlTemplate cassandraCqlTemplate;
 	private final CassandraConverter cassandraConverter;
 	private final String keyspace;
 	private final MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
@@ -100,7 +100,7 @@ public class CassandraTemplate implements CassandraOperations {
 	public CassandraTemplate(Session session, CassandraConverter converter, String keyspace) {
 		Assert.notNull(session);
 		Assert.notNull(converter);
-		this.cassandraCqlTemplate = new CassandraCqlTemplate(session, keyspace);
+		this.cassandraCqlTemplate = new CqlTemplate(session, keyspace);
 		this.cassandraConverter = converter;
 		this.keyspace = keyspace;
 		this.mappingContext = this.cassandraConverter.getMappingContext();
@@ -377,11 +377,11 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public CassandraCqlOperations cqlOps() {
+	public CqlOperations cqlOps() {
 		return cassandraCqlTemplate;
 	}
 
-	public CassandraCqlTemplate cqlTemplate() {
+	public CqlTemplate cqlTemplate() {
 		return cassandraCqlTemplate;
 	}
 

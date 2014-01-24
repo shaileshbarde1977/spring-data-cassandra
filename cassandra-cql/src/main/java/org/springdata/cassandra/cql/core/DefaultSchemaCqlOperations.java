@@ -32,10 +32,10 @@ public class DefaultSchemaCqlOperations implements SchemaCqlOperations {
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultSchemaCqlOperations.class);
 
-	private final CassandraCqlTemplate cassandraTemplate;
+	private final CqlTemplate cassandraTemplate;
 	private final String keyspace;
 
-	protected DefaultSchemaCqlOperations(CassandraCqlTemplate cassandraTemplate, String keyspace) {
+	protected DefaultSchemaCqlOperations(CqlTemplate cassandraTemplate, String keyspace) {
 
 		Assert.notNull(cassandraTemplate);
 		Assert.notNull(keyspace);

@@ -18,7 +18,7 @@ package org.springdata.cassandra.cql.config.xml;
 import java.util.List;
 
 import org.springdata.cassandra.cql.config.KeyspaceAttributes;
-import org.springdata.cassandra.cql.core.CassandraCqlSessionFactoryBean;
+import org.springdata.cassandra.cql.core.SessionFactoryBean;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -39,7 +39,7 @@ public class CassandraCqlSessionParser extends AbstractSimpleBeanDefinitionParse
 
 	@Override
 	protected Class<?> getBeanClass(Element element) {
-		return CassandraCqlSessionFactoryBean.class;
+		return SessionFactoryBean.class;
 	}
 
 	@Override

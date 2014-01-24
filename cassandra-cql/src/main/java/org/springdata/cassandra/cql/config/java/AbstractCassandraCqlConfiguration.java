@@ -16,9 +16,9 @@
 package org.springdata.cassandra.cql.config.java;
 
 import org.springdata.cassandra.cql.config.KeyspaceAttributes;
-import org.springdata.cassandra.cql.core.CassandraCqlOperations;
-import org.springdata.cassandra.cql.core.CassandraCqlSessionFactoryBean;
-import org.springdata.cassandra.cql.core.CassandraCqlTemplate;
+import org.springdata.cassandra.cql.core.CqlOperations;
+import org.springdata.cassandra.cql.core.SessionFactoryBean;
+import org.springdata.cassandra.cql.core.CqlTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -59,7 +59,7 @@ public abstract class AbstractCassandraCqlConfiguration {
 	}
 
 	/**
-	 * Creates a {@link Session} to be used by the {@link CassandraCqlTemplate}. Will use the {@link Cluster} instance
+	 * Creates a {@link Session} to be used by the {@link CqlTemplate}. Will use the {@link Cluster} instance
 	 * configured in {@link #cluster()}.
 	 * 
 	 * @see #cluster()
@@ -68,7 +68,7 @@ public abstract class AbstractCassandraCqlConfiguration {
 	 */
 	@Bean
 	public Session session() {
-		CassandraCqlSessionFactoryBean factory = new CassandraCqlSessionFactoryBean();
+		SessionFactoryBean factory = new SessionFactoryBean();
 		factory.setKeyspace(keyspace());
 		factory.setCluster(cluster());
 		factory.setKeyspaceAttributes(keyspaceAttributes());
@@ -77,13 +77,13 @@ public abstract class AbstractCassandraCqlConfiguration {
 	}
 
 	/**
-	 * Creates a {@link CassandraCqlTemplate}.
+	 * Creates a {@link CqlTemplate}.
 	 * 
 	 * @return CassandraCqlOperations
 	 */
 	@Bean
-	public CassandraCqlOperations cassandraCqlTemplate() {
-		return new CassandraCqlTemplate(session(), keyspace());
+	public CqlOperations cassandraCqlTemplate() {
+		return new CqlTemplate(session(), keyspace());
 	}
 
 }

@@ -33,7 +33,7 @@ import com.datastax.driver.core.Statement;
  * @author David Webb
  * @author Matthew Adams
  */
-public interface CassandraCqlOperations {
+public interface CqlOperations {
 
 	/**
 	 * Creates query by using QueryCreator

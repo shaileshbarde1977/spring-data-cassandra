@@ -20,8 +20,8 @@ import java.util.List;
 
 import org.springdata.cassandra.config.TableAttributes;
 import org.springdata.cassandra.convert.CassandraConverter;
-import org.springdata.cassandra.cql.core.CassandraCqlSessionFactoryBean;
-import org.springdata.cassandra.cql.core.CassandraCqlTemplate;
+import org.springdata.cassandra.cql.core.SessionFactoryBean;
+import org.springdata.cassandra.cql.core.CqlTemplate;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
@@ -41,7 +41,7 @@ import com.datastax.driver.core.TableMetadata;
  * @author Alex Shvid
  */
 
-public class CassandraSessionFactoryBean extends CassandraCqlSessionFactoryBean implements FactoryBean<Session>,
+public class CassandraSessionFactoryBean extends SessionFactoryBean implements FactoryBean<Session>,
 		InitializingBean, DisposableBean, BeanClassLoaderAware, PersistenceExceptionTranslator {
 
 	private ClassLoader beanClassLoader;
@@ -66,7 +66,7 @@ public class CassandraSessionFactoryBean extends CassandraCqlSessionFactoryBean 
 
 		if (StringUtils.hasText(keyspace)) {
 
-			CassandraCqlTemplate cassandraTemplate = new CassandraCqlTemplate(session, keyspace);
+			CqlTemplate cassandraTemplate = new CqlTemplate(session, keyspace);
 			CassandraTemplate cassandraDataTemplate = new CassandraTemplate(session, converter, keyspace);
 
 			if (!CollectionUtils.isEmpty(tables)) {

@@ -47,7 +47,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 public abstract class AbstractQueryOperation<T, O extends QueryOperation<T, O>> implements QueryOperation<T, O> {
 
-	protected final CassandraCqlTemplate cassandraCqlTemplate;
+	protected final CqlTemplate cassandraCqlTemplate;
 
 	private ConsistencyLevel consistencyLevel;
 	private RetryPolicy retryPolicy;
@@ -56,7 +56,7 @@ public abstract class AbstractQueryOperation<T, O extends QueryOperation<T, O>> 
 	private FallbackHandler fh;
 	private Executor executor;
 
-	protected AbstractQueryOperation(CassandraCqlTemplate cassandraCqlTemplate) {
+	protected AbstractQueryOperation(CqlTemplate cassandraCqlTemplate) {
 		Assert.notNull(cassandraCqlTemplate);
 		this.cassandraCqlTemplate = cassandraCqlTemplate;
 	}

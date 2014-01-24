@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springdata.cassandra.convert.CassandraConverter;
-import org.springdata.cassandra.cql.core.CassandraCqlOperations;
+import org.springdata.cassandra.cql.core.CqlOperations;
 import org.springdata.cassandra.cql.core.query.StatementOptions;
 
 /**
@@ -208,6 +208,6 @@ public interface CassandraOperations {
 	 * 
 	 * @return CassandraCqlOperations
 	 */
-	CassandraCqlOperations cqlOps();
+	CqlOperations cqlOps();
 
 }

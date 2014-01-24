@@ -38,9 +38,9 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 
 	private static final String SYSTEM_KEYSPACE = "system";
 
-	private final CassandraCqlTemplate cassandraTemplate;
+	private final CqlTemplate cassandraTemplate;
 
-	protected DefaultAdminCqlOperations(CassandraCqlTemplate cassandraTemplate) {
+	protected DefaultAdminCqlOperations(CqlTemplate cassandraTemplate) {
 		Assert.notNull(cassandraTemplate);
 
 		this.cassandraTemplate = cassandraTemplate;

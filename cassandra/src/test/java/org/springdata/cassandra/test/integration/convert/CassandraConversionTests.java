@@ -50,7 +50,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springdata.cassandra.core.CassandraOperations;
-import org.springdata.cassandra.cql.core.CassandraCqlOperations;
+import org.springdata.cassandra.cql.core.CqlOperations;
 import org.springdata.cassandra.test.integration.config.JavaConfig;
 import org.springdata.cassandra.test.integration.table.BasicTypesEntity;
 import org.springdata.cassandra.test.integration.table.CollectionTypesEntity;
@@ -75,7 +75,7 @@ import com.google.common.collect.ImmutableSet;
 public class CassandraConversionTests {
 
 	@Autowired
-	private CassandraCqlOperations cassandraCqlOperations;
+	private CqlOperations cassandraCqlOperations;
 
 	@Autowired
 	private CassandraOperations cassandraOperations;
