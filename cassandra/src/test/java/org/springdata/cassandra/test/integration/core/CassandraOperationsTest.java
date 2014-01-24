@@ -811,7 +811,7 @@ public class CassandraOperationsTest {
 
 		cassandraTemplate.saveNew(b1).execute();
 
-		Book b = cassandraTemplate.findById("123456-1", Book.class, null);
+		Book b = cassandraTemplate.findById(Book.class, "123456-1").execute();
 
 		log.info("SingleSelect Book Title -> " + b.getTitle());
 		log.info("SingleSelect Book Author -> " + b.getAuthor());

@@ -109,7 +109,7 @@ public class CassandraConversionTests {
 
 		cassandraCqlOperations.update("insert into test.basic_types_table (id) values ('nulls')").execute();
 
-		BasicTypesEntity nullProps = cassandraOperations.findById("nulls", BasicTypesEntity.class, null);
+		BasicTypesEntity nullProps = cassandraOperations.findById(BasicTypesEntity.class, "nulls").execute();
 		assertThat(nullProps, is(not(nullValue(BasicTypesEntity.class))));
 		assertThat(nullProps.getId(), is("nulls"));
 		assertThat(nullProps.getPropascii(), is(nullValue()));
@@ -142,7 +142,7 @@ public class CassandraConversionTests {
 						+ "values ('ascii', 'ascii test value', %d, 0xcafebabe, true, 10.56, 1.5E50, 1E9, '10.1.2.3', "
 						+ "123456, 'text test value', '2013-12-25T12:34:00+0000', %s, %s, 'varchar test value', "
 						+ "12345678901234567890)", longValue, uuid.toString(), uuid.toString())).execute();
-		BasicTypesEntity entity = cassandraOperations.findById("ascii", BasicTypesEntity.class, null);
+		BasicTypesEntity entity = cassandraOperations.findById(BasicTypesEntity.class, "ascii").execute();
 		assertThat(entity, is(not(nullValue(BasicTypesEntity.class))));
 		assertThat(entity.getId(), is("ascii"));
 		assertThat(entity.getPropascii(), is("ascii test value"));
@@ -189,7 +189,7 @@ public class CassandraConversionTests {
 		newEntity.setPropvarint(new BigInteger("12345678901234567890"));
 		cassandraOperations.saveNew(newEntity).execute();
 
-		BasicTypesEntity entity = cassandraOperations.findById("ascii", BasicTypesEntity.class, null);
+		BasicTypesEntity entity = cassandraOperations.findById(BasicTypesEntity.class, "ascii").execute();
 		assertThat(entity, is(not(nullValue(BasicTypesEntity.class))));
 		assertThat(entity.getId(), is("ascii"));
 		assertThat(entity.getPropascii(), is("ascii test value"));
@@ -212,7 +212,7 @@ public class CassandraConversionTests {
 
 		cassandraCqlOperations.update("insert into test.collection_types_table (id) values ('nulls')").execute();
 
-		CollectionTypesEntity nullProps = cassandraOperations.findById("nulls", CollectionTypesEntity.class, null);
+		CollectionTypesEntity nullProps = cassandraOperations.findById(CollectionTypesEntity.class, "nulls").execute();
 		assertThat(nullProps, is(not(nullValue(CollectionTypesEntity.class))));
 		assertThat(nullProps.getId(), is("nulls"));
 		assertThat(nullProps.getTextlist(), is(nullValue()));
@@ -238,7 +238,7 @@ public class CassandraConversionTests {
 						+ "{'settext1', 'settext2'}, {'uuid1':%s}, " + "[%s, %s], " + "{%s} )", mapUUID.toString(),
 						listUUID[0].toString(), listUUID[1].toString(), setUUID.toString())).execute();
 
-		CollectionTypesEntity entity = cassandraOperations.findById("values", CollectionTypesEntity.class, null);
+		CollectionTypesEntity entity = cassandraOperations.findById(CollectionTypesEntity.class, "values").execute();
 
 		assertThat(entity, is(not(nullValue(CollectionTypesEntity.class))));
 		assertThat(entity.getId(), is("values"));
@@ -290,7 +290,7 @@ public class CassandraConversionTests {
 
 		cassandraOperations.saveNew(newEntity).execute();
 
-		CollectionTypesEntity entity = cassandraOperations.findById("values", CollectionTypesEntity.class, null);
+		CollectionTypesEntity entity = cassandraOperations.findById(CollectionTypesEntity.class, "values").execute();
 
 		assertThat(entity, is(not(nullValue(CollectionTypesEntity.class))));
 		assertThat(entity.getId(), is("values"));
@@ -331,7 +331,7 @@ public class CassandraConversionTests {
 				.execute();
 
 		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(1, "first");
-		EmbeddedIdEntity entity = cassandraOperations.findById(pk, EmbeddedIdEntity.class, null);
+		EmbeddedIdEntity entity = cassandraOperations.findById(EmbeddedIdEntity.class, pk).execute();
 		assertThat(entity, is(not(nullValue(EmbeddedIdEntity.class))));
 		EmbeddedIdEntity.PK entityPk = entity.getId();
 		assertThat(entityPk, is(not(nullValue(EmbeddedIdEntity.PK.class))));
@@ -349,7 +349,7 @@ public class CassandraConversionTests {
 		newEntity.setProptext("two");
 		cassandraOperations.saveNew(newEntity).execute();
 
-		EmbeddedIdEntity entity = cassandraOperations.findById(pk, EmbeddedIdEntity.class, null);
+		EmbeddedIdEntity entity = cassandraOperations.findById(EmbeddedIdEntity.class, pk).execute();
 		assertThat(entity, is(not(nullValue(EmbeddedIdEntity.class))));
 		EmbeddedIdEntity.PK entityPk = entity.getId();
 		assertThat(entityPk, is(not(nullValue(EmbeddedIdEntity.PK.class))));
@@ -367,7 +367,7 @@ public class CassandraConversionTests {
 				"insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) " + " values (2, 'second', 'two')")
 				.execute();
 
-		EmbeddedIdEntity entity = cassandraOperations.findById(pk, EmbeddedIdEntity.class, null);
+		EmbeddedIdEntity entity = cassandraOperations.findById(EmbeddedIdEntity.class, pk).execute();
 		assertThat(entity, is(not(nullValue(EmbeddedIdEntity.class))));
 		EmbeddedIdEntity.PK entityPk = entity.getId();
 		assertThat(entityPk, is(not(nullValue(EmbeddedIdEntity.PK.class))));
@@ -377,7 +377,7 @@ public class CassandraConversionTests {
 
 		entity.setProptext("Two!");
 		cassandraOperations.save(entity).execute();
-		entity = cassandraOperations.findById(pk, EmbeddedIdEntity.class, null);
+		entity = cassandraOperations.findById(EmbeddedIdEntity.class, pk).execute();
 		assertThat(entity.getProptext(), equalTo("Two!"));
 	}
 
@@ -390,7 +390,7 @@ public class CassandraConversionTests {
 				"insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) " + " values (2, 'second', 'two')")
 				.execute();
 
-		EmbeddedIdEntity entity = cassandraOperations.findById(pk, EmbeddedIdEntity.class, null);
+		EmbeddedIdEntity entity = cassandraOperations.findById(EmbeddedIdEntity.class, pk).execute();
 		assertThat(entity, is(not(nullValue(EmbeddedIdEntity.class))));
 		EmbeddedIdEntity.PK entityPk = entity.getId();
 		assertThat(entityPk, is(not(nullValue(EmbeddedIdEntity.PK.class))));
@@ -399,7 +399,7 @@ public class CassandraConversionTests {
 		assertThat(entity.getProptext(), equalTo("two"));
 
 		cassandraOperations.delete(entity).execute();
-		entity = cassandraOperations.findById(pk, EmbeddedIdEntity.class, null);
+		entity = cassandraOperations.findById(EmbeddedIdEntity.class, pk).execute();
 		assertThat(entity, is(nullValue(EmbeddedIdEntity.class)));
 	}
 

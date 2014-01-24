@@ -58,7 +58,7 @@ public interface CassandraOperations {
 	 * @return
 	 */
 
-	<T> T findById(Object id, Class<T> entityClass, StatementOptions optionsOrNull);
+	<T> GetOperation<T> findById(Class<T> entityClass, Object id);
 
 	/**
 	 * 

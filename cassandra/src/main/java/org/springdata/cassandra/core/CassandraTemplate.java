@@ -121,10 +121,30 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> T findById(Object id, Class<T> entityClass, StatementOptions optionsOrNull) {
-		String tableName = getTableName(entityClass);
-		Assert.notNull(tableName);
-		return findById(id, entityClass, tableName, optionsOrNull);
+	public <T> GetOperation<T> findById(Class<T> entityClass, final Object id) {
+		Assert.notNull(entityClass);
+		Assert.notNull(id);
+
+		return new AbstractFindOneOperation<T>(this, entityClass) {
+
+			@Override
+			public Query createQuery() {
+				Select select = QueryBuilder.select().all().from(cassandraTemplate.getKeyspace(), getTableName());
+				Select.Where w = select.where();
+
+				CassandraPersistentEntity<?> entity = getPersistentEntity(entityClass);
+
+				List<Clause> list = cassandraConverter.getPrimaryKey(entity, id);
+
+				for (Clause c : list) {
+					w.and(c);
+				}
+
+				return select;
+			}
+
+		};
+
 	}
 
 	@Override
