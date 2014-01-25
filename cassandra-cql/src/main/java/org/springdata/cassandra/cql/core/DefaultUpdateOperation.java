@@ -28,11 +28,11 @@ public class DefaultUpdateOperation extends AbstractUpdateOperation<UpdateOperat
 
 	private final QueryCreator qc;
 
-	protected DefaultUpdateOperation(CqlTemplate cqlTemplate, String cql) {
+	public DefaultUpdateOperation(CqlTemplate cqlTemplate, String cql) {
 		this(cqlTemplate, new SimpleQueryCreator(cql));
 	}
 
-	protected DefaultUpdateOperation(CqlTemplate cqlTemplate, QueryCreator qc) {
+	public DefaultUpdateOperation(CqlTemplate cqlTemplate, QueryCreator qc) {
 		super(cqlTemplate);
 		this.qc = qc;
 	}

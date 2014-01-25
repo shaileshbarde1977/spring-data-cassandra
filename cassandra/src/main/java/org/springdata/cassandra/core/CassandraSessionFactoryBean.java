@@ -20,8 +20,9 @@ import java.util.List;
 
 import org.springdata.cassandra.config.TableAttributes;
 import org.springdata.cassandra.convert.CassandraConverter;
-import org.springdata.cassandra.cql.core.SessionFactoryBean;
 import org.springdata.cassandra.cql.core.CqlTemplate;
+import org.springdata.cassandra.cql.core.SessionFactoryBean;
+import org.springdata.cassandra.cql.core.UpdateOperation;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
@@ -34,6 +35,7 @@ import org.springframework.util.StringUtils;
 
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.TableMetadata;
+import com.google.common.base.Optional;
 
 /**
  * Convenient factory for configuring a Cassandra Session.
@@ -41,8 +43,8 @@ import com.datastax.driver.core.TableMetadata;
  * @author Alex Shvid
  */
 
-public class CassandraSessionFactoryBean extends SessionFactoryBean implements FactoryBean<Session>,
-		InitializingBean, DisposableBean, BeanClassLoaderAware, PersistenceExceptionTranslator {
+public class CassandraSessionFactoryBean extends SessionFactoryBean implements FactoryBean<Session>, InitializingBean,
+		DisposableBean, BeanClassLoaderAware, PersistenceExceptionTranslator {
 
 	private ClassLoader beanClassLoader;
 
@@ -87,9 +89,13 @@ public class CassandraSessionFactoryBean extends SessionFactoryBean implements F
 							createNewTable(cassandraDataTemplate, useTableName, entityClass);
 						} else {
 
-							cassandraDataTemplate.schemaOps().alterTable(useTableName, entityClass, true, null);
+							Optional<UpdateOperation> alter = cassandraDataTemplate.schemaOps().alterTable(useTableName, entityClass,
+									true);
+							if (alter.isPresent()) {
+								alter.get().execute();
+							}
 
-							cassandraDataTemplate.schemaOps().alterIndexes(useTableName, entityClass, null);
+							cassandraDataTemplate.schemaOps().alterIndexes(useTableName, entityClass).execute();
 
 						}
 					} else if (keyspaceAttributes.isValidate()) {
@@ -131,8 +137,8 @@ public class CassandraSessionFactoryBean extends SessionFactoryBean implements F
 	}
 
 	private void createNewTable(CassandraTemplate cassandraDataTemplate, String useTableName, Class<?> entityClass) {
-		cassandraDataTemplate.schemaOps().createTable(false, useTableName, entityClass, null);
-		cassandraDataTemplate.schemaOps().createIndexes(useTableName, entityClass, null);
+		cassandraDataTemplate.schemaOps().createTable(useTableName, entityClass).execute();
+		cassandraDataTemplate.schemaOps().createIndexes(useTableName, entityClass).execute();
 	}
 
 	public void setConverter(CassandraConverter converter) {

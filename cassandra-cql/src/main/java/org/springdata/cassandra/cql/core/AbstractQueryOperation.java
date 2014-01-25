@@ -15,6 +15,7 @@
  */
 package org.springdata.cassandra.cql.core;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -193,6 +194,16 @@ public abstract class AbstractQueryOperation<T, O extends QueryOperation<T, O>> 
 	}
 
 	protected CassandraFuture<List<ResultSet>> doExecuteAsync(Iterator<Query> queryIterator) {
+
+		if (!queryIterator.hasNext()) {
+			ListenableFuture<List<ResultSet>> emptyResultFuture = Futures
+					.immediateFuture(Collections.<ResultSet> emptyList());
+
+			CassandraFuture<List<ResultSet>> wrappedFuture = new CassandraFuture<List<ResultSet>>(emptyResultFuture,
+					cqlTemplate.getExceptionTranslator());
+
+			return wrappedFuture;
+		}
 
 		final Iterator<ListenableFuture<ResultSet>> resultSetFutures = Iterators.transform(queryIterator,
 				new Function<Query, ListenableFuture<ResultSet>>() {
