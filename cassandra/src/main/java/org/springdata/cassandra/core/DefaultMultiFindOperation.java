@@ -39,7 +39,7 @@ import com.google.common.collect.Iterators;
  * 
  */
 
-public class DefaultFindByIdsOperation<T> extends AbstractMultiGetOperation<List<T>> {
+public class DefaultMultiFindOperation<T> extends AbstractMultiGetOperation<List<T>> {
 
 	private final CassandraTemplate cassandraTemplate;
 	private final EntityReader<? super T, Object> entityReader;
@@ -47,7 +47,7 @@ public class DefaultFindByIdsOperation<T> extends AbstractMultiGetOperation<List
 	private final CassandraPersistentEntity<?> entity;
 	private final Iterator<?> ids;
 
-	public DefaultFindByIdsOperation(CassandraTemplate cassandraTemplate, Class<T> entityClass, Iterator<?> ids) {
+	public DefaultMultiFindOperation(CassandraTemplate cassandraTemplate, Class<T> entityClass, Iterator<?> ids) {
 		super(cassandraTemplate.cqlTemplate());
 		this.cassandraTemplate = cassandraTemplate;
 		this.entityReader = cassandraTemplate.getConverter();

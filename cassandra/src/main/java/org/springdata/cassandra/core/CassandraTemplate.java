@@ -127,7 +127,7 @@ public class CassandraTemplate implements CassandraOperations {
 		Assert.notNull(entityClass);
 		Assert.notNull(ids);
 
-		return new DefaultFindByIdsOperation<T>(this, entityClass, ids.iterator());
+		return new DefaultMultiFindOperation<T>(this, entityClass, ids.iterator());
 	}
 
 	@Override
