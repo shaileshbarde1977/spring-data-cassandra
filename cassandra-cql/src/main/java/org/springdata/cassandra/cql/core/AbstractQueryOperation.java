@@ -22,10 +22,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.springdata.cassandra.cql.core.query.ConsistencyLevel;
-import org.springdata.cassandra.cql.core.query.ConsistencyLevelResolver;
-import org.springdata.cassandra.cql.core.query.RetryPolicy;
-import org.springdata.cassandra.cql.core.query.RetryPolicyResolver;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Query;

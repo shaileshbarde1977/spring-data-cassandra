@@ -38,10 +38,9 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.core.CassandraOperations;
+import org.springdata.cassandra.cql.core.ConsistencyLevel;
 import org.springdata.cassandra.cql.core.QueryCreator;
-import org.springdata.cassandra.cql.core.query.ConsistencyLevel;
-import org.springdata.cassandra.cql.core.query.RetryPolicy;
-import org.springdata.cassandra.cql.core.query.StatementOptions;
+import org.springdata.cassandra.cql.core.RetryPolicy;
 import org.springdata.cassandra.test.integration.config.JavaConfig;
 import org.springdata.cassandra.test.integration.table.Book;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -463,10 +462,6 @@ public class CassandraOperationsTest {
 
 		insertTest();
 
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
-
 		/*
 		 * Test Single Insert with entity
 		 */
@@ -504,10 +499,6 @@ public class CassandraOperationsTest {
 	public void deleteAsynchronouslyTest() {
 
 		insertTest();
-
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		/*
 		 * Test Single Insert with entity
@@ -616,10 +607,6 @@ public class CassandraOperationsTest {
 
 		insertTest();
 
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
-
 		/*
 		 * Test Single Insert with entity
 		 */
@@ -657,10 +644,6 @@ public class CassandraOperationsTest {
 	public void deleteByIdAsynchronouslyTest() {
 
 		insertTest();
-
-		StatementOptions options = new StatementOptions();
-		options.withConsistencyLevel(ConsistencyLevel.ONE);
-		options.withRetryPolicy(RetryPolicy.DOWNGRADING_CONSISTENCY);
 
 		/*
 		 * Test Single Insert with entity

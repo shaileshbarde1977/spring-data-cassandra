@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.springdata.cassandra.convert.CassandraConverter;
 import org.springdata.cassandra.cql.core.CqlOperations;
-import org.springdata.cassandra.cql.core.query.StatementOptions;
 
 /**
  * Operations for interacting with Cassandra. These operations are also used by the SimpleCassandraRepository

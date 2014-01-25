@@ -20,9 +20,6 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeoutException;
 
-import org.springdata.cassandra.cql.core.query.ConsistencyLevel;
-import org.springdata.cassandra.cql.core.query.RetryPolicy;
-
 import com.datastax.driver.core.Query;
 import com.datastax.driver.core.ResultSet;
 import com.google.common.base.Function;
