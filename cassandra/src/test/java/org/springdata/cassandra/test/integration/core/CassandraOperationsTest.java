@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.core.CassandraOperations;
+import org.springdata.cassandra.cql.core.QueryCreator;
 import org.springdata.cassandra.cql.core.query.ConsistencyLevel;
 import org.springdata.cassandra.cql.core.query.RetryPolicy;
 import org.springdata.cassandra.cql.core.query.StatementOptions;
@@ -48,6 +49,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import com.datastax.driver.core.Query;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
 
@@ -844,9 +846,14 @@ public class CassandraOperationsTest {
 
 		cassandraTemplate.saveNewInBatch(books).execute();
 
-		Select select = QueryBuilder.select().countAll().from("book");
+		Long count = cassandraTemplate.cqlOps().select(new QueryCreator() {
 
-		Long count = cassandraTemplate.count(select.getQueryString(), null);
+			@Override
+			public Query createQuery() {
+				return QueryBuilder.select().countAll().from("book");
+			}
+
+		}).firstColumnOne(Long.class).execute();
 
 		log.info("Book Count -> " + count);
 

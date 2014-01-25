@@ -97,12 +97,12 @@ public interface CassandraOperations {
 	<T> T findOne(String query, Class<T> entityClass, StatementOptions optionsOrNull);
 
 	/**
-	 * Counts rows for given query
+	 * Counts rows for given entity
 	 * 
-	 * @param query
+	 * @param entityClass
 	 * @return
 	 */
-	Long count(String query, StatementOptions optionsOrNull);
+	<T> GetOperation<Long> count(Class<T> entityClass);
 
 	/**
 	 * Checks if entity exists in Cassandra

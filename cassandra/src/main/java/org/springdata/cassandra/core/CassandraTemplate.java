@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.convert.CassandraConverter;
 import org.springdata.cassandra.cql.core.CqlOperations;
 import org.springdata.cassandra.cql.core.CqlTemplate;
-import org.springdata.cassandra.cql.core.QueryCreator;
 import org.springdata.cassandra.cql.core.SessionCallback;
 import org.springdata.cassandra.cql.core.query.ConsistencyLevelResolver;
 import org.springdata.cassandra.cql.core.query.RetryPolicyResolver;
@@ -201,11 +200,6 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public Long count(String cql, StatementOptions optionsOrNull) {
-		return doSelectCount(cql, optionsOrNull);
-	}
-
-	@Override
 	public <T> BatchOperation deleteByIdInBatch(final Class<T> entityClass, Iterable<?> ids) {
 		Assert.notNull(entityClass);
 		Assert.notNull(ids);
@@ -263,6 +257,12 @@ public class CassandraTemplate implements CassandraOperations {
 		Assert.notNull(entity);
 		assertNotIterable(entity);
 		return new DefaultDeleteOperation<T>(this, entity);
+	}
+
+	@Override
+	public <T> GetOperation<Long> count(Class<T> entityClass) {
+		Assert.notNull(entityClass);
+		return new DefaultCountOperation<T>(this, entityClass);
 	}
 
 	@Override
