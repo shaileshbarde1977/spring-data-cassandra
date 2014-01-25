@@ -47,7 +47,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 public abstract class AbstractQueryOperation<T, O extends QueryOperation<T, O>> implements QueryOperation<T, O> {
 
-	protected final CqlTemplate cassandraCqlTemplate;
+	protected final CqlTemplate cqlTemplate;
 
 	private ConsistencyLevel consistencyLevel;
 	private RetryPolicy retryPolicy;
@@ -56,9 +56,9 @@ public abstract class AbstractQueryOperation<T, O extends QueryOperation<T, O>> 
 	private FallbackHandler fh;
 	private Executor executor;
 
-	protected AbstractQueryOperation(CqlTemplate cassandraCqlTemplate) {
-		Assert.notNull(cassandraCqlTemplate);
-		this.cassandraCqlTemplate = cassandraCqlTemplate;
+	protected AbstractQueryOperation(CqlTemplate cqlTemplate) {
+		Assert.notNull(cqlTemplate);
+		this.cqlTemplate = cqlTemplate;
 	}
 
 	@Override
@@ -124,25 +124,25 @@ public abstract class AbstractQueryOperation<T, O extends QueryOperation<T, O>> 
 	}
 
 	protected Query doCreateQuery(QueryCreator qc) {
-		return cassandraCqlTemplate.createQuery(qc);
+		return cqlTemplate.createQuery(qc);
 	}
 
 	protected ResultSet doExecute(Query query) {
 		addQueryOptions(query);
-		return cassandraCqlTemplate.doExecute(query);
+		return cqlTemplate.doExecute(query);
 	}
 
 	protected CassandraFuture<ResultSet> doExecuteAsync(Query query) {
 		addQueryOptions(query);
-		ResultSetFuture resultSetFuture = cassandraCqlTemplate.doExecuteAsync(query);
+		ResultSetFuture resultSetFuture = cqlTemplate.doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture,
-				cassandraCqlTemplate.getExceptionTranslator());
+				cqlTemplate.getExceptionTranslator());
 		return wrappedFuture;
 	}
 
 	protected void doExecuteAsync(Query query, final CallbackHandler<ResultSet> cb) {
 		addQueryOptions(query);
-		ResultSetFuture resultSetFuture = cassandraCqlTemplate.doExecuteAsync(query);
+		ResultSetFuture resultSetFuture = cqlTemplate.doExecuteAsync(query);
 		doFutureCallback(resultSetFuture, cb);
 	}
 
@@ -158,7 +158,7 @@ public abstract class AbstractQueryOperation<T, O extends QueryOperation<T, O>> 
 			@Override
 			public void onFailure(Throwable t) {
 				if (t instanceof RuntimeException) {
-					t = cassandraCqlTemplate.translateIfPossible((RuntimeException) t);
+					t = cqlTemplate.translateIfPossible((RuntimeException) t);
 				}
 				fireOnFailure(t);
 			}
@@ -168,9 +168,9 @@ public abstract class AbstractQueryOperation<T, O extends QueryOperation<T, O>> 
 
 	protected ResultSet doExecuteNonstop(Query query, int timeoutMls) throws TimeoutException {
 		addQueryOptions(query);
-		ResultSetFuture resultSetFuture = cassandraCqlTemplate.doExecuteAsync(query);
+		ResultSetFuture resultSetFuture = cqlTemplate.doExecuteAsync(query);
 		CassandraFuture<ResultSet> wrappedFuture = new CassandraFuture<ResultSet>(resultSetFuture,
-				cassandraCqlTemplate.getExceptionTranslator());
+				cqlTemplate.getExceptionTranslator());
 		return wrappedFuture.getUninterruptibly(timeoutMls, TimeUnit.MILLISECONDS);
 	}
 
@@ -215,7 +215,7 @@ public abstract class AbstractQueryOperation<T, O extends QueryOperation<T, O>> 
 				});
 
 		CassandraFuture<List<ResultSet>> wrappedFuture = new CassandraFuture<List<ResultSet>>(allResultSetFuture,
-				cassandraCqlTemplate.getExceptionTranslator());
+				cqlTemplate.getExceptionTranslator());
 
 		return wrappedFuture;
 	}

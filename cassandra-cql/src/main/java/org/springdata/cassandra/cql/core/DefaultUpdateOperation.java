@@ -28,12 +28,12 @@ public class DefaultUpdateOperation extends AbstractUpdateOperation<UpdateOperat
 
 	private final QueryCreator qc;
 
-	protected DefaultUpdateOperation(CqlTemplate cassandraCqlTemplate, String cql) {
-		this(cassandraCqlTemplate, new SimpleQueryCreator(cql));
+	protected DefaultUpdateOperation(CqlTemplate cqlTemplate, String cql) {
+		this(cqlTemplate, new SimpleQueryCreator(cql));
 	}
 
-	protected DefaultUpdateOperation(CqlTemplate cassandraCqlTemplate, QueryCreator qc) {
-		super(cassandraCqlTemplate);
+	protected DefaultUpdateOperation(CqlTemplate cqlTemplate, QueryCreator qc) {
+		super(cqlTemplate);
 		this.qc = qc;
 	}
 

@@ -206,7 +206,7 @@ public interface CassandraOperations {
 	/**
 	 * Returns Cql specific operations
 	 * 
-	 * @return CassandraCqlOperations
+	 * @return CqlOperations
 	 */
 	CqlOperations cqlOps();
 

@@ -59,8 +59,8 @@ public abstract class AbstractCassandraCqlConfiguration {
 	}
 
 	/**
-	 * Creates a {@link Session} to be used by the {@link CqlTemplate}. Will use the {@link Cluster} instance
-	 * configured in {@link #cluster()}.
+	 * Creates a {@link Session} to be used by the {@link CqlTemplate}. Will use the {@link Cluster} instance configured
+	 * in {@link #cluster()}.
 	 * 
 	 * @see #cluster()
 	 * @see #Keyspace()
@@ -79,10 +79,10 @@ public abstract class AbstractCassandraCqlConfiguration {
 	/**
 	 * Creates a {@link CqlTemplate}.
 	 * 
-	 * @return CassandraCqlOperations
+	 * @return CqlOperations
 	 */
 	@Bean
-	public CqlOperations cassandraCqlTemplate() {
+	public CqlOperations cqlTemplate() {
 		return new CqlTemplate(session(), keyspace());
 	}
 

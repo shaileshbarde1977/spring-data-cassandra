@@ -120,10 +120,10 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	/**
 	 * Creates a {@link CqlTemplate}.
 	 * 
-	 * @return CassandraCqlOperations
+	 * @return CqlOperations
 	 */
 	@Bean
-	public CqlOperations cassandraCqlTemplate() {
+	public CqlOperations cqlTemplate() {
 		return new CqlTemplate(session(), keyspace());
 	}
 

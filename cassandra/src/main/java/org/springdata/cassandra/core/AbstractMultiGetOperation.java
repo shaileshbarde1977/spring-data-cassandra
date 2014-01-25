@@ -47,8 +47,8 @@ public abstract class AbstractMultiGetOperation<T> extends AbstractQueryOperatio
 
 	public abstract T transform(List<ResultSet> resultSets);
 
-	public AbstractMultiGetOperation(CqlTemplate cassandraCqlTemplate) {
-		super(cassandraCqlTemplate);
+	public AbstractMultiGetOperation(CqlTemplate cqlTemplate) {
+		super(cqlTemplate);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public abstract class AbstractMultiGetOperation<T> extends AbstractQueryOperatio
 
 		}, getExecutor());
 
-		return new CassandraFuture<T>(future, cassandraCqlTemplate.getExceptionTranslator());
+		return new CassandraFuture<T>(future, cqlTemplate.getExceptionTranslator());
 
 	}
 

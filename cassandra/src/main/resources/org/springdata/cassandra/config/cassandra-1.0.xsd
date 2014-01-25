@@ -218,7 +218,7 @@ The reference to a CassandraConverter instance. Will default to 'cassandra-conve
 		<xsd:annotation>
 			<xsd:documentation
 				source="org.springdata.cassandra.cql.core.CqlTemplateFactoryBean"><![CDATA[
-Defines a Cassandra Driver Template instance.
+Defines a CqlTemplate instance.
 			]]></xsd:documentation>
 			<xsd:appinfo>
 				<tool:annotation>
@@ -232,8 +232,8 @@ Defines a Cassandra Driver Template instance.
 		<xsd:attribute name="id" type="xsd:ID" use="optional">
 			<xsd:annotation>
 				<xsd:documentation>
-					The name of the Driver Template definition (by default
-					"cassandra-driver-template")
+					The name of the CqlTemplate definition (by default
+					"cql-template")
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>

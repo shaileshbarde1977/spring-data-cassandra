@@ -44,8 +44,8 @@ public abstract class AbstractGetOperation<T> extends AbstractQueryOperation<T, 
 
 	public abstract T transform(ResultSet resultSet);
 
-	public AbstractGetOperation(CqlTemplate cassandraCqlTemplate) {
-		super(cassandraCqlTemplate);
+	public AbstractGetOperation(CqlTemplate cqlTemplate) {
+		super(cqlTemplate);
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public abstract class AbstractGetOperation<T> extends AbstractQueryOperation<T, 
 
 		}, getExecutor());
 
-		return new CassandraFuture<T>(future, cassandraCqlTemplate.getExceptionTranslator());
+		return new CassandraFuture<T>(future, cqlTemplate.getExceptionTranslator());
 
 	}
 

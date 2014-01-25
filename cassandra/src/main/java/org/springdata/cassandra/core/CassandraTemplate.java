@@ -84,7 +84,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 	}
 
-	private final CqlTemplate cassandraCqlTemplate;
+	private final CqlTemplate cqlTemplate;
 	private final CassandraConverter cassandraConverter;
 	private final String keyspace;
 	private final MappingContext<? extends CassandraPersistentEntity<?>, CassandraPersistentProperty> mappingContext;
@@ -100,7 +100,7 @@ public class CassandraTemplate implements CassandraOperations {
 	public CassandraTemplate(Session session, CassandraConverter converter, String keyspace) {
 		Assert.notNull(session);
 		Assert.notNull(converter);
-		this.cassandraCqlTemplate = new CqlTemplate(session, keyspace);
+		this.cqlTemplate = new CqlTemplate(session, keyspace);
 		this.cassandraConverter = converter;
 		this.keyspace = keyspace;
 		this.mappingContext = this.cassandraConverter.getMappingContext();
@@ -378,11 +378,11 @@ public class CassandraTemplate implements CassandraOperations {
 
 	@Override
 	public CqlOperations cqlOps() {
-		return cassandraCqlTemplate;
+		return cqlTemplate;
 	}
 
 	public CqlTemplate cqlTemplate() {
-		return cassandraCqlTemplate;
+		return cqlTemplate;
 	}
 
 	/**
@@ -405,7 +405,7 @@ public class CassandraTemplate implements CassandraOperations {
 	protected <T> List<T> doSelect(final String cql, ReadRowCallback<T> readRowCallback,
 			final StatementOptions optionsOrNull) {
 
-		ResultSet resultSet = cassandraCqlTemplate.execute(new SessionCallback<ResultSet>() {
+		ResultSet resultSet = cqlTemplate.execute(new SessionCallback<ResultSet>() {
 
 			@Override
 			public ResultSet doInSession(Session s) {
@@ -440,7 +440,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 		Long count = null;
 
-		ResultSet resultSet = cassandraCqlTemplate.execute(new SessionCallback<ResultSet>() {
+		ResultSet resultSet = cqlTemplate.execute(new SessionCallback<ResultSet>() {
 
 			@Override
 			public ResultSet doInSession(Session s) {
@@ -479,7 +479,7 @@ public class CassandraTemplate implements CassandraOperations {
 		/*
 		 * Run the Query
 		 */
-		ResultSet resultSet = cassandraCqlTemplate.execute(new SessionCallback<ResultSet>() {
+		ResultSet resultSet = cqlTemplate.execute(new SessionCallback<ResultSet>() {
 
 			@Override
 			public ResultSet doInSession(Session s) {
@@ -551,7 +551,7 @@ public class CassandraTemplate implements CassandraOperations {
 			logger.debug(batch.getQueryString());
 		}
 
-		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
+		cqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public List<T> doInSession(Session s) {
@@ -611,7 +611,7 @@ public class CassandraTemplate implements CassandraOperations {
 			logger.debug(batch.toString());
 		}
 
-		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
+		cqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public List<T> doInSession(Session s) {
@@ -644,7 +644,7 @@ public class CassandraTemplate implements CassandraOperations {
 			logger.debug(query.toString());
 		}
 
-		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
+		cqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public Object doInSession(Session s) {
@@ -677,7 +677,7 @@ public class CassandraTemplate implements CassandraOperations {
 			logger.debug(query.toString());
 		}
 
-		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
+		cqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public Object doInSession(Session s) {
@@ -844,7 +844,7 @@ public class CassandraTemplate implements CassandraOperations {
 			logger.debug(batch.toString());
 		}
 
-		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
+		cqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public Object doInSession(Session s) {
@@ -931,7 +931,7 @@ public class CassandraTemplate implements CassandraOperations {
 			logger.debug(batch.toString());
 		}
 
-		cassandraCqlTemplate.execute(new SessionCallback<Object>() {
+		cqlTemplate.execute(new SessionCallback<Object>() {
 
 			@Override
 			public Object doInSession(Session s) {
@@ -1094,7 +1094,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 		logger.debug(cql);
 
-		return cassandraCqlTemplate.execute(new SessionCallback<ResultSet>() {
+		return cqlTemplate.execute(new SessionCallback<ResultSet>() {
 
 			@Override
 			public ResultSet doInSession(Session s) {
@@ -1109,6 +1109,6 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	protected RuntimeException translateIfPossible(RuntimeException ex) {
-		return cassandraCqlTemplate.translateIfPossible(ex);
+		return cqlTemplate.translateIfPossible(ex);
 	}
 }

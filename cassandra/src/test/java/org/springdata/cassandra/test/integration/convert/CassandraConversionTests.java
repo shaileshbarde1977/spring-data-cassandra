@@ -75,7 +75,7 @@ import com.google.common.collect.ImmutableSet;
 public class CassandraConversionTests {
 
 	@Autowired
-	private CqlOperations cassandraCqlOperations;
+	private CqlOperations cqlOperations;
 
 	@Autowired
 	private CassandraOperations cassandraOperations;
@@ -107,7 +107,7 @@ public class CassandraConversionTests {
 	@Test
 	public void basicNullsTest() {
 
-		cassandraCqlOperations.update("insert into test.basic_types_table (id) values ('nulls')").execute();
+		cqlOperations.update("insert into test.basic_types_table (id) values ('nulls')").execute();
 
 		BasicTypesEntity nullProps = cassandraOperations.findById(BasicTypesEntity.class, "nulls").execute();
 		assertThat(nullProps, is(not(nullValue(BasicTypesEntity.class))));
@@ -135,7 +135,7 @@ public class CassandraConversionTests {
 		UUID uuid = UUID.fromString("f7a04220-6dda-11e3-981f-0800200c9a66");
 		long longValue = 555555555555L;
 
-		cassandraCqlOperations.update(
+		cqlOperations.update(
 				String.format("insert into test.basic_types_table (id, propascii, propbigint, propblob, propboolean, "
 						+ "propdecimal, propdouble, propfloat, propinet, propint, proptext, proptimestamp, propuuid, "
 						+ "proptimeuuid, propvarchar, propvarint) "
@@ -210,7 +210,7 @@ public class CassandraConversionTests {
 	@Test
 	public void collectionsNullsTest() {
 
-		cassandraCqlOperations.update("insert into test.collection_types_table (id) values ('nulls')").execute();
+		cqlOperations.update("insert into test.collection_types_table (id) values ('nulls')").execute();
 
 		CollectionTypesEntity nullProps = cassandraOperations.findById(CollectionTypesEntity.class, "nulls").execute();
 		assertThat(nullProps, is(not(nullValue(CollectionTypesEntity.class))));
@@ -231,7 +231,7 @@ public class CassandraConversionTests {
 				UUID.fromString("149f0c81-6ddb-11e3-981f-0800200c9a66") };
 		UUID setUUID = UUID.fromString("149f0c82-6ddb-11e3-981f-0800200c9a66");
 
-		cassandraCqlOperations.update(
+		cqlOperations.update(
 				String.format("insert into test.collection_types_table "
 						+ "(id, textlist, textmap, textset, textuuidmap, uuidlist, uuidset) "
 						+ "values ('values', ['text1', 'text2'], {'key1':'value1', 'key2':'value2'}, "
@@ -326,7 +326,7 @@ public class CassandraConversionTests {
 	@Test
 	public void embeddedIdReadTest() {
 
-		cassandraCqlOperations.update(
+		cqlOperations.update(
 				"insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) " + " values (1, 'first', 'one')")
 				.execute();
 
@@ -363,7 +363,7 @@ public class CassandraConversionTests {
 
 		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(2, "second");
 
-		cassandraCqlOperations.update(
+		cqlOperations.update(
 				"insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) " + " values (2, 'second', 'two')")
 				.execute();
 
@@ -386,7 +386,7 @@ public class CassandraConversionTests {
 
 		EmbeddedIdEntity.PK pk = new EmbeddedIdEntity.PK(2, "second");
 
-		cassandraCqlOperations.update(
+		cqlOperations.update(
 				"insert into test.embedded_id_table (partitionkey, clusteringkey, proptext) " + " values (2, 'second', 'two')")
 				.execute();
 
