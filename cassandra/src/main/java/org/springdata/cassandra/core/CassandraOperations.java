@@ -79,22 +79,20 @@ public interface CassandraOperations {
 	/**
 	 * Execute query and convert ResultSet to the list of entities
 	 * 
-	 * @param query must not be {@literal null}.
 	 * @param entityClass must not be {@literal null}, mapped entity type.
-	 * @param optionsOrNull
+	 * @param cql must not be {@literal null}.
 	 * @return
 	 */
-	<T> List<T> find(String cql, Class<T> entityClass, StatementOptions optionsOrNull);
+	<T> GetOperation<Iterator<T>> find(Class<T> entityClass, String cql);
 
 	/**
 	 * Execute query and convert ResultSet to the list of entities
 	 * 
-	 * @param query must not be {@literal null}.
 	 * @param entityClass must not be {@literal null}, mapped entity type.
-	 * @param optionsOrNull
+	 * @param cql must not be {@literal null}.
 	 * @return
 	 */
-	<T> T findOne(String query, Class<T> entityClass, StatementOptions optionsOrNull);
+	<T> GetOperation<T> findOne(Class<T> entityClass, String cql);
 
 	/**
 	 * Counts rows for given entity

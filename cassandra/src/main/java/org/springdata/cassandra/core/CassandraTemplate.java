@@ -184,19 +184,35 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> List<T> find(String query, Class<T> entityClass, StatementOptions optionsOrNull) {
-		Assert.notNull(query);
+	public <T> GetOperation<Iterator<T>> find(Class<T> entityClass, final String cql) {
 		Assert.notNull(entityClass);
+		Assert.notNull(cql);
 
-		return doSelect(query, new ReadRowCallback<T>(cassandraConverter, entityClass), optionsOrNull);
+		return new AbstractFindOperation<T>(this, entityClass) {
+
+			@Override
+			public Query createQuery() {
+				return new SimpleStatement(cql);
+			}
+
+		};
+
 	}
 
 	@Override
-	public <T> T findOne(String query, Class<T> entityClass, StatementOptions optionsOrNull) {
-		Assert.notNull(query);
+	public <T> GetOperation<T> findOne(Class<T> entityClass, final String cql) {
 		Assert.notNull(entityClass);
+		Assert.notNull(cql);
 
-		return doSelectOne(query, new ReadRowCallback<T>(cassandraConverter, entityClass), optionsOrNull);
+		return new AbstractFindOneOperation<T>(this, entityClass) {
+
+			@Override
+			public Query createQuery() {
+				return new SimpleStatement(cql);
+			}
+
+		};
+
 	}
 
 	@Override

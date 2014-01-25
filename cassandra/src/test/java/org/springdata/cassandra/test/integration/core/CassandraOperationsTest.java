@@ -52,6 +52,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import com.datastax.driver.core.Query;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
+import com.google.common.collect.Lists;
 
 /**
  * Unit Tests for CassandraTemplate
@@ -789,7 +790,7 @@ public class CassandraOperationsTest {
 		Select select = QueryBuilder.select().all().from("book");
 		select.where(QueryBuilder.eq("isbn", "123456-1"));
 
-		Book b = cassandraTemplate.findOne(select.getQueryString(), Book.class, null);
+		Book b = cassandraTemplate.findOne(Book.class, select.getQueryString()).execute();
 
 		log.info("SingleSelect Book Title -> " + b.getTitle());
 		log.info("SingleSelect Book Author -> " + b.getAuthor());
@@ -831,7 +832,7 @@ public class CassandraOperationsTest {
 
 		Select select = QueryBuilder.select().all().from("book");
 
-		List<Book> b = cassandraTemplate.find(select.getQueryString(), Book.class, null);
+		List<Book> b = Lists.newArrayList(cassandraTemplate.find(Book.class, select.getQueryString()).execute());
 
 		log.info("Book Count -> " + b.size());
 

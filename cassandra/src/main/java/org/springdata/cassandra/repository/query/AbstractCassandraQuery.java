@@ -15,6 +15,7 @@
  */
 package org.springdata.cassandra.repository.query;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.springdata.cassandra.core.CassandraOperations;
@@ -23,6 +24,8 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.repository.query.ParameterAccessor;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.util.Assert;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Base class for {@link RepositoryQuery} implementations for Cassandra.
@@ -119,7 +122,9 @@ public abstract class AbstractCassandraQuery implements RepositoryQuery {
 
 			CassandraEntityMetadata<?> metadata = method.getEntityInformation();
 
-			return cassandraOperations.find(query, metadata.getJavaType(), null);
+			Iterator<?> iterator = cassandraOperations.find(metadata.getJavaType(), query).execute();
+
+			return ImmutableList.copyOf(iterator);
 		}
 	}
 
@@ -159,7 +164,7 @@ public abstract class AbstractCassandraQuery implements RepositoryQuery {
 			if (countProjection) {
 				return cassandraOperations.cqlOps().select(query).firstColumnOne(Long.class).execute();
 			} else {
-				return cassandraOperations.findOne(query, metadata.getJavaType(), null);
+				return cassandraOperations.findOne(metadata.getJavaType(), query).execute();
 			}
 
 		}
