@@ -33,6 +33,7 @@ import org.springframework.data.mapping.model.MappingException;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.Query;
+import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.SimpleStatement;
 import com.datastax.driver.core.querybuilder.Clause;
@@ -369,6 +370,31 @@ public class CassandraTemplate implements CassandraOperations {
 		Assert.notNull(entity);
 		assertNotIterable(entity);
 		return new DefaultSaveOperation<T>(this, entity);
+	}
+
+	@Override
+	public <T> Iterator<T> process(ResultSet resultSet, Class<T> entityClass) {
+		Assert.notNull(resultSet);
+		Assert.notNull(entityClass);
+
+		return cqlTemplate().process(resultSet, new ReaderRowMapper<T>(cassandraConverter, entityClass));
+	}
+
+	@Override
+	public <T> void process(ResultSet resultSet, Class<T> entityClass, final EntryCallbackHandler<T> ech) {
+		Assert.notNull(resultSet);
+		Assert.notNull(entityClass);
+		Assert.notNull(ech);
+
+		cqlTemplate().process(resultSet, new ReaderEntryCallbackAdapter<T>(cassandraConverter, entityClass, ech));
+	}
+
+	@Override
+	public <T> T processOne(ResultSet resultSet, Class<T> entityClass) {
+		Assert.notNull(resultSet);
+		Assert.notNull(entityClass);
+
+		return cqlTemplate().processOne(resultSet, new ReaderRowMapper<T>(cassandraConverter, entityClass));
 	}
 
 	@Override

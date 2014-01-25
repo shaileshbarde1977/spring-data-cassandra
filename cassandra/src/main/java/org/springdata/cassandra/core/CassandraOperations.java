@@ -20,6 +20,9 @@ import java.util.List;
 
 import org.springdata.cassandra.convert.CassandraConverter;
 import org.springdata.cassandra.cql.core.CqlOperations;
+import org.springdata.cassandra.cql.core.RowMapper;
+
+import com.datastax.driver.core.ResultSet;
 
 /**
  * Operations for interacting with Cassandra. These operations are also used by the SimpleCassandraRepository
@@ -178,6 +181,39 @@ public interface CassandraOperations {
 	 * @param entities
 	 */
 	<T> BatchOperation deleteInBatch(Iterable<T> entities);
+
+	/**
+	 * Processes the ResultSet through the CassandraConverter and returns the List of mapped Rows. This is used internal
+	 * to the Template for core operations, but is made available through Operations in the event you have a ResultSet to
+	 * process. The ResultsSet could come from a ResultSetFuture after an asynchronous query.
+	 * 
+	 * @param resultSet Results to process
+	 * @param entityClass Entity class used to mapping results
+	 * @return Iterator of <T>
+	 */
+	<T> Iterator<T> process(ResultSet resultSet, Class<T> entityClass);
+
+	/**
+	 * Processes the ResultSet through the RowCallbackHandler and return nothing. This is used internal to the Template
+	 * for core operations, but is made available through Operations in the event you have a ResultSet to process. The
+	 * ResultsSet could come from a ResultSetFuture after an asynchronous query.
+	 * 
+	 * @param resultSet Results to process
+	 * @param entityClass Entity class used to mapping results
+	 * @param ech EntryCallbackHandler with the processing implementation
+	 */
+	<T> void process(ResultSet resultSet, Class<T> entityClass, EntryCallbackHandler<T> ech);
+
+	/**
+	 * Process a ResultSet through the CassandraConverter. This is used internal to the Template for core operations, but
+	 * is made available through Operations in the event you have a ResultSet to process. The ResultsSet could come from a
+	 * ResultSetFuture after an asynchronous query.
+	 * 
+	 * @param resultSet
+	 * @param entityClass
+	 * @return
+	 */
+	<T> T processOne(ResultSet resultSet, Class<T> entityClass);
 
 	/**
 	 * Returns the underlying keyspace.
