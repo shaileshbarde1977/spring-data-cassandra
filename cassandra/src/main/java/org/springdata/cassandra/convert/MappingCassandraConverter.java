@@ -541,10 +541,6 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 				if (prop.isIdProperty()) {
 
-					result.add(QueryBuilder.eq(prop.getColumnName(), id));
-
-				} else if (prop.isEmbeddedIdProperty()) {
-
 					if (prop.hasEmbeddableType()) {
 
 						if (!prop.getRawType().isAssignableFrom(id.getClass())) {
@@ -554,8 +550,11 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 						embeddedPrimaryKey(prop.getRawType(), id, result, false);
 
-					}
+					} else {
 
+						result.add(QueryBuilder.eq(prop.getColumnName(), id));
+
+					}
 				}
 
 			}
@@ -578,19 +577,21 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 
 				if (prop.isIdProperty()) {
 
-					throw new MappingException(String.format("Entity %s must have an embeddable primary key", entity.getName()));
+					if (prop.hasEmbeddableType()) {
 
-				} else if (prop.isEmbeddedIdProperty() && prop.hasEmbeddableType()) {
+						if (!prop.getRawType().isAssignableFrom(id.getClass())) {
+							throw new MappingException("id class " + id.getClass() + " can not be converted to embeddedid property "
+									+ prop.getColumnName() + " in the entity " + entity.getName());
+						}
 
-					if (!prop.getRawType().isAssignableFrom(id.getClass())) {
-						throw new MappingException("id class " + id.getClass() + " can not be converted to embeddedid property "
-								+ prop.getColumnName() + " in the entity " + entity.getName());
+						embeddedPrimaryKey(prop.getRawType(), id, result, true);
+
+					} else {
+
+						result.add(QueryBuilder.eq(prop.getColumnName(), id));
+
 					}
-
-					embeddedPrimaryKey(prop.getRawType(), id, result, true);
-
 				}
-
 			}
 		});
 
@@ -645,7 +646,7 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 						throw new MappingException("entity not found for " + prop.getRawType());
 					}
 
-					if (prop.isEmbeddedIdProperty()) {
+					if (prop.isIdProperty()) {
 						validatePkEntity(pkEntity);
 					}
 
