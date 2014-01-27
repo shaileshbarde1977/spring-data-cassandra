@@ -20,13 +20,13 @@ import java.util.Set;
 
 import org.springdata.cassandra.convert.CassandraConverter;
 import org.springdata.cassandra.convert.MappingCassandraConverter;
-import org.springdata.cassandra.core.CassandraOperations;
 import org.springdata.cassandra.core.CassandraSessionFactoryBean;
 import org.springdata.cassandra.core.CassandraTemplate;
+import org.springdata.cassandra.core.CassandraTemplateFactoryBean;
 import org.springdata.cassandra.cql.config.KeyspaceAttributes;
 import org.springdata.cassandra.cql.config.java.AbstractCassandraClusterConfiguration;
-import org.springdata.cassandra.cql.core.CqlOperations;
 import org.springdata.cassandra.cql.core.CqlTemplate;
+import org.springdata.cassandra.cql.core.CqlTemplateFactoryBean;
 import org.springdata.cassandra.mapping.CassandraMappingContext;
 import org.springdata.cassandra.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.mapping.CassandraPersistentProperty;
@@ -114,8 +114,11 @@ public abstract class AbstractCassandraConfiguration extends AbstractCassandraCl
 	 * @return CqlOperations
 	 */
 	@Bean
-	public CqlOperations cqlTemplate() throws Exception {
-		return new CqlTemplate(session().getObject(), keyspace());
+	public CqlTemplateFactoryBean cqlTemplate() throws Exception {
+		CqlTemplateFactoryBean factory = new CqlTemplateFactoryBean();
+		factory.setKeyspace(keyspace());
+		factory.setSession(session().getObject());
+		return factory;
 	}
 
 	/**
@@ -124,8 +127,12 @@ public abstract class AbstractCassandraConfiguration extends AbstractCassandraCl
 	 * @return CassandraOperations
 	 */
 	@Bean
-	public CassandraOperations cassandraTemplate() throws Exception {
-		return new CassandraTemplate(session().getObject(), converter(), keyspace());
+	public CassandraTemplateFactoryBean cassandraTemplate() throws Exception {
+		CassandraTemplateFactoryBean factory = new CassandraTemplateFactoryBean();
+		factory.setKeyspace(keyspace());
+		factory.setSession(session().getObject());
+		factory.setConverter(converter());
+		return factory;
 	}
 
 	/**

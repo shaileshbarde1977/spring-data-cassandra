@@ -16,8 +16,8 @@
 package org.springdata.cassandra.cql.config.java;
 
 import org.springdata.cassandra.cql.config.KeyspaceAttributes;
-import org.springdata.cassandra.cql.core.CqlOperations;
 import org.springdata.cassandra.cql.core.CqlTemplate;
+import org.springdata.cassandra.cql.core.CqlTemplateFactoryBean;
 import org.springdata.cassandra.cql.core.SessionFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,8 +73,11 @@ public abstract class AbstractCassandraCqlConfiguration extends AbstractCassandr
 	 * @return CqlOperations
 	 */
 	@Bean
-	public CqlOperations cqlTemplate() throws Exception {
-		return new CqlTemplate(session().getObject(), keyspace());
+	public CqlTemplateFactoryBean cqlTemplate() throws Exception {
+		CqlTemplateFactoryBean factory = new CqlTemplateFactoryBean();
+		factory.setKeyspace(keyspace());
+		factory.setSession(session().getObject());
+		return factory;
 	}
 
 }
