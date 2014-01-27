@@ -15,23 +15,15 @@
  */
 package org.springdata.cassandra.cql.config.java;
 
-import org.springdata.cassandra.cql.config.CompressionType;
 import org.springdata.cassandra.cql.config.KeyspaceAttributes;
-import org.springdata.cassandra.cql.config.PoolingOptions;
-import org.springdata.cassandra.cql.config.SocketOptions;
-import org.springdata.cassandra.cql.core.CassandraClusterFactoryBean;
 import org.springdata.cassandra.cql.core.CqlOperations;
 import org.springdata.cassandra.cql.core.CqlTemplate;
 import org.springdata.cassandra.cql.core.SessionFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.datastax.driver.core.AuthProvider;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.policies.LoadBalancingPolicy;
-import com.datastax.driver.core.policies.ReconnectionPolicy;
-import com.datastax.driver.core.policies.RetryPolicy;
 
 /**
  * Base class for Spring Data Cassandra configuration using JavaConfig.
@@ -39,7 +31,7 @@ import com.datastax.driver.core.policies.RetryPolicy;
  * @author Alex Shvid
  */
 @Configuration
-public abstract class AbstractCassandraCqlConfiguration {
+public abstract class AbstractCassandraCqlConfiguration extends AbstractCassandraClusterConfiguration {
 
 	/**
 	 * Return the name of the keyspace to connect to.
@@ -47,74 +39,6 @@ public abstract class AbstractCassandraCqlConfiguration {
 	 * @return for {@literal null} or empty keyspace will be used SYSTEM keyspace by default.
 	 */
 	protected abstract String keyspace();
-
-	/**
-	 * Return the {@link Cluster} instance to connect to.
-	 * 
-	 * @return Cluster object
-	 */
-	@Bean
-	public CassandraClusterFactoryBean cluster() {
-
-		CassandraClusterFactoryBean bean = new CassandraClusterFactoryBean();
-		bean.setAuthProvider(authProvider());
-		bean.setCompressionType(compressionType());
-		bean.setContactPoints(contactPoints());
-		bean.setPort(port());
-		bean.setMetricsEnabled(metricsEnabled());
-		bean.setLoadBalancingPolicy(loadBalancingPolicy());
-		bean.setReconnectionPolicy(reconnectionPolicy());
-		bean.setLocalPoolingOptions(localPoolingOptions());
-		bean.setRemotePoolingOptions(remotePoolingOptions());
-		bean.setRetryPolicy(retryPolicy());
-		bean.setSocketOptions(socketOptions());
-
-		return bean;
-	}
-
-	protected AuthProvider authProvider() {
-		return null;
-	}
-
-	protected CompressionType compressionType() {
-		return null;
-	}
-
-	protected String contactPoints() {
-		return CassandraClusterFactoryBean.DEFAULT_CONTACT_POINTS;
-	}
-
-	protected int port() {
-		return CassandraClusterFactoryBean.DEFAULT_PORT;
-	}
-
-	protected boolean metricsEnabled() {
-		return CassandraClusterFactoryBean.DEFAULT_METRICS_ENABLED;
-	}
-
-	protected LoadBalancingPolicy loadBalancingPolicy() {
-		return null;
-	}
-
-	protected ReconnectionPolicy reconnectionPolicy() {
-		return null;
-	}
-
-	protected PoolingOptions localPoolingOptions() {
-		return null;
-	}
-
-	protected PoolingOptions remotePoolingOptions() {
-		return null;
-	}
-
-	protected RetryPolicy retryPolicy() {
-		return null;
-	}
-
-	protected SocketOptions socketOptions() {
-		return null;
-	}
 
 	/**
 	 * Return keyspace attributes

@@ -23,8 +23,10 @@ import org.springdata.cassandra.convert.MappingCassandraConverter;
 import org.springdata.cassandra.core.CassandraOperations;
 import org.springdata.cassandra.core.CassandraSessionFactoryBean;
 import org.springdata.cassandra.core.CassandraTemplate;
-import org.springdata.cassandra.cql.config.java.AbstractCassandraCqlConfiguration;
-import org.springdata.cassandra.cql.core.SessionFactoryBean;
+import org.springdata.cassandra.cql.config.KeyspaceAttributes;
+import org.springdata.cassandra.cql.config.java.AbstractCassandraClusterConfiguration;
+import org.springdata.cassandra.cql.core.CqlOperations;
+import org.springdata.cassandra.cql.core.CqlTemplate;
 import org.springdata.cassandra.mapping.CassandraMappingContext;
 import org.springdata.cassandra.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.mapping.CassandraPersistentProperty;
@@ -48,13 +50,30 @@ import com.datastax.driver.core.Session;
  * @author Alex Shvid
  */
 @Configuration
-public abstract class AbstractCassandraConfiguration extends AbstractCassandraCqlConfiguration implements
+public abstract class AbstractCassandraConfiguration extends AbstractCassandraClusterConfiguration implements
 		BeanClassLoaderAware {
 
 	/**
 	 * Used by CassandraConverter
 	 */
 	private ClassLoader beanClassLoader;
+
+	/**
+	 * Return the name of the keyspace to connect to.
+	 * 
+	 * @return for {@literal null} or empty keyspace will be used SYSTEM keyspace by default.
+	 */
+	protected abstract String keyspace();
+
+	/**
+	 * Return keyspace attributes
+	 * 
+	 * @return KeyspaceAttributes
+	 */
+	@Bean
+	public KeyspaceAttributes keyspaceAttributes() {
+		return new KeyspaceAttributes();
+	}
 
 	/**
 	 * Creates a {@link Session}. Will create, verify or drop tables in Cassandra on creation/destroy stage.
@@ -66,7 +85,7 @@ public abstract class AbstractCassandraConfiguration extends AbstractCassandraCq
 	 * @throws Exception
 	 */
 	@Bean
-	public SessionFactoryBean session() throws Exception {
+	public CassandraSessionFactoryBean session() throws Exception {
 		CassandraSessionFactoryBean factory = new CassandraSessionFactoryBean();
 		factory.setKeyspace(keyspace());
 		factory.setCluster(cluster().getObject());
@@ -87,6 +106,16 @@ public abstract class AbstractCassandraConfiguration extends AbstractCassandraCq
 	 */
 	protected String getMappingBasePackage() {
 		return getClass().getPackage().getName();
+	}
+
+	/**
+	 * Creates a {@link CqlTemplate}.
+	 * 
+	 * @return CqlOperations
+	 */
+	@Bean
+	public CqlOperations cqlTemplate() throws Exception {
+		return new CqlTemplate(session().getObject(), keyspace());
 	}
 
 	/**
