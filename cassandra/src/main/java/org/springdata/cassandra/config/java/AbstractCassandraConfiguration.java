@@ -23,9 +23,8 @@ import org.springdata.cassandra.convert.MappingCassandraConverter;
 import org.springdata.cassandra.core.CassandraOperations;
 import org.springdata.cassandra.core.CassandraSessionFactoryBean;
 import org.springdata.cassandra.core.CassandraTemplate;
-import org.springdata.cassandra.cql.config.KeyspaceAttributes;
-import org.springdata.cassandra.cql.core.CqlOperations;
-import org.springdata.cassandra.cql.core.CqlTemplate;
+import org.springdata.cassandra.cql.config.java.AbstractCassandraCqlConfiguration;
+import org.springdata.cassandra.cql.core.SessionFactoryBean;
 import org.springdata.cassandra.mapping.CassandraMappingContext;
 import org.springdata.cassandra.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.mapping.CassandraPersistentProperty;
@@ -41,7 +40,6 @@ import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
-import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 
 /**
@@ -50,38 +48,13 @@ import com.datastax.driver.core.Session;
  * @author Alex Shvid
  */
 @Configuration
-public abstract class AbstractCassandraConfiguration implements BeanClassLoaderAware {
+public abstract class AbstractCassandraConfiguration extends AbstractCassandraCqlConfiguration implements
+		BeanClassLoaderAware {
 
 	/**
 	 * Used by CassandraConverter
 	 */
 	private ClassLoader beanClassLoader;
-
-	/**
-	 * Return the name of the keyspace to connect to.
-	 * 
-	 * @return for {@literal null} value will be used SYSTEM keyspace.
-	 */
-	protected abstract String keyspace();
-
-	/**
-	 * Return the {@link Cluster} instance to connect to.
-	 * 
-	 * @return
-	 * @throws Exception
-	 */
-	@Bean
-	public abstract Cluster cluster();
-
-	/**
-	 * Return keyspace attributes
-	 * 
-	 * @return KeyspaceAttributes
-	 */
-	@Bean
-	public KeyspaceAttributes keyspaceAttributes() {
-		return new KeyspaceAttributes();
-	}
 
 	/**
 	 * Creates a {@link Session}. Will create, verify or drop tables in Cassandra on creation/destroy stage.
@@ -93,15 +66,14 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	 * @throws Exception
 	 */
 	@Bean
-	public Session session() {
+	public SessionFactoryBean session() throws Exception {
 		CassandraSessionFactoryBean factory = new CassandraSessionFactoryBean();
 		factory.setKeyspace(keyspace());
-		factory.setCluster(cluster());
+		factory.setCluster(cluster().getObject());
 		factory.setConverter(converter());
 		factory.setKeyspaceAttributes(keyspaceAttributes());
 		factory.setBeanClassLoader(beanClassLoader);
-		factory.afterPropertiesSet();
-		return factory.getObject();
+		return factory;
 	}
 
 	/**
@@ -118,23 +90,13 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	}
 
 	/**
-	 * Creates a {@link CqlTemplate}.
-	 * 
-	 * @return CqlOperations
-	 */
-	@Bean
-	public CqlOperations cqlTemplate() {
-		return new CqlTemplate(session(), keyspace());
-	}
-
-	/**
 	 * Creates a {@link CassandraTemplate}.
 	 * 
 	 * @return CassandraOperations
 	 */
 	@Bean
-	public CassandraOperations cassandraTemplate() {
-		return new CassandraTemplate(session(), converter(), keyspace());
+	public CassandraOperations cassandraTemplate() throws Exception {
+		return new CassandraTemplate(session().getObject(), converter(), keyspace());
 	}
 
 	/**
@@ -198,6 +160,13 @@ public abstract class AbstractCassandraConfiguration implements BeanClassLoaderA
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.beanClassLoader = classLoader;
 	}
+
+	/**
+	 * Service method to load class and transform ClassNotFoundException to IllegalArgumentException
+	 * 
+	 * @param className
+	 * @return
+	 */
 
 	private Class<?> loadClass(String className) {
 		try {

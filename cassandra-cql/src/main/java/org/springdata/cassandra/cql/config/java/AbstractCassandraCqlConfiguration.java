@@ -15,15 +15,23 @@
  */
 package org.springdata.cassandra.cql.config.java;
 
+import org.springdata.cassandra.cql.config.CompressionType;
 import org.springdata.cassandra.cql.config.KeyspaceAttributes;
+import org.springdata.cassandra.cql.config.PoolingOptions;
+import org.springdata.cassandra.cql.config.SocketOptions;
+import org.springdata.cassandra.cql.core.CassandraClusterFactoryBean;
 import org.springdata.cassandra.cql.core.CqlOperations;
-import org.springdata.cassandra.cql.core.SessionFactoryBean;
 import org.springdata.cassandra.cql.core.CqlTemplate;
+import org.springdata.cassandra.cql.core.SessionFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.datastax.driver.core.AuthProvider;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.policies.LoadBalancingPolicy;
+import com.datastax.driver.core.policies.ReconnectionPolicy;
+import com.datastax.driver.core.policies.RetryPolicy;
 
 /**
  * Base class for Spring Data Cassandra configuration using JavaConfig.
@@ -46,7 +54,67 @@ public abstract class AbstractCassandraCqlConfiguration {
 	 * @return Cluster object
 	 */
 	@Bean
-	public abstract Cluster cluster();
+	public CassandraClusterFactoryBean cluster() {
+
+		CassandraClusterFactoryBean bean = new CassandraClusterFactoryBean();
+		bean.setAuthProvider(authProvider());
+		bean.setCompressionType(compressionType());
+		bean.setContactPoints(contactPoints());
+		bean.setPort(port());
+		bean.setMetricsEnabled(metricsEnabled());
+		bean.setLoadBalancingPolicy(loadBalancingPolicy());
+		bean.setReconnectionPolicy(reconnectionPolicy());
+		bean.setLocalPoolingOptions(localPoolingOptions());
+		bean.setRemotePoolingOptions(remotePoolingOptions());
+		bean.setRetryPolicy(retryPolicy());
+		bean.setSocketOptions(socketOptions());
+
+		return bean;
+	}
+
+	protected AuthProvider authProvider() {
+		return null;
+	}
+
+	protected CompressionType compressionType() {
+		return null;
+	}
+
+	protected String contactPoints() {
+		return CassandraClusterFactoryBean.DEFAULT_CONTACT_POINTS;
+	}
+
+	protected int port() {
+		return CassandraClusterFactoryBean.DEFAULT_PORT;
+	}
+
+	protected boolean metricsEnabled() {
+		return CassandraClusterFactoryBean.DEFAULT_METRICS_ENABLED;
+	}
+
+	protected LoadBalancingPolicy loadBalancingPolicy() {
+		return null;
+	}
+
+	protected ReconnectionPolicy reconnectionPolicy() {
+		return null;
+	}
+
+	protected PoolingOptions localPoolingOptions() {
+		return null;
+	}
+
+	protected PoolingOptions remotePoolingOptions() {
+		return null;
+	}
+
+	protected RetryPolicy retryPolicy() {
+		return null;
+	}
+
+	protected SocketOptions socketOptions() {
+		return null;
+	}
 
 	/**
 	 * Return keyspace attributes
@@ -67,13 +135,12 @@ public abstract class AbstractCassandraCqlConfiguration {
 	 * @return Session
 	 */
 	@Bean
-	public Session session() {
+	public SessionFactoryBean session() throws Exception {
 		SessionFactoryBean factory = new SessionFactoryBean();
 		factory.setKeyspace(keyspace());
-		factory.setCluster(cluster());
+		factory.setCluster(cluster().getObject());
 		factory.setKeyspaceAttributes(keyspaceAttributes());
-		factory.afterPropertiesSet();
-		return factory.getObject();
+		return factory;
 	}
 
 	/**
@@ -82,8 +149,8 @@ public abstract class AbstractCassandraCqlConfiguration {
 	 * @return CqlOperations
 	 */
 	@Bean
-	public CqlOperations cqlTemplate() {
-		return new CqlTemplate(session(), keyspace());
+	public CqlOperations cqlTemplate() throws Exception {
+		return new CqlTemplate(session().getObject(), keyspace());
 	}
 
 }
