@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.cql.core.CqlOperations;
 import org.springdata.cassandra.cql.core.CqlTemplate;
 import org.springdata.cassandra.cql.core.PreparedStatementBinder;
-import org.springdata.cassandra.cql.core.ResultSetCallback;
+import org.springdata.cassandra.cql.core.ResultSetExtractor;
 import org.springdata.cassandra.cql.test.integration.AbstractEmbeddedCassandraIntegrationTest;
 
 import com.datastax.driver.core.BoundStatement;
@@ -156,10 +156,10 @@ public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassan
 			}
 		}).transform(
 
-		new ResultSetCallback<Book>() {
+		new ResultSetExtractor<Book>() {
 
 			@Override
-			public Book doWithResultSet(ResultSet rs) {
+			public Book extractData(ResultSet rs) {
 				Book b = new Book();
 				Row r = rs.one();
 				b.setIsbn(r.getString("isbn"));

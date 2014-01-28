@@ -426,11 +426,11 @@ public class CqlTemplate implements CqlOperations {
 	 * @param callback
 	 * @return
 	 */
-	protected <T> T doProcess(final ResultSet resultSet, final ResultSetCallback<T> callback) {
+	protected <T> T doProcess(final ResultSet resultSet, final ResultSetExtractor<T> callback) {
 
 		try {
 
-			return callback.doWithResultSet(resultSet);
+			return callback.extractData(resultSet);
 
 		} catch (RuntimeException e) {
 			throw translateIfPossible(e);
@@ -496,10 +496,10 @@ public class CqlTemplate implements CqlOperations {
 		Assert.notNull(resultSet);
 		Assert.notNull(rch);
 
-		doProcess(resultSet, new ResultSetCallback<Object>() {
+		doProcess(resultSet, new ResultSetExtractor<Object>() {
 
 			@Override
-			public Object doWithResultSet(ResultSet resultSet) {
+			public Object extractData(ResultSet resultSet) {
 
 				for (Row row : resultSet) {
 					rch.processRow(row);
@@ -516,10 +516,10 @@ public class CqlTemplate implements CqlOperations {
 		Assert.notNull(resultSet);
 		Assert.notNull(rowMapper);
 
-		return doProcess(resultSet, new ResultSetCallback<Iterator<T>>() {
+		return doProcess(resultSet, new ResultSetExtractor<Iterator<T>>() {
 
 			@Override
-			public Iterator<T> doWithResultSet(ResultSet resultSet) {
+			public Iterator<T> extractData(ResultSet resultSet) {
 				return new MappedRowIterator<T>(resultSet.iterator(), rowMapper);
 			}
 
@@ -532,10 +532,10 @@ public class CqlTemplate implements CqlOperations {
 		Assert.notNull(resultSet);
 		Assert.notNull(rowMapper);
 
-		return doProcess(resultSet, new ResultSetCallback<T>() {
+		return doProcess(resultSet, new ResultSetExtractor<T>() {
 
 			@Override
-			public T doWithResultSet(ResultSet resultSet) {
+			public T extractData(ResultSet resultSet) {
 
 				Iterator<Row> iterator = resultSet.iterator();
 				if (!iterator.hasNext()) {
@@ -561,10 +561,10 @@ public class CqlTemplate implements CqlOperations {
 		Assert.notNull(resultSet);
 		Assert.notNull(elementType);
 
-		return doProcess(resultSet, new ResultSetCallback<T>() {
+		return doProcess(resultSet, new ResultSetExtractor<T>() {
 
 			@Override
-			public T doWithResultSet(ResultSet resultSet) {
+			public T extractData(ResultSet resultSet) {
 
 				Iterator<Row> iterator = resultSet.iterator();
 				if (!iterator.hasNext()) {
@@ -589,10 +589,10 @@ public class CqlTemplate implements CqlOperations {
 	public Map<String, Object> processOneAsMap(ResultSet resultSet, final boolean singleResult) {
 		Assert.notNull(resultSet);
 
-		return doProcess(resultSet, new ResultSetCallback<Map<String, Object>>() {
+		return doProcess(resultSet, new ResultSetExtractor<Map<String, Object>>() {
 
 			@Override
-			public Map<String, Object> doWithResultSet(ResultSet resultSet) {
+			public Map<String, Object> extractData(ResultSet resultSet) {
 
 				Iterator<Row> iterator = resultSet.iterator();
 				if (!iterator.hasNext()) {
@@ -619,10 +619,10 @@ public class CqlTemplate implements CqlOperations {
 		Assert.notNull(resultSet);
 		Assert.notNull(elementType);
 
-		return doProcess(resultSet, new ResultSetCallback<Iterator<T>>() {
+		return doProcess(resultSet, new ResultSetExtractor<Iterator<T>>() {
 
 			@Override
-			public Iterator<T> doWithResultSet(ResultSet resultSet) {
+			public Iterator<T> extractData(ResultSet resultSet) {
 
 				return Iterators.transform(resultSet.iterator(), new Function<Row, T>() {
 
@@ -643,10 +643,10 @@ public class CqlTemplate implements CqlOperations {
 	public Iterator<Map<String, Object>> processAsMap(ResultSet resultSet) {
 		Assert.notNull(resultSet);
 
-		return doProcess(resultSet, new ResultSetCallback<Iterator<Map<String, Object>>>() {
+		return doProcess(resultSet, new ResultSetExtractor<Iterator<Map<String, Object>>>() {
 
 			@Override
-			public Iterator<Map<String, Object>> doWithResultSet(ResultSet resultSet) {
+			public Iterator<Map<String, Object>> extractData(ResultSet resultSet) {
 
 				return Iterators.transform(resultSet.iterator(), new Function<Row, Map<String, Object>>() {
 

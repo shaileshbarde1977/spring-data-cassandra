@@ -27,7 +27,7 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.springdata.cassandra.cql.core.HostMapper;
-import org.springdata.cassandra.cql.core.ResultSetCallback;
+import org.springdata.cassandra.cql.core.ResultSetExtractor;
 import org.springdata.cassandra.cql.core.RingMember;
 import org.springdata.cassandra.cql.core.RowCallbackHandler;
 import org.springdata.cassandra.cql.core.RowMapper;
@@ -145,10 +145,10 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		final String isbn = "999999999";
 
 		Book b1 = cassandraTemplate.select("select * from book where isbn='" + isbn + "'")
-				.transform(new ResultSetCallback<Book>() {
+				.transform(new ResultSetExtractor<Book>() {
 
 					@Override
-					public Book doWithResultSet(ResultSet rs) {
+					public Book extractData(ResultSet rs) {
 						Row r = rs.one();
 						assertNotNull(r);
 

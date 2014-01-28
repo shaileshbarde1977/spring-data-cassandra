@@ -79,7 +79,7 @@ public interface SelectOperation extends QueryOperation<ResultSet, SelectOperati
 	 * @param rsc
 	 * @return ProcessOperation
 	 */
-	<O> ProcessOperation<O> transform(ResultSetCallback<O> rsc);
+	<O> ProcessOperation<O> transform(ResultSetExtractor<O> rsc);
 
 	/**
 	 * Calls RowCallbackHandler for each row in ResultSet.

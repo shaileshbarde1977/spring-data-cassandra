@@ -73,10 +73,10 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 			@Override
 			public Boolean process(ResultSet resultSet) {
-				return cqlTemplate.doProcess(resultSet, new ResultSetCallback<Boolean>() {
+				return cqlTemplate.doProcess(resultSet, new ResultSetExtractor<Boolean>() {
 
 					@Override
-					public Boolean doWithResultSet(ResultSet resultSet) {
+					public Boolean extractData(ResultSet resultSet) {
 						return resultSet.iterator().hasNext();
 					}
 
@@ -117,7 +117,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public <O> ProcessOperation<O> transform(final ResultSetCallback<O> rsc) {
+	public <O> ProcessOperation<O> transform(final ResultSetExtractor<O> rsc) {
 
 		return new ProcessingSelectOperation<O>(this, new Processor<O>() {
 

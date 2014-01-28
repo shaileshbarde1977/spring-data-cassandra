@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.springdata.cassandra.cql.core.PreparedStatementBinder;
 import org.springdata.cassandra.cql.core.PreparedStatementCallback;
 import org.springdata.cassandra.cql.core.PreparedStatementCreator;
-import org.springdata.cassandra.cql.core.ResultSetCallback;
+import org.springdata.cassandra.cql.core.ResultSetExtractor;
 import org.springdata.cassandra.cql.core.RowCallbackHandler;
 import org.springdata.cassandra.cql.core.RowMapper;
 import org.springdata.cassandra.cql.core.SimplePreparedStatementQueryCreator;
@@ -108,10 +108,10 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 			}
 		});
 
-		Book b1 = cassandraTemplate.select(bs).transform(new ResultSetCallback<Book>() {
+		Book b1 = cassandraTemplate.select(bs).transform(new ResultSetExtractor<Book>() {
 
 			@Override
-			public Book doWithResultSet(ResultSet rs) {
+			public Book extractData(ResultSet rs) {
 				Row r = rs.one();
 				assertNotNull(r);
 
@@ -203,10 +203,10 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 
 		BoundStatement bs = cassandraTemplate.bind(ps);
 
-		List<Book> books = cassandraTemplate.select(bs).transform(new ResultSetCallback<List<Book>>() {
+		List<Book> books = cassandraTemplate.select(bs).transform(new ResultSetExtractor<List<Book>>() {
 
 			@Override
-			public List<Book> doWithResultSet(ResultSet rs) {
+			public List<Book> extractData(ResultSet rs) {
 
 				List<Book> books = new LinkedList<Book>();
 
@@ -309,10 +309,10 @@ public class PreparedStatementTest extends AbstractCassandraOperations {
 		});
 
 		List<Book> books = cassandraTemplate.select(new SimpleQueryCreator(bs))
-				.transform(new ResultSetCallback<List<Book>>() {
+				.transform(new ResultSetExtractor<List<Book>>() {
 
 					@Override
-					public List<Book> doWithResultSet(ResultSet rs) {
+					public List<Book> extractData(ResultSet rs) {
 						List<Book> books = new LinkedList<Book>();
 
 						for (Row row : rs.all()) {

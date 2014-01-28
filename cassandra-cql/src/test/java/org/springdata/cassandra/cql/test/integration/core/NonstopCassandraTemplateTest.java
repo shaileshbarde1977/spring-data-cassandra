@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
-import org.springdata.cassandra.cql.core.ResultSetCallback;
+import org.springdata.cassandra.cql.core.ResultSetExtractor;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
@@ -36,10 +36,10 @@ public class NonstopCassandraTemplateTest extends AbstractCassandraOperations {
 		final String isbn = "999999999";
 
 		Book b1 = cassandraTemplate.select("select * from book where isbn='" + isbn + "'")
-				.transform(new ResultSetCallback<Book>() {
+				.transform(new ResultSetExtractor<Book>() {
 
 					@Override
-					public Book doWithResultSet(ResultSet rs) {
+					public Book extractData(ResultSet rs) {
 						Row r = rs.one();
 						assertNotNull(r);
 
