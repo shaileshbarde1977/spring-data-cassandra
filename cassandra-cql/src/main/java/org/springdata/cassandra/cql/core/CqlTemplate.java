@@ -57,7 +57,7 @@ import com.google.common.collect.Iterators;
  * package.
  * 
  * <p>
- * For working with POJOs, use the CassandraDataTemplate.
+ * For working with POJOs, use the CassandraTemplate.
  * </p>
  * 
  * @author Alex Shvid

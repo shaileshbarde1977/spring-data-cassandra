@@ -32,22 +32,22 @@ public class DefaultSchemaCqlOperations implements SchemaCqlOperations {
 
 	private static final Logger log = LoggerFactory.getLogger(DefaultSchemaCqlOperations.class);
 
-	private final CqlTemplate cassandraTemplate;
+	private final CqlTemplate cqlTemplate;
 	private final String keyspace;
 
-	protected DefaultSchemaCqlOperations(CqlTemplate cassandraTemplate, String keyspace) {
+	protected DefaultSchemaCqlOperations(CqlTemplate cqlTemplate, String keyspace) {
 
-		Assert.notNull(cassandraTemplate);
+		Assert.notNull(cqlTemplate);
 		Assert.notNull(keyspace);
 
-		this.cassandraTemplate = cassandraTemplate;
+		this.cqlTemplate = cqlTemplate;
 		this.keyspace = keyspace;
 	}
 
 	@Override
 	public TableMetadata getTableMetadata(final String tableName) {
 
-		return cassandraTemplate.doExecute(new SessionCallback<TableMetadata>() {
+		return cqlTemplate.doExecute(new SessionCallback<TableMetadata>() {
 
 			public TableMetadata doInSession(Session s) {
 

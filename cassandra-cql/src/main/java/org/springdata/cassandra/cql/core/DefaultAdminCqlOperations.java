@@ -38,12 +38,12 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 
 	private static final String SYSTEM_KEYSPACE = "system";
 
-	private final CqlTemplate cassandraTemplate;
+	private final CqlTemplate cqlTemplate;
 
-	protected DefaultAdminCqlOperations(CqlTemplate cassandraTemplate) {
-		Assert.notNull(cassandraTemplate);
+	protected DefaultAdminCqlOperations(CqlTemplate cqlTemplate) {
+		Assert.notNull(cqlTemplate);
 
-		this.cassandraTemplate = cassandraTemplate;
+		this.cqlTemplate = cqlTemplate;
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 
 		CreateKeyspaceCqlGenerator generator = new CreateKeyspaceCqlGenerator(spec);
 
-		return new DefaultUpdateOperation(cassandraTemplate, generator.toCql());
+		return new DefaultUpdateOperation(cqlTemplate, generator.toCql());
 
 	}
 
@@ -72,7 +72,7 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 
 		AlterKeyspaceCqlGenerator generator = new AlterKeyspaceCqlGenerator(spec);
 
-		return new DefaultUpdateOperation(cassandraTemplate, generator.toCql());
+		return new DefaultUpdateOperation(cqlTemplate, generator.toCql());
 
 	}
 
@@ -84,7 +84,7 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 		DropKeyspaceSpecification spec = new DropKeyspaceSpecification().name(keyspace);
 		DropKeyspaceCqlGenerator generator = new DropKeyspaceCqlGenerator(spec);
 
-		return new DefaultUpdateOperation(cassandraTemplate, generator.toCql());
+		return new DefaultUpdateOperation(cqlTemplate, generator.toCql());
 
 	}
 
@@ -96,7 +96,7 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(keyspace);
 		UseKeyspaceCqlGenerator generator = new UseKeyspaceCqlGenerator(spec);
 
-		return new DefaultUpdateOperation(cassandraTemplate, generator.toCql());
+		return new DefaultUpdateOperation(cqlTemplate, generator.toCql());
 
 	}
 
@@ -106,7 +106,7 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(SYSTEM_KEYSPACE);
 		UseKeyspaceCqlGenerator generator = new UseKeyspaceCqlGenerator(spec);
 
-		return new DefaultUpdateOperation(cassandraTemplate, generator.toCql());
+		return new DefaultUpdateOperation(cqlTemplate, generator.toCql());
 
 	}
 
@@ -120,7 +120,7 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 
 		Assert.notNull(keyspace);
 
-		return cassandraTemplate.doExecute(new SessionCallback<KeyspaceMetadata>() {
+		return cqlTemplate.doExecute(new SessionCallback<KeyspaceMetadata>() {
 
 			public KeyspaceMetadata doInSession(Session s) {
 

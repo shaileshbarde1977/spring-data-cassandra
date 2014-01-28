@@ -95,8 +95,8 @@ public class SessionFactoryBean implements FactoryBean<Session>, InitializingBea
 
 		if (StringUtils.hasText(keyspace)) {
 
-			CqlTemplate cassandraTemplate = new CqlTemplate(session, keyspace);
-			AdminCqlOperations adminOps = cassandraTemplate.adminOps();
+			CqlTemplate cqlTemplate = new CqlTemplate(session, keyspace);
+			AdminCqlOperations adminOps = cqlTemplate.adminOps();
 
 			KeyspaceMetadata keyspaceMetadata = adminOps.getKeyspaceMetadata(keyspace);
 			boolean keyspaceExists = keyspaceMetadata != null;
