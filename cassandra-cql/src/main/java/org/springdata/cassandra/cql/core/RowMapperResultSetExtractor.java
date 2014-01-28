@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springdata.cassandra.core;
+package org.springdata.cassandra.cql.core;
 
 import java.util.Iterator;
-
-import org.springdata.cassandra.cql.core.ResultSetExtractor;
-import org.springframework.data.convert.EntityReader;
-import org.springframework.util.Assert;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
@@ -27,36 +23,30 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 
 /**
- * Extracts data from the ResultSet by using Cassandra Converter for particular Entity
+ * ResutSetExtractor that uses RowMapper to extract data
  * 
  * @author Alex Shvid
  * 
  */
-public class ReaderResultSetExtractor<T> implements ResultSetExtractor<Iterator<T>> {
+public class RowMapperResultSetExtractor<T> implements ResultSetExtractor<Iterator<T>> {
 
-	private final EntityReader<? super T, Object> reader;
-	private final Class<T> entityClass;
+	private final RowMapper<T> rowMapper;
 
-	public ReaderResultSetExtractor(EntityReader<? super T, Object> reader, Class<T> entityClass) {
-		Assert.notNull(reader);
-		Assert.notNull(entityClass);
-		this.reader = reader;
-		this.entityClass = entityClass;
+	public RowMapperResultSetExtractor(RowMapper<T> rowMapper) {
+		this.rowMapper = rowMapper;
 	}
 
 	@Override
 	public Iterator<T> extractData(ResultSet resultSet) {
-
 		return Iterators.transform(resultSet.iterator(), new Function<Row, T>() {
+
+			private int rowNum = 0;
 
 			@Override
 			public T apply(Row row) {
-				T source = reader.read(entityClass, row);
-				return source;
+				return rowMapper.mapRow(row, rowNum++);
 			}
 
 		});
-
 	}
-
 }

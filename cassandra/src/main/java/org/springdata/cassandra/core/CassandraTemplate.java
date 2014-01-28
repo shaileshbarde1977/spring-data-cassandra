@@ -27,6 +27,7 @@ import org.springdata.cassandra.cql.core.CqlOperations;
 import org.springdata.cassandra.cql.core.CqlTemplate;
 import org.springdata.cassandra.cql.core.ResultSetExtractor;
 import org.springdata.cassandra.cql.core.RowMapper;
+import org.springdata.cassandra.cql.core.RowMapperResultSetExtractor;
 import org.springdata.cassandra.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -382,8 +383,7 @@ public class CassandraTemplate implements CassandraOperations {
 
 	@Override
 	public <T> ResultSetExtractor<Iterator<T>> resultSetExtractor(Class<T> entityClass) {
-		Assert.notNull(entityClass);
-		return new ReaderResultSetExtractor<T>(cassandraConverter, entityClass);
+		return new RowMapperResultSetExtractor<T>(rowMapper(entityClass));
 	}
 
 	@Override
