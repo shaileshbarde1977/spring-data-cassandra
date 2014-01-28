@@ -117,13 +117,13 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public <O> ProcessOperation<O> transform(final ResultSetExtractor<O> rsc) {
+	public <O> ProcessOperation<O> transform(final ResultSetExtractor<O> rse) {
 
 		return new ProcessingSelectOperation<O>(this, new Processor<O>() {
 
 			@Override
 			public O process(ResultSet resultSet) {
-				return cqlTemplate.doProcess(resultSet, rsc);
+				return cqlTemplate.doProcess(resultSet, rse);
 			}
 
 		});

@@ -76,10 +76,10 @@ public interface SelectOperation extends QueryOperation<ResultSet, SelectOperati
 	/**
 	 * Uses ResultSetCallback to transform ResultSet to object with type T.
 	 * 
-	 * @param rsc
+	 * @param rse ResultSet Extractor to convert ResultSet to type T
 	 * @return ProcessOperation
 	 */
-	<O> ProcessOperation<O> transform(ResultSetExtractor<O> rsc);
+	<O> ProcessOperation<O> transform(ResultSetExtractor<O> rse);
 
 	/**
 	 * Calls RowCallbackHandler for each row in ResultSet.
