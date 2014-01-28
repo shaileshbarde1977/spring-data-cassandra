@@ -220,9 +220,10 @@ public interface CassandraOperations {
 	 * 
 	 * @param resultSet
 	 * @param entityClass
+	 * @param singleResult Expected single result in ResultSet
 	 * @return
 	 */
-	<T> T processOne(ResultSet resultSet, Class<T> entityClass);
+	<T> T processOne(ResultSet resultSet, Class<T> entityClass, boolean singleResult);
 
 	/**
 	 * Returns the underlying keyspace.

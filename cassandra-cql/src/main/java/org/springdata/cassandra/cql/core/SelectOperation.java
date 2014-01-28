@@ -34,7 +34,14 @@ public interface SelectOperation extends QueryOperation<ResultSet, SelectOperati
 	 * 
 	 * @return SelectOneOperation
 	 */
-	SelectOneOperation one();
+	SelectOneOperation firstRow();
+
+	/**
+	 * Returns single result operation
+	 * 
+	 * @return SelectOneOperation
+	 */
+	SelectOneOperation singleResult();
 
 	/**
 	 * Maps each row in ResultSet by RowMapper.

@@ -284,7 +284,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	@Test
 	public void queryForObjectTestCqlStringRowMapper() {
 
-		Book book = cassandraTemplate.select("select * from book where isbn in ('" + ISBN_NINES + "')").one()
+		Book book = cassandraTemplate.select("select * from book where isbn in ('" + ISBN_NINES + "')").singleResult()
 				.map(new RowMapper<Book>() {
 					@Override
 					public Book mapRow(Row row, int rowNum) {
@@ -307,7 +307,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 		insertBooks();
 
 		Book book = cassandraTemplate
-				.select(new SimpleQueryCreator("select * from book where isbn in ('1234','2345','3456')")).one()
+				.select(new SimpleQueryCreator("select * from book where isbn in ('1234','2345','3456')")).singleResult()
 				.map(new RowMapper<Book>() {
 					@Override
 					public Book mapRow(Row row, int rowNum) {
@@ -335,7 +335,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 				Book b = rowToBook(row);
 				return b;
 			}
-		});
+		}, true);
 
 		assertNotNull(book);
 		assertBook(book, getBook(ISBN_NINES));
@@ -344,8 +344,8 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	@Test
 	public void quertForObjectTestCqlStringRequiredType() {
 
-		String title = cassandraTemplate.select("select title from book where isbn in ('" + ISBN_NINES + "')").one()
-				.firstColumn(String.class).execute();
+		String title = cassandraTemplate.select("select title from book where isbn in ('" + ISBN_NINES + "')")
+				.singleResult().firstColumn(String.class).execute();
 
 		assertEquals(title, TITLE_NINES);
 
@@ -355,7 +355,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	public void queryForObjectTestCqlStringRequiredTypeInvalid() {
 
 		Float title = cassandraTemplate
-				.select(new SimpleQueryCreator("select title from book where isbn in ('" + ISBN_NINES + "')")).one()
+				.select(new SimpleQueryCreator("select title from book where isbn in ('" + ISBN_NINES + "')")).singleResult()
 				.firstColumn(Float.class).execute();
 
 	}
@@ -369,7 +369,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 
 		assertNotNull(rs);
 
-		String title = cassandraTemplate.processOneFirstColumn(rs, String.class);
+		String title = cassandraTemplate.processOneFirstColumn(rs, String.class, true);
 
 		assertNotNull(title);
 		assertEquals(title, TITLE_NINES);
@@ -379,7 +379,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	public void queryForMapTestCqlString() {
 
 		Map<String, Object> rsMap = cassandraTemplate.select("select * from book where isbn in ('" + ISBN_NINES + "')")
-				.one().map().execute();
+				.singleResult().map().execute();
 
 		log.debug(rsMap.toString());
 
@@ -400,7 +400,7 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 
 		assertNotNull(rs);
 
-		Map<String, Object> rsMap = cassandraTemplate.processOneAsMap(rs);
+		Map<String, Object> rsMap = cassandraTemplate.processOneAsMap(rs, true);
 
 		log.debug("Size of Book List -> " + rsMap.size());
 

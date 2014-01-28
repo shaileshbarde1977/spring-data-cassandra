@@ -162,7 +162,7 @@ public abstract class AbstractCassandraQuery implements RepositoryQuery {
 
 			CassandraEntityMetadata<?> metadata = method.getEntityInformation();
 			if (countProjection) {
-				return cassandraOperations.cqlOps().select(query).one().firstColumn(Long.class).execute();
+				return cassandraOperations.cqlOps().select(query).singleResult().firstColumn(Long.class).execute();
 			} else {
 				return cassandraOperations.findOne(metadata.getJavaType(), query).execute();
 			}

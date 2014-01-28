@@ -397,11 +397,11 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> T processOne(ResultSet resultSet, Class<T> entityClass) {
+	public <T> T processOne(ResultSet resultSet, Class<T> entityClass, boolean singleResult) {
 		Assert.notNull(resultSet);
 		Assert.notNull(entityClass);
 
-		return cqlTemplate().processOne(resultSet, new ReaderRowMapper<T>(cassandraConverter, entityClass));
+		return cqlTemplate().processOne(resultSet, new ReaderRowMapper<T>(cassandraConverter, entityClass), singleResult);
 	}
 
 	@Override

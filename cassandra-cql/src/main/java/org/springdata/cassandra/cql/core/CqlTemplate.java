@@ -25,7 +25,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdata.cassandra.cql.support.CassandraExceptionTranslator;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springdata.cassandra.cql.support.exception.CassandraNotSingleResultException;
 import org.springframework.util.Assert;
 
 import com.datastax.driver.core.BoundStatement;
@@ -519,7 +519,7 @@ public class CqlTemplate implements CqlOperations {
 	}
 
 	@Override
-	public <T> T processOne(ResultSet resultSet, final RowMapper<T> rowMapper) {
+	public <T> T processOne(ResultSet resultSet, final RowMapper<T> rowMapper, final boolean singleResult) {
 		Assert.notNull(resultSet);
 		Assert.notNull(rowMapper);
 
@@ -535,8 +535,8 @@ public class CqlTemplate implements CqlOperations {
 
 				Row firstRow = iterator.next();
 
-				if (iterator.hasNext()) {
-					throw new DataIntegrityViolationException("expected single row in the resultSet");
+				if (singleResult && iterator.hasNext()) {
+					throw new CassandraNotSingleResultException(resultSet);
 				}
 
 				return rowMapper.mapRow(firstRow, 0);
@@ -548,7 +548,7 @@ public class CqlTemplate implements CqlOperations {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T processOneFirstColumn(ResultSet resultSet, Class<T> elementType) {
+	public <T> T processOneFirstColumn(ResultSet resultSet, Class<T> elementType, final boolean singleResult) {
 		Assert.notNull(resultSet);
 		Assert.notNull(elementType);
 
@@ -557,12 +557,18 @@ public class CqlTemplate implements CqlOperations {
 			@Override
 			public T doWithResultSet(ResultSet resultSet) {
 
-				Row row = resultSet.one();
-				if (row == null) {
+				Iterator<Row> iterator = resultSet.iterator();
+				if (!iterator.hasNext()) {
 					return null;
 				}
 
-				return (T) firstColumnToObject(row);
+				Row firstRow = iterator.next();
+
+				if (singleResult && iterator.hasNext()) {
+					throw new CassandraNotSingleResultException(resultSet);
+				}
+
+				return (T) firstColumnToObject(firstRow);
 
 			}
 
@@ -571,7 +577,7 @@ public class CqlTemplate implements CqlOperations {
 	}
 
 	@Override
-	public Map<String, Object> processOneAsMap(ResultSet resultSet) {
+	public Map<String, Object> processOneAsMap(ResultSet resultSet, final boolean singleResult) {
 		Assert.notNull(resultSet);
 
 		return doProcess(resultSet, new ResultSetCallback<Map<String, Object>>() {
@@ -579,11 +585,18 @@ public class CqlTemplate implements CqlOperations {
 			@Override
 			public Map<String, Object> doWithResultSet(ResultSet resultSet) {
 
-				Row row = resultSet.one();
-				if (row == null) {
+				Iterator<Row> iterator = resultSet.iterator();
+				if (!iterator.hasNext()) {
 					return Collections.emptyMap();
 				}
-				return toMap(row);
+
+				Row firstRow = iterator.next();
+
+				if (singleResult && iterator.hasNext()) {
+					throw new CassandraNotSingleResultException(resultSet);
+				}
+
+				return toMap(firstRow);
 
 			}
 
@@ -831,7 +844,7 @@ public class CqlTemplate implements CqlOperations {
 				return select;
 			}
 
-		}).one().firstColumn(Long.class);
+		}).singleResult().firstColumn(Long.class);
 	}
 
 	@Override

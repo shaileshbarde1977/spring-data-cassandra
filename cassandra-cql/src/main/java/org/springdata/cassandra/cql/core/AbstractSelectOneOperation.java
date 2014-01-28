@@ -15,7 +15,10 @@
  */
 package org.springdata.cassandra.cql.core;
 
+import java.util.Iterator;
 import java.util.concurrent.TimeoutException;
+
+import org.springdata.cassandra.cql.support.exception.CassandraNotSingleResultException;
 
 import com.datastax.driver.core.Query;
 import com.datastax.driver.core.ResultSet;
@@ -34,16 +37,18 @@ public abstract class AbstractSelectOneOperation extends AbstractQueryOperation<
 		SelectOneOperation {
 
 	private final Query query;
+	private final boolean singleResult;
 
-	protected AbstractSelectOneOperation(CqlTemplate cqlTemplate, Query query) {
+	protected AbstractSelectOneOperation(CqlTemplate cqlTemplate, Query query, boolean singleResult) {
 		super(cqlTemplate);
 		this.query = query;
+		this.singleResult = singleResult;
 	}
 
 	@Override
 	public Row execute() {
 		ResultSet resultSet = doExecute(query);
-		return resultSet.one();
+		return getRow(resultSet);
 	}
 
 	@Override
@@ -53,7 +58,7 @@ public abstract class AbstractSelectOneOperation extends AbstractQueryOperation<
 
 			@Override
 			public Row apply(ResultSet resultSet) {
-				return resultSet.one();
+				return getRow(resultSet);
 			}
 
 		}, getExecutor());
@@ -69,7 +74,7 @@ public abstract class AbstractSelectOneOperation extends AbstractQueryOperation<
 
 			@Override
 			public void onComplete(ResultSet resultSet) {
-				Row row = resultSet.one();
+				Row row = getRow(resultSet);
 				cb.onComplete(row);
 			}
 
@@ -79,7 +84,24 @@ public abstract class AbstractSelectOneOperation extends AbstractQueryOperation<
 	@Override
 	public Row executeNonstop(int timeoutMls) throws TimeoutException {
 		ResultSet resultSet = doExecuteNonstop(query, timeoutMls);
-		return resultSet.one();
+		return getRow(resultSet);
+	}
+
+	private Row getRow(ResultSet resultSet) {
+
+		Iterator<Row> iterator = resultSet.iterator();
+		if (!iterator.hasNext()) {
+			return null;
+		}
+
+		Row firstRow = iterator.next();
+
+		if (singleResult && iterator.hasNext()) {
+			throw new CassandraNotSingleResultException(resultSet);
+		}
+
+		return firstRow;
+
 	}
 
 }

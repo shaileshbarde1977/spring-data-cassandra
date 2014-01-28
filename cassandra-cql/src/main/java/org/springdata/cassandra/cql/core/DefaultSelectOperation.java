@@ -44,54 +44,13 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public SelectOneOperation one() {
+	public SelectOneOperation firstRow() {
+		return new DefaultSelectOneOperation(this, false);
+	}
 
-		final DefaultSelectOperation defaultSelectOperation = this;
-
-		return new AbstractSelectOneOperation(cqlTemplate, query) {
-
-			@Override
-			public <R> ProcessOperation<R> map(final RowMapper<R> rowMapper) {
-
-				return new ProcessingSelectOperation<R>(defaultSelectOperation, new Processor<R>() {
-
-					@Override
-					public R process(ResultSet resultSet) {
-						return cqlTemplate.processOne(resultSet, rowMapper);
-					}
-
-				});
-
-			}
-
-			@Override
-			public <E> ProcessOperation<E> firstColumn(final Class<E> elementType) {
-
-				return new ProcessingSelectOperation<E>(defaultSelectOperation, new Processor<E>() {
-
-					@Override
-					public E process(ResultSet resultSet) {
-						return cqlTemplate.processOneFirstColumn(resultSet, elementType);
-					}
-
-				});
-			}
-
-			@Override
-			public ProcessOperation<Map<String, Object>> map() {
-
-				return new ProcessingSelectOperation<Map<String, Object>>(defaultSelectOperation,
-						new Processor<Map<String, Object>>() {
-
-							@Override
-							public Map<String, Object> process(ResultSet resultSet) {
-								return cqlTemplate.processOneAsMap(resultSet);
-							}
-
-						});
-			}
-
-		};
+	@Override
+	public SelectOneOperation singleResult() {
+		return new DefaultSelectOneOperation(this, true);
 	}
 
 	@Override
@@ -311,4 +270,57 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 	}
 
+	final class DefaultSelectOneOperation extends AbstractSelectOneOperation {
+
+		private final DefaultSelectOperation defaultSelectOperation;
+		private final boolean singleResult;
+
+		DefaultSelectOneOperation(DefaultSelectOperation defaultSelectOperation, boolean singleResult) {
+			super(defaultSelectOperation.cqlTemplate, defaultSelectOperation.query, singleResult);
+			this.defaultSelectOperation = defaultSelectOperation;
+			this.singleResult = singleResult;
+		}
+
+		@Override
+		public <R> ProcessOperation<R> map(final RowMapper<R> rowMapper) {
+
+			return new ProcessingSelectOperation<R>(defaultSelectOperation, new Processor<R>() {
+
+				@Override
+				public R process(ResultSet resultSet) {
+					return cqlTemplate.processOne(resultSet, rowMapper, singleResult);
+				}
+
+			});
+
+		}
+
+		@Override
+		public <E> ProcessOperation<E> firstColumn(final Class<E> elementType) {
+
+			return new ProcessingSelectOperation<E>(defaultSelectOperation, new Processor<E>() {
+
+				@Override
+				public E process(ResultSet resultSet) {
+					return cqlTemplate.processOneFirstColumn(resultSet, elementType, singleResult);
+				}
+
+			});
+		}
+
+		@Override
+		public ProcessOperation<Map<String, Object>> map() {
+
+			return new ProcessingSelectOperation<Map<String, Object>>(defaultSelectOperation,
+					new Processor<Map<String, Object>>() {
+
+						@Override
+						public Map<String, Object> process(ResultSet resultSet) {
+							return cqlTemplate.processOneAsMap(resultSet, singleResult);
+						}
+
+					});
+		}
+
+	}
 }

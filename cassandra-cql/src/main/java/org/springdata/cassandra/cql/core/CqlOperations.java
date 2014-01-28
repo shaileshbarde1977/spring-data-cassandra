@@ -160,9 +160,10 @@ public interface CqlOperations {
 	 * 
 	 * @param resultSet
 	 * @param rowMapper
+	 * @param singleResult Expected single result
 	 * @return
 	 */
-	<T> T processOne(ResultSet resultSet, RowMapper<T> rowMapper);
+	<T> T processOne(ResultSet resultSet, RowMapper<T> rowMapper, boolean singleResult);
 
 	/**
 	 * Process a ResultSet, trying to convert the first columns of the first Row to Class<T>. This is used internal to the
@@ -171,9 +172,10 @@ public interface CqlOperations {
 	 * 
 	 * @param resultSet
 	 * @param elementType
+	 * @param singleResult Expected single result
 	 * @return
 	 */
-	<T> T processOneFirstColumn(ResultSet resultSet, Class<T> elementType);
+	<T> T processOneFirstColumn(ResultSet resultSet, Class<T> elementType, boolean singleResult);
 
 	/**
 	 * Process a ResultSet with <b>ONE</b> Row and convert to a Map. This is used internal to the Template for core
@@ -181,9 +183,10 @@ public interface CqlOperations {
 	 * could come from a ResultSetFuture after an asynchronous query.
 	 * 
 	 * @param resultSet
+	 * @param singleResult Expected single result
 	 * @return
 	 */
-	Map<String, Object> processOneAsMap(ResultSet resultSet);
+	Map<String, Object> processOneAsMap(ResultSet resultSet, boolean singleResult);
 
 	/**
 	 * Process a ResultSet and convert the first column of the results to a List. This is used internal to the Template
