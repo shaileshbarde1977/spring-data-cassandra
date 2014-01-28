@@ -27,19 +27,71 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 /**
+ * Default implementation for SelectOperation
  * 
  * @author Alex Shvid
  * 
  */
 
-public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, SelectOperation<ResultSet>> implements
-		SelectOperation<ResultSet> {
+public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, SelectOperation> implements
+		SelectOperation {
 
 	private final Query query;
 
-	protected DefaultSelectOperation(CqlTemplate cassandraTemplate, Query query) {
-		super(cassandraTemplate);
+	protected DefaultSelectOperation(CqlTemplate cqlTemplate, Query query) {
+		super(cqlTemplate);
 		this.query = query;
+	}
+
+	@Override
+	public SelectOneOperation one() {
+
+		final DefaultSelectOperation defaultSelectOperation = this;
+
+		return new AbstractSelectOneOperation(cqlTemplate, query) {
+
+			@Override
+			public <R> ProcessOperation<R> map(final RowMapper<R> rowMapper) {
+
+				return new ProcessingSelectOperation<R>(defaultSelectOperation, new Processor<R>() {
+
+					@Override
+					public R process(ResultSet resultSet) {
+						return cqlTemplate.processOne(resultSet, rowMapper);
+					}
+
+				});
+
+			}
+
+			@Override
+			public <E> ProcessOperation<E> firstColumn(final Class<E> elementType) {
+
+				return new ProcessingSelectOperation<E>(defaultSelectOperation, new Processor<E>() {
+
+					@Override
+					public E process(ResultSet resultSet) {
+						return cqlTemplate.processOneFirstColumn(resultSet, elementType);
+					}
+
+				});
+			}
+
+			@Override
+			public ProcessOperation<Map<String, Object>> map() {
+
+				return new ProcessingSelectOperation<Map<String, Object>>(defaultSelectOperation,
+						new Processor<Map<String, Object>>() {
+
+							@Override
+							public Map<String, Object> process(ResultSet resultSet) {
+								return cqlTemplate.processOneAsMap(resultSet);
+							}
+
+						});
+			}
+
+		};
 	}
 
 	@Override
@@ -50,19 +102,6 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 			@Override
 			public Iterator<R> process(ResultSet resultSet) {
 				return cqlTemplate.process(resultSet, rowMapper);
-			}
-
-		});
-	}
-
-	@Override
-	public <R> ProcessOperation<R> mapOne(final RowMapper<R> rowMapper) {
-
-		return new ProcessingSelectOperation<R>(this, new Processor<R>() {
-
-			@Override
-			public R process(ResultSet resultSet) {
-				return cqlTemplate.processOne(resultSet, rowMapper);
 			}
 
 		});
@@ -91,19 +130,6 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public <E> ProcessOperation<E> firstColumnOne(final Class<E> elementType) {
-
-		return new ProcessingSelectOperation<E>(this, new Processor<E>() {
-
-			@Override
-			public E process(ResultSet resultSet) {
-				return cqlTemplate.processOneFirstColumn(resultSet, elementType);
-			}
-
-		});
-	}
-
-	@Override
 	public <E> ProcessOperation<Iterator<E>> firstColumn(final Class<E> elementType) {
 
 		return new ProcessingSelectOperation<Iterator<E>>(this, new Processor<Iterator<E>>() {
@@ -129,19 +155,6 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 				});
 
-	}
-
-	@Override
-	public ProcessOperation<Map<String, Object>> mapOne() {
-
-		return new ProcessingSelectOperation<Map<String, Object>>(this, new Processor<Map<String, Object>>() {
-
-			@Override
-			public Map<String, Object> process(ResultSet resultSet) {
-				return cqlTemplate.processOneAsMap(resultSet);
-			}
-
-		});
 	}
 
 	@Override
@@ -193,9 +206,9 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 	abstract class ForwardingSelectOperation<T> implements ProcessOperation<T> {
 
-		protected final SelectOperation<ResultSet> delegate;
+		protected final SelectOperation delegate;
 
-		private ForwardingSelectOperation(SelectOperation<ResultSet> delegate) {
+		private ForwardingSelectOperation(SelectOperation delegate) {
 			this.delegate = delegate;
 		}
 
@@ -239,7 +252,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 
 		private final Processor<T> processor;
 
-		ProcessingSelectOperation(SelectOperation<ResultSet> delegate, Processor<T> processor) {
+		ProcessingSelectOperation(SelectOperation delegate, Processor<T> processor) {
 			super(delegate);
 			this.processor = processor;
 		}

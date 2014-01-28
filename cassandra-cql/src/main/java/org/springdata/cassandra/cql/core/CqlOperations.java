@@ -102,7 +102,7 @@ public interface CqlOperations {
 	 * 
 	 * @return SelectOperation of ResultSet
 	 */
-	SelectOperation<ResultSet> select(String cql);
+	SelectOperation select(String cql);
 
 	/**
 	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback.
@@ -112,7 +112,7 @@ public interface CqlOperations {
 	 * 
 	 * @return SelectOperation of ResultSet
 	 */
-	SelectOperation<ResultSet> select(PreparedStatement ps, PreparedStatementBinder psb);
+	SelectOperation select(PreparedStatement ps, PreparedStatementBinder psb);
 
 	/**
 	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback.
@@ -121,7 +121,7 @@ public interface CqlOperations {
 	 * 
 	 * @return SelectOperation of ResultSet
 	 */
-	SelectOperation<ResultSet> select(BoundStatement bs);
+	SelectOperation select(BoundStatement bs);
 
 	/**
 	 * Executes the provided CQL Query, and extracts the results with the ResultSetCallback.
@@ -130,7 +130,7 @@ public interface CqlOperations {
 	 * 
 	 * @return SelectOperation of ResultSet
 	 */
-	SelectOperation<ResultSet> select(QueryCreator qc);
+	SelectOperation select(QueryCreator qc);
 
 	/**
 	 * Processes the ResultSet through the RowCallbackHandler and return nothing. This is used internal to the Template

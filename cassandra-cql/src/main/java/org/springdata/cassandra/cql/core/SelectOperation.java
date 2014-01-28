@@ -18,6 +18,8 @@ package org.springdata.cassandra.cql.core;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.datastax.driver.core.ResultSet;
+
 /**
  * General class for select operations. Support transformation and mapping of the ResultSet
  * 
@@ -25,7 +27,14 @@ import java.util.Map;
  * 
  */
 
-public interface SelectOperation<T> extends QueryOperation<T, SelectOperation<T>> {
+public interface SelectOperation extends QueryOperation<ResultSet, SelectOperation> {
+
+	/**
+	 * Returns single result operation
+	 * 
+	 * @return SelectOneOperation
+	 */
+	SelectOneOperation one();
 
 	/**
 	 * Maps each row in ResultSet by RowMapper.
@@ -36,27 +45,11 @@ public interface SelectOperation<T> extends QueryOperation<T, SelectOperation<T>
 	<R> ProcessOperation<Iterator<R>> map(RowMapper<R> rowMapper);
 
 	/**
-	 * Maps first row in ResultSet by RowMapper.
-	 * 
-	 * @param rowMapper
-	 * @return ProcessOperation
-	 */
-	<R> ProcessOperation<R> mapOne(RowMapper<R> rowMapper);
-
-	/**
 	 * Returns true is ResultSet is not empty.
 	 * 
 	 * @return ProcessOperation
 	 */
 	ProcessOperation<Boolean> notEmpty();
-
-	/**
-	 * Retrieves first row in the first column, expected type is elementType class.
-	 * 
-	 * @param elementType
-	 * @return ProcessOperation
-	 */
-	<E> ProcessOperation<E> firstColumnOne(Class<E> elementType);
 
 	/**
 	 * Retrieves only the first column from ResultSet, expected type is elementType class.
@@ -72,13 +65,6 @@ public interface SelectOperation<T> extends QueryOperation<T, SelectOperation<T>
 	 * @return ProcessOperation
 	 */
 	ProcessOperation<Iterator<Map<String, Object>>> map();
-
-	/**
-	 * Maps only first row from ResultSet to Map<String, Object>.
-	 * 
-	 * @return ProcessOperation
-	 */
-	ProcessOperation<Map<String, Object>> mapOne();
 
 	/**
 	 * Uses ResultSetCallback to transform ResultSet to object with type T.

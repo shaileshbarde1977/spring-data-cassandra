@@ -837,7 +837,7 @@ public class CassandraOperationsTest {
 				return QueryBuilder.select().countAll().from("book");
 			}
 
-		}).firstColumnOne(Long.class).execute();
+		}).one().firstColumn(Long.class).execute();
 
 		log.info("Book Count -> " + count);
 

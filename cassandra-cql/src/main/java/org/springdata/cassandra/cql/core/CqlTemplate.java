@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 the original author or authors.
+ * Copyright 2013-2014 the original author or authors.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -241,27 +241,27 @@ public class CqlTemplate implements CqlOperations {
 	}
 
 	@Override
-	public SelectOperation<ResultSet> select(String cql) {
+	public SelectOperation select(String cql) {
 		Assert.notNull(cql);
 		Query query = new SimpleStatement(cql);
 		return new DefaultSelectOperation(this, query);
 	}
 
 	@Override
-	public SelectOperation<ResultSet> select(PreparedStatement ps, PreparedStatementBinder psb) {
+	public SelectOperation select(PreparedStatement ps, PreparedStatementBinder psb) {
 		Assert.notNull(ps);
 		BoundStatement bs = doBind(ps, psb);
 		return new DefaultSelectOperation(this, bs);
 	}
 
 	@Override
-	public SelectOperation<ResultSet> select(BoundStatement bs) {
+	public SelectOperation select(BoundStatement bs) {
 		Assert.notNull(bs);
 		return new DefaultSelectOperation(this, bs);
 	}
 
 	@Override
-	public SelectOperation<ResultSet> select(QueryCreator qc) {
+	public SelectOperation select(QueryCreator qc) {
 		Assert.notNull(qc);
 		Query query = doCreateQuery(qc);
 		return new DefaultSelectOperation(this, query);
@@ -831,7 +831,7 @@ public class CqlTemplate implements CqlOperations {
 				return select;
 			}
 
-		}).firstColumnOne(Long.class);
+		}).one().firstColumn(Long.class);
 	}
 
 	@Override
