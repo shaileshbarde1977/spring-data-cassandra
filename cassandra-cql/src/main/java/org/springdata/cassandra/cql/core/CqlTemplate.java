@@ -15,10 +15,11 @@
  */
 package org.springdata.cassandra.cql.core;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -387,8 +388,8 @@ public class CqlTemplate implements CqlOperations {
 	}
 
 	@Override
-	public Collection<RingMember> describeRing() {
-		return Collections.unmodifiableCollection(describeRing(new RingMemberHostMapper()));
+	public List<RingMember> describeRing() {
+		return Collections.unmodifiableList(describeRing(new RingMemberHostMapper()));
 	}
 
 	/**
@@ -476,10 +477,18 @@ public class CqlTemplate implements CqlOperations {
 	}
 
 	@Override
-	public <T> Collection<T> describeRing(HostMapper<T> hostMapper) {
+	public <T> List<T> describeRing(HostMapper<T> hostMapper) {
 		Assert.notNull(hostMapper);
+
 		Set<Host> hosts = getHosts();
-		return hostMapper.mapHosts(hosts);
+
+		List<T> results = new ArrayList<T>(hosts.size());
+		for (Host host : hosts) {
+			T obj = hostMapper.mapHost(host);
+			results.add(obj);
+		}
+
+		return results;
 	}
 
 	@Override

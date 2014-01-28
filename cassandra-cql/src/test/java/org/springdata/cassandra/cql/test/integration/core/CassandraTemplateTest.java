@@ -21,10 +21,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -72,20 +70,13 @@ public class CassandraTemplateTest extends AbstractCassandraOperations {
 	@Test
 	public void hostMapperTest() {
 
-		List<MyHost> ring = (List<MyHost>) cassandraTemplate.describeRing(new HostMapper<MyHost>() {
+		List<MyHost> ring = cassandraTemplate.describeRing(new HostMapper<MyHost>() {
 
 			@Override
-			public Collection<MyHost> mapHosts(Set<Host> host) {
-
-				List<MyHost> list = new LinkedList<MyHost>();
-
-				for (Host h : host) {
-					MyHost mh = new MyHost();
-					mh.someName = h.getAddress().getCanonicalHostName();
-					list.add(mh);
-				}
-
-				return list;
+			public MyHost mapHost(Host host) {
+				MyHost mh = new MyHost();
+				mh.someName = host.getAddress().getCanonicalHostName();
+				return mh;
 			}
 
 		});
