@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.springdata.cassandra.convert.CassandraConverter;
 import org.springdata.cassandra.cql.core.CqlOperations;
+import org.springdata.cassandra.cql.core.ResultSetExtractor;
 import org.springdata.cassandra.cql.core.RowMapper;
 
 import com.datastax.driver.core.ResultSet;
@@ -189,7 +190,16 @@ public interface CassandraOperations {
 	 * @return RowMapper that can be used in SelectOperation
 	 */
 
-	<T> RowMapper<T> getRowMapper(Class<T> entityClass);
+	<T> RowMapper<T> rowMapper(Class<T> entityClass);
+
+	/**
+	 * Returns ResultSetExtractor based on Cassandra Converter.
+	 * 
+	 * @param entityClass Entity class used to convert ResultSet to type T
+	 * @return ResultSetExtractor that can be used in SelectOperation
+	 */
+
+	<T> ResultSetExtractor<Iterator<T>> resultSetExtractor(Class<T> entityClass);
 
 	/**
 	 * Processes the ResultSet through the CassandraConverter and returns the List of mapped Rows. This is used internal

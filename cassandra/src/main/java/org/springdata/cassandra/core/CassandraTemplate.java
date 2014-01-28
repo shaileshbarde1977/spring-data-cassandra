@@ -25,6 +25,7 @@ import java.util.Set;
 import org.springdata.cassandra.convert.CassandraConverter;
 import org.springdata.cassandra.cql.core.CqlOperations;
 import org.springdata.cassandra.cql.core.CqlTemplate;
+import org.springdata.cassandra.cql.core.ResultSetExtractor;
 import org.springdata.cassandra.cql.core.RowMapper;
 import org.springdata.cassandra.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.mapping.CassandraPersistentProperty;
@@ -374,9 +375,15 @@ public class CassandraTemplate implements CassandraOperations {
 	}
 
 	@Override
-	public <T> RowMapper<T> getRowMapper(Class<T> entityClass) {
+	public <T> RowMapper<T> rowMapper(Class<T> entityClass) {
 		Assert.notNull(entityClass);
 		return new ReaderRowMapper<T>(cassandraConverter, entityClass);
+	}
+
+	@Override
+	public <T> ResultSetExtractor<Iterator<T>> resultSetExtractor(Class<T> entityClass) {
+		Assert.notNull(entityClass);
+		return new ReaderResultSetExtractor<T>(cassandraConverter, entityClass);
 	}
 
 	@Override
