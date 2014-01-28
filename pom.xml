@@ -319,6 +319,15 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<aggregate>true</aggregate>
+	                <author>true</author>
+	                <bottom>true</bottom>
+	                <destDir>target/javadoc</destDir>
+	                <packagenames>org.springdata.cassandra.*</packagenames>
+	                <use>true</use>
+	                <version>true</version>
+				</configuration>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
