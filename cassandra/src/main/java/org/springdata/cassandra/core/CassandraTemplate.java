@@ -25,6 +25,7 @@ import java.util.Set;
 import org.springdata.cassandra.convert.CassandraConverter;
 import org.springdata.cassandra.cql.core.CqlOperations;
 import org.springdata.cassandra.cql.core.CqlTemplate;
+import org.springdata.cassandra.cql.core.RowMapper;
 import org.springdata.cassandra.mapping.CassandraPersistentEntity;
 import org.springdata.cassandra.mapping.CassandraPersistentProperty;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -370,6 +371,12 @@ public class CassandraTemplate implements CassandraOperations {
 		Assert.notNull(entity);
 		assertNotIterable(entity);
 		return new DefaultSaveOperation<T>(this, entity);
+	}
+
+	@Override
+	public <T> RowMapper<T> getRowMapper(Class<T> entityClass) {
+		Assert.notNull(entityClass);
+		return new ReaderRowMapper<T>(cassandraConverter, entityClass);
 	}
 
 	@Override

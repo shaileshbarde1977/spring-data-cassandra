@@ -183,6 +183,15 @@ public interface CassandraOperations {
 	<T> BatchOperation deleteInBatch(Iterable<T> entities);
 
 	/**
+	 * Returns RowMapper based on Cassandra Converter.
+	 * 
+	 * @param entityClass Entity class used to convert ResultSet to type T
+	 * @return RowMapper that can be used in SelectOperation
+	 */
+
+	<T> RowMapper<T> getRowMapper(Class<T> entityClass);
+
+	/**
 	 * Processes the ResultSet through the CassandraConverter and returns the List of mapped Rows. This is used internal
 	 * to the Template for core operations, but is made available through Operations in the event you have a ResultSet to
 	 * process. The ResultsSet could come from a ResultSetFuture after an asynchronous query.
