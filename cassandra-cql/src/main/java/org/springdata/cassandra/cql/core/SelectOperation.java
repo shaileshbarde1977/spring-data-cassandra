@@ -52,11 +52,11 @@ public interface SelectOperation extends QueryOperation<ResultSet, SelectOperati
 	<R> ProcessOperation<Iterator<R>> map(RowMapper<R> rowMapper);
 
 	/**
-	 * Returns true is ResultSet is not empty.
+	 * Returns true if ResultSet is not empty.
 	 * 
 	 * @return ProcessOperation
 	 */
-	ProcessOperation<Boolean> notEmpty();
+	ProcessOperation<Boolean> exists();
 
 	/**
 	 * Retrieves only the first column from ResultSet, expected type is elementType class.

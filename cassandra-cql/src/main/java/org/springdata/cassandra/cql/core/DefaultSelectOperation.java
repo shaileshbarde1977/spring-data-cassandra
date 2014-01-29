@@ -67,7 +67,7 @@ public class DefaultSelectOperation extends AbstractQueryOperation<ResultSet, Se
 	}
 
 	@Override
-	public ProcessOperation<Boolean> notEmpty() {
+	public ProcessOperation<Boolean> exists() {
 
 		return new ProcessingSelectOperation<Boolean>(this, new Processor<Boolean>() {
 
