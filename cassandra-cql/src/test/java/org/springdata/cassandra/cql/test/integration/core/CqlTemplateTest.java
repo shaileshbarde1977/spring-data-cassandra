@@ -52,7 +52,7 @@ import com.google.common.collect.Lists;
  * @author David Webb
  * @author Alex Shvid
  */
-public class CassandraTemplateTest extends AbstractCassandraOperations {
+public class CqlTemplateTest extends AbstractCassandraOperations {
 
 	@Test
 	public void ringTest() {
