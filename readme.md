@@ -31,6 +31,12 @@ CQL
 
 Fully supported CQL 3.0 version. Specification is available [here] (http://www.datastax.com/documentation/cql/3.0/pdf/cql30.pdf)
 
+Modules
+--------
+
+This project has two modules:
+ - [Spring Cassandra Cql](cassandra-cql/readme.md)
+ - [Spring Data Cassandra](cassandra/readme.md)
 
 Building
 --------
