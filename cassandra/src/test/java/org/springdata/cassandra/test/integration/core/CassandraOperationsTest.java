@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -757,7 +758,7 @@ public class CassandraOperationsTest {
 	}
 
 	@Test
-	public void selectOneTest() {
+	public void findOneTest() {
 
 		/*
 		 * Test Single Insert with entity
@@ -807,7 +808,62 @@ public class CassandraOperationsTest {
 	}
 
 	@Test
-	public void selectTest() {
+	public void findByPartitionKeyTest() {
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b1 = new Book();
+		b1.setIsbn("123456-1");
+		b1.setTitle("Spring Data Cassandra Guide");
+		b1.setAuthor("Cassandra Guru");
+		b1.setPages(521);
+
+		cassandraTemplate.saveNew(b1).execute();
+
+		Iterator<Book> bi = cassandraTemplate.findByPartitionKey(Book.class, "123456-1").execute();
+
+		List<Book> found = Lists.newArrayList(bi);
+
+		assertEquals(1, found.size());
+		Book b = found.get(0);
+
+		log.info("SingleSelect Book Title -> " + b.getTitle());
+		log.info("SingleSelect Book Author -> " + b.getAuthor());
+
+		assertEquals(b.getTitle(), "Spring Data Cassandra Guide");
+		assertEquals(b.getAuthor(), "Cassandra Guru");
+	}
+
+	@Test
+	public void findAllTest() {
+
+		List<Book> books = getBookList(20);
+
+		cassandraTemplate.saveNewInBatch(books).execute();
+
+		Iterator<Book> foundIterator = cassandraTemplate.findAll(Book.class).execute();
+		List<Book> found = Lists.newArrayList(foundIterator);
+
+		assertEquals(20, found.size());
+
+	}
+
+	@Test
+	public void findAllByIdsTest() {
+
+		List<Book> books = getBookList(20);
+
+		cassandraTemplate.saveNewInBatch(books).execute();
+
+		List<Book> found = cassandraTemplate.findAll(Book.class, ids(books)).execute();
+
+		assertEquals(20, found.size());
+
+	}
+
+	@Test
+	public void findTest() {
 
 		List<Book> books = getBookList(20);
 
@@ -824,20 +880,13 @@ public class CassandraOperationsTest {
 	}
 
 	@Test
-	public void selectCountTest() {
+	public void countTest() {
 
 		List<Book> books = getBookList(20);
 
 		cassandraTemplate.saveNewInBatch(books).execute();
 
-		Long count = cassandraTemplate.cqlOps().select(new QueryCreator() {
-
-			@Override
-			public Query createQuery() {
-				return QueryBuilder.select().countAll().from("book");
-			}
-
-		}).singleResult().firstColumn(Long.class).execute();
+		Long count = cassandraTemplate.count(Book.class).execute();
 
 		log.info("Book Count -> " + count);
 
@@ -848,7 +897,6 @@ public class CassandraOperationsTest {
 	@After
 	public void clearCassandra() {
 		EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
-
 	}
 
 	@SuppressWarnings("deprecation")

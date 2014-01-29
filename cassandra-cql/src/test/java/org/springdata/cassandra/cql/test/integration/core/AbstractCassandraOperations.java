@@ -42,7 +42,7 @@ import com.datastax.driver.core.Row;
 
 public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassandraIntegrationTest {
 
-	protected CqlOperations cassandraTemplate;
+	protected CqlOperations cqlTemplate;
 
 	protected Logger log = LoggerFactory.getLogger(getClass());
 
@@ -65,7 +65,7 @@ public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassan
 
 	@Before
 	public void setupTemplate() {
-		cassandraTemplate = new CqlTemplate(session, keyspace);
+		cqlTemplate = new CqlTemplate(session, keyspace);
 	}
 
 	/**
@@ -146,9 +146,9 @@ public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassan
 	 */
 	protected Book getBook(final String isbn) {
 
-		PreparedStatement ps = cassandraTemplate.prepareStatement("select * from book where isbn = ?");
+		PreparedStatement ps = cqlTemplate.prepareStatement("select * from book where isbn = ?");
 
-		Book b = cassandraTemplate.select(ps, new PreparedStatementBinder() {
+		Book b = cqlTemplate.select(ps, new PreparedStatementBinder() {
 
 			@Override
 			public BoundStatement bindValues(PreparedStatement ps) {
@@ -183,7 +183,7 @@ public abstract class AbstractCassandraOperations extends AbstractEmbeddedCassan
 		values[1] = o2;
 		values[2] = o3;
 
-		cassandraTemplate.ingest(cassandraTemplate.prepareStatement(cql), values).execute();
+		cqlTemplate.ingest(cqlTemplate.prepareStatement(cql), values).execute();
 
 	}
 
