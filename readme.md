@@ -35,8 +35,11 @@ Modules
 --------
 
 This project has two modules:
- - [Spring Cassandra Cql](cassandra-cql/readme.md)
- - [Spring Data Cassandra](cassandra/readme.md)
+ - [Spring Cassandra Cql](cassandra-cql)
+ - [Spring Data Cassandra](cassandra)
+
+Spring Cassandra Cql gives ability to use CqlTemplate and makes operations based in CQL.
+Spring Data Cassandra gives ability to use Spring Data to convert ResultSet in to entities. 
 
 Building
 --------
