@@ -15,6 +15,7 @@
  */
 package org.springdata.cassandra.core;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springdata.cassandra.cql.core.AbstractUpdateOperation;
@@ -119,22 +120,24 @@ public class DefaultDeleteOperation<T> extends AbstractUpdateOperation<DeleteOpe
 		Delete query = ds.from(cassandraTemplate.getKeyspace(), getTableName());
 		Where w = query.where();
 
+		List<Clause> clauseList = null;
+
 		switch (deleteBy) {
 
 		case ID:
 			CassandraPersistentEntity<?> persistenceEntity = cassandraTemplate.getPersistentEntity(entityClass);
-			List<Clause> list = cassandraTemplate.getConverter().getPrimaryKey(persistenceEntity, id);
-
-			for (Clause c : list) {
-				w.and(c);
-			}
-
+			clauseList = cassandraTemplate.getConverter().getPrimaryKey(persistenceEntity, id);
 			break;
 
 		case ENTITY:
-			cassandraTemplate.getConverter().write(entity, w);
+			clauseList = new LinkedList<Clause>();
+			cassandraTemplate.getConverter().write(entity, clauseList);
 			break;
 
+		}
+
+		for (Clause c : clauseList) {
+			w.and(c);
 		}
 
 		if (timestamp != null) {

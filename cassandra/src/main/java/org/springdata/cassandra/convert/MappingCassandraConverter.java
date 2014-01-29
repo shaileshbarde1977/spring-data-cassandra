@@ -231,13 +231,14 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		}
 	}
 
-	private class DeletePropertyHandler implements PropertyHandler<CassandraPersistentProperty> {
+	private class WherePropertyHandler implements PropertyHandler<CassandraPersistentProperty> {
 
 		private final BeanWrapper<CassandraPersistentEntity<Object>, Object> wrapper;
-		private Delete.Where deleteWhere;
+		private final List<Clause> clauseList;
 
-		private DeletePropertyHandler(Delete.Where update, BeanWrapper<CassandraPersistentEntity<Object>, Object> wrapper) {
-			this.deleteWhere = update;
+		private WherePropertyHandler(List<Clause> clauseList,
+				BeanWrapper<CassandraPersistentEntity<Object>, Object> wrapper) {
+			this.clauseList = clauseList;
 			this.wrapper = wrapper;
 		}
 
@@ -250,9 +251,9 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 					final CassandraPersistentEntity<?> propEntity = mappingContext.getPersistentEntity(prop.getRawType());
 					final BeanWrapper<CassandraPersistentEntity<Object>, Object> propWrapper = BeanWrapper.create(propertyObj,
 							conversionService);
-					propEntity.doWithProperties(new DeletePropertyHandler(deleteWhere, propWrapper));
+					propEntity.doWithProperties(new WherePropertyHandler(clauseList, propWrapper));
 				} else if (prop.isIdProperty() || prop.getKeyPart() != null) {
-					deleteWhere.and(QueryBuilder.eq(prop.getColumnName(), propertyObj));
+					clauseList.add(QueryBuilder.eq(prop.getColumnName(), propertyObj));
 				}
 			}
 
@@ -310,8 +311,8 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 			writeInsertInternal(obj, (Insert) builtStatement, entity);
 		} else if (builtStatement instanceof Update) {
 			writeUpdateInternal(obj, (Update) builtStatement, entity);
-		} else if (builtStatement instanceof Delete.Where) {
-			writeDeleteWhereInternal(obj, (Delete.Where) builtStatement, entity);
+		} else if (builtStatement instanceof List) {
+			writeWhereInternal(obj, (List<Clause>) builtStatement, entity);
 		} else {
 			throw new MappingException("Unknown buildStatement " + builtStatement.getClass().getName());
 		}
@@ -334,13 +335,13 @@ public class MappingCassandraConverter extends AbstractCassandraConverter implem
 		entity.doWithProperties(new UpdatePropertyHandler(update, wrapper));
 	}
 
-	private void writeDeleteWhereInternal(final Object objectToSave, final Delete.Where whereId,
+	private void writeWhereInternal(final Object objectToSave, final List<Clause> clauseList,
 			CassandraPersistentEntity<?> entity) {
 
 		final BeanWrapper<CassandraPersistentEntity<Object>, Object> wrapper = BeanWrapper.create(objectToSave,
 				conversionService);
 
-		entity.doWithProperties(new DeletePropertyHandler(whereId, wrapper));
+		entity.doWithProperties(new WherePropertyHandler(clauseList, wrapper));
 	}
 
 	@Override

@@ -894,6 +894,34 @@ public class CassandraOperationsTest {
 
 	}
 
+	@Test
+	public void existsTest() {
+
+		/*
+		 * Test Single Insert with entity
+		 */
+		Book b1 = new Book();
+		b1.setIsbn("123456-1");
+		b1.setTitle("Spring Data Cassandra Guide");
+		b1.setAuthor("Cassandra Guru");
+		b1.setPages(521);
+
+		cassandraTemplate.saveNew(b1).execute();
+
+		Boolean exists = cassandraTemplate.exists(b1).execute();
+
+		log.info("Book Exists -> " + exists);
+
+		assertEquals(Boolean.TRUE, exists);
+
+		Boolean notExists = cassandraTemplate.exists(Book.class, "xxx").execute();
+
+		log.info("Book Not Exists -> " + notExists);
+
+		assertEquals(Boolean.FALSE, notExists);
+
+	}
+
 	@After
 	public void clearCassandra() {
 		EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
