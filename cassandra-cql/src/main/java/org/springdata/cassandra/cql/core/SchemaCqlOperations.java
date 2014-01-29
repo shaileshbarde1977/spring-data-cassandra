@@ -16,7 +16,6 @@
 package org.springdata.cassandra.cql.core;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springdata.cassandra.cql.option.TableOptions;
 import org.springdata.cassandra.cql.spec.AlterTableSpecification;
