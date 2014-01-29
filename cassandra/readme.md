@@ -1,4 +1,4 @@
 Spring Data Cassandra
 =====================
 
-This module is the extension of the Spring Cassandra Cql that gives ability to use Cassandra Mapping capabilities based on Spring Data framework.
+This module is the extension of the Spring Cassandra Cql with ability to use mapping capabilities based on SpringFramework Data.
