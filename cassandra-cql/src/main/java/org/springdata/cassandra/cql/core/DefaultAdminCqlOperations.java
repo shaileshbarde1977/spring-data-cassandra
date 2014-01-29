@@ -55,6 +55,15 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 		CreateKeyspaceSpecification spec = new CreateKeyspaceSpecification().name(keyspace).with(
 				keyspaceOptions.getOptions());
 
+		return createKeyspace(spec);
+
+	}
+
+	@Override
+	public UpdateOperation createKeyspace(CreateKeyspaceSpecification spec) {
+
+		Assert.notNull(spec);
+
 		CreateKeyspaceCqlGenerator generator = new CreateKeyspaceCqlGenerator(spec);
 
 		return new DefaultUpdateOperation(cqlTemplate, generator.toCql());
@@ -70,6 +79,15 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 		AlterKeyspaceSpecification spec = new AlterKeyspaceSpecification().name(keyspace)
 				.with(keyspaceOptions.getOptions());
 
+		return alterKeyspace(spec);
+
+	}
+
+	@Override
+	public UpdateOperation alterKeyspace(AlterKeyspaceSpecification spec) {
+
+		Assert.notNull(spec);
+
 		AlterKeyspaceCqlGenerator generator = new AlterKeyspaceCqlGenerator(spec);
 
 		return new DefaultUpdateOperation(cqlTemplate, generator.toCql());
@@ -82,6 +100,16 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 		Assert.notNull(keyspace);
 
 		DropKeyspaceSpecification spec = new DropKeyspaceSpecification().name(keyspace);
+
+		return dropKeyspace(spec);
+
+	}
+
+	@Override
+	public UpdateOperation dropKeyspace(DropKeyspaceSpecification spec) {
+
+		Assert.notNull(spec);
+
 		DropKeyspaceCqlGenerator generator = new DropKeyspaceCqlGenerator(spec);
 
 		return new DefaultUpdateOperation(cqlTemplate, generator.toCql());
@@ -94,6 +122,16 @@ public class DefaultAdminCqlOperations implements AdminCqlOperations {
 		Assert.notNull(keyspace);
 
 		UseKeyspaceSpecification spec = new UseKeyspaceSpecification().name(keyspace);
+
+		return useKeyspace(spec);
+
+	}
+
+	@Override
+	public UpdateOperation useKeyspace(UseKeyspaceSpecification spec) {
+
+		Assert.notNull(spec);
+
 		UseKeyspaceCqlGenerator generator = new UseKeyspaceCqlGenerator(spec);
 
 		return new DefaultUpdateOperation(cqlTemplate, generator.toCql());
