@@ -39,7 +39,7 @@ This project has two modules:
  - [Spring Data Cassandra](cassandra)
 
 Spring Cassandra Cql gives ability to use CqlTemplate and makes operations based in CQL.
-Spring Data Cassandra gives ability to use Spring Data to convert ResultSet in to entities. 
+Spring Data Cassandra gives ability to use CassandraTemplate and CassandraRepository based on Spring Data capabilities. 
 
 Building
 --------
